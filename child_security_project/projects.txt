@@ -1,0 +1,4 @@
+# This file can be used to add projects not in the projects directory
+# by listing the full path to each project, one per line.
+
+C:\Users\ht24a071\source\child_security_project\child_security_project

@@ -50,6 +50,12 @@ label start:
 
     e "ストーリー、画像、音楽を追加すれば、世界にリリースすることができます！"
 
+    "いまからゲームをしよう！おまえにはくりあできねぇよ。"
+
+    $ g = "mg_bar_simple"
+
+    call expression g
+
     # return でゲームを終了します。
 
     return
