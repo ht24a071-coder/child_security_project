@@ -1,4 +1,5 @@
 ﻿# ゲーム開始
+
 label start:
     # 変数のリセット（2周目のために必要）
     $ current_step = 0
@@ -55,4 +56,28 @@ label game_over:
     scene bg black
     "連れ去られてしまった..."
     "GAME OVER..."
+    return
+
+# game/script.rpy などのファイルの最後に追記してください
+
+label event_bad_cookie:
+    "ここはクッキーを配る不審者イベントです。（未実装）"
+    return
+
+label event_bad_car:
+    "ここは車に乗った不審者イベントです。（未実装）"
+    return
+
+# 安全イベントのラベル定義例
+
+label event_safe_grandma:
+    "おばあちゃんと会ったイベント（未実装）"
+    return
+
+label event_safe_dog:
+    "犬に会ったイベント（未実装）"
+    return
+
+label event_safe_shop:
+    "お店に立ち寄ったイベント（未実装）"
     return
