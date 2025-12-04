@@ -52,10 +52,27 @@ label start:
 
     "いまからゲームをしよう！おまえにはくりあできねぇよ。"
 
-    $ g = "mg_bar_simple"
+    $ g = "play_minigame"
 
     call expression g
 
+    e "まだ終わりやない"
+
+    $ g = "play_minigame2"
+
+    call expression g
+
+    e "これは究極や(IJKL で移動することになります)"
+
+    $ g = "play_minigame3"
+
+    call expression g
+
+    e "それはヤバお　(IJKL で移動することになります)"
+
+    $ g = "play_minigame4"
+
+    call expression g
     # return でゲームを終了します。
 
     return
