@@ -1,32 +1,12 @@
-# ==========================================
-# ★重要：このファイルを他のファイルより先に読み込ませる設定
-# ==========================================
-init offset = -1
+init -1 python:
+    # イベントリスト
+    suspicious_events = []  # 危険イベントリスト
+    safe_events = []        # 安全イベントリスト
 
-# ==========================================
-# 1. 定数（define）
-# ==========================================
-define PROB_SUSPICIOUS = 50
-define MAX_STEPS = 10 
+# その他の定義（define, default）
+define PROB_SUSPICIOUS = 20  # 危険イベント発生確率（％）
+define MAX_STEPS = 10  # マップ移動の最大ステップ数
 
-# ==========================================
-# 2. 変数・フラグ（default）
-# ==========================================
-default current_step = 0
-default has_encountered_suspicious = False
-default flag_know_110 = False
-
-# ==========================================
-# 3. イベントリスト（init python）
-# ==========================================
-init python:
-    suspicious_events = [
-        "event_bad_cookie",
-        "event_bad_car",
-    ]
-    
-    safe_events = [
-        "event_safe_grandma",
-        "event_safe_dog",
-        "event_safe_shop",
-    ]
+default current_step = 0 # 現在のステップ数
+default has_encountered_suspicious = False # 危険イベント遭遇フラグ
+default flag_know_110 = False # 110番通報を知っているかどうか

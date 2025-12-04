@@ -1,5 +1,4 @@
 ﻿# ゲーム開始
-
 label start:
     # 変数のリセット（2周目のために必要）
     $ current_step = 0
@@ -10,7 +9,7 @@ label start:
     "下校時刻だ。家に帰ろう！"
 
     # マップループ
-    while current_step < MAX_STEPS: # defineした定数はそのまま使える
+    while current_step < MAX_STEPS: 
         
         $ current_step += 1
         "テクテク歩いて、あと [MAX_STEPS - current_step] マス..."
@@ -25,24 +24,42 @@ label start:
 label trigger_category_event:
     python:
         steps_left = MAX_STEPS - current_step
-
-        # 強制出現判定
+        
+        # 危険イベントか安全イベントかを判定
+        # 1. 強制出現判定（残り2マス以下で未遭遇なら必ず危険）
         if steps_left <= 2 and not has_encountered_suspicious:
             is_danger = True
+        # 2. それ以外なら確率で判定
         else:
             if renpy.random.randint(1, 100) <= PROB_SUSPICIOUS:
                 is_danger = True
             else:
                 is_danger = False
 
-        # イベント決定
+        # --- イベント抽選とリスト空チェック ---
+        
         if is_danger:
-            target_label = renpy.random.choice(suspicious_events)
-            has_encountered_suspicious = True
+            # 危険イベントリストが空でなければ抽選
+            if suspicious_events: 
+                target_label = renpy.random.choice(suspicious_events)
+                has_encountered_suspicious = True
+            else:
+                # 危険イベントが空なら安全イベントにフォールバック
+                if safe_events:
+                    target_label = renpy.random.choice(safe_events)
+                else:
+                    target_label = "event_fallback_nothing"
+        
         else:
-            target_label = renpy.random.choice(safe_events)
+            # 安全イベントリストが空でなければ抽選
+            if safe_events:
+                target_label = renpy.random.choice(safe_events)
+            else:
+                target_label = "event_fallback_nothing"
 
+    # 抽選結果のイベントへコール
     call expression target_label
+
     return
 
 # エンディング類
@@ -58,26 +75,7 @@ label game_over:
     "GAME OVER..."
     return
 
-# game/script.rpy などのファイルの最後に追記してください
-
-label event_bad_cookie:
-    "ここはクッキーを配る不審者イベントです。（未実装）"
-    return
-
-label event_bad_car:
-    "ここは車に乗った不審者イベントです。（未実装）"
-    return
-
-# 安全イベントのラベル定義例
-
-label event_safe_grandma:
-    "おばあちゃんと会ったイベント（未実装）"
-    return
-
-label event_safe_dog:
-    "犬に会ったイベント（未実装）"
-    return
-
-label event_safe_shop:
-    "お店に立ち寄ったイベント（未実装）"
+# 代替イベント (リストが空だった場合の安全装置)
+label event_fallback_nothing:
+    "特に何も起こらなかった。" 
     return
