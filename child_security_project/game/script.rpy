@@ -1,79 +1,80 @@
-﻿# このファイルにはゲームのスクリプトを記述します。
+﻿# 初期設定とリスト定義
+init python:
+    # 不審者が出る確率（％）
+    PROB_SUSPICIOUS = 50
 
-# Ren'Py のスクリプトは、インデント（行頭の空白）によってブロック分けされています。
-# インデントは Tab や Shift + Tab によって調整することができます。
+    # 不審者イベントのリスト
+    suspicious_events = [
+        "event_bad_cookie",     # お菓子
+        "event_bad_car",        # 車
+    ]
 
+    # 安全イベントのリスト
+    safe_events = [
+        "event_safe_grandma",   # おばあちゃん
+        "event_safe_dog",       # 犬
+    ]
 
-# まず最初に、ゲームに使うキャラクター（台詞を表示するオブジェクト）を定義します。
-# 一番目のパラメーターは、テキストウィンドウに表示されるキャラクターの名前です。
-# color のパラメーターを追加すると、キャラクターの名前を色付けできます。
-
-define e = Character('Eileen', color="#c8ffc8")
-
-
-# label ステートメント（文）はゲームの処理をまとめてラベル付けします。
-# ラベル間の移動は jump ステートメントか call ステートメントを使います。
-
-# ゲームは start ラベルからスタートします。
-
+# ゲーム開始
 label start:
+    # 変数リセット
+    $ current_step = 0
+    $ max_steps = 10
+    $ has_encountered_suspicious = False # 不審者に会ったかフラグ
 
-    # 背景を表示します。デフォルトではプレースホルダー（仮画像）を使用しますが、
-    # images ディレクトリーにファイル（ファイル名は "bg room.png" や "bg room.jpg"）
-    # を追加することで表示できます。
+    scene bg school_road_evening
+    "下校時刻だ。家に帰ろう！"
 
-    scene bg room
+    # マップループ開始
+    while current_step < max_steps:
+        
+        $ current_step += 1
+        "テクテク歩いて、あと [max_steps - current_step] マス..."
 
-    # スプライト（立ち絵）を表示します。ここではプレースホルダーを使用していますが、
-    # images ディレクトリーに "eileen happy.png" などと命名したファイルを追加すると
-    # 表示することができます。
+        # 抽選システム呼び出し
+        call trigger_category_event
 
-    # at ステートメントは画像の表示する位置を調整します。
-    # at center は中央に下揃えで表示します。これは省略しても同じ結果になります。
-    # その他に at right、at left などがデフォルトで定義されています。
+    # ループ終了後のクリア処理
+    jump game_clear
 
-    show eileen happy at center
+# 抽選ロジック（強制出現機能付き）
+label trigger_category_event:
+    python:
+        steps_left = max_steps - current_step
 
-    # トランジション（画面遷移効果）を使って表示を画面に反映させます。
-    # 台詞を表示するか with None を使うと、トランジション無しで直ちに表示します。
+        # 【強制出現判定】残り2マス以下 かつ まだ不審者に会っていない場合
+        if steps_left <= 2 and not has_encountered_suspicious:
+            is_danger = True
+            # renpy.notify("強制出現！") # デバッグ用
+        
+        # 通常の確率計算
+        else:
+            roll = renpy.random.randint(1, 100)
+            if roll <= PROB_SUSPICIOUS:
+                is_danger = True
+            else:
+                is_danger = False
 
-    with dissolve
+        # イベント決定処理
+        if is_danger:
+            target_label = renpy.random.choice(suspicious_events)
+            has_encountered_suspicious = True # フラグON
+        else:
+            target_label = renpy.random.choice(safe_events)
 
-    # 音楽を再生します。
-    # game ディレクトリーに "music.ogg" などのファイルを追加すると再生できます。
-
-    # play music "music.ogg"
-
-    # 以下は台詞を表示します。
-
-    e "Ren'Py の新しいゲームを作成しました。"
-
-    e "ストーリー、画像、音楽を追加すれば、世界にリリースすることができます！"
-
-    "いまからゲームをしよう！おまえにはくりあできねぇよ。"
-
-    $ g = "play_minigame"
-
-    call expression g
-
-    e "まだ終わりやない"
-
-    $ g = "play_minigame2"
-
-    call expression g
-
-    e "これは究極や(IJKL で移動することになります)"
-
-    $ g = "play_minigame3"
-
-    call expression g
-
-    e "それはヤバお　(IJKL で移動することになります)"
-
-    $ g = "play_minigame4"
-
-    call expression g
-    # return でゲームを終了します。
-
+    # イベント実行
+    call expression target_label
     return
 
+# エンディング類
+label game_clear:
+    "「ただいまー！」"
+    "無事に家に到着した。"
+    "GAME CLEAR!!"
+    return
+
+label game_over:
+    scene bg black
+    "連れ去られてしまった..."
+    "GAME OVER..."
+    return
