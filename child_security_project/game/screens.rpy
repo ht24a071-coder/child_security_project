@@ -1632,73 +1632,105 @@ style slider_slider:
     xsize 900
 
 # ===========================================================
-# 1. 移動先選択スクリーン
+# 1. 方向選択スクリーン
 # ===========================================================
 screen move_selector(current_id):
-    # 背景を少し暗くしてボタンを目立たせる
     add "#00000080"
     
     vbox:
-        align (0.5, 0.4)
+        align (0.5, 0.7)
         spacing 20
 
-        text "どこへ進みますか？" size 40 color "#fff" xalign 0.5 outlines [(2, "#000", 0, 0)]
+        text "地図を見て、通学路を選ぼう！" size 30 color "#fff" xalign 0.5 outlines [(2, "#000", 0, 0)]
 
-        # マップデータから「次に行ける場所」を探してボタンを自動で作る
-        for next_id in map_data[current_id]['next']:
+        hbox:
+            spacing 50
+            xalign 0.5
             
-            # --- ボタンの色を変える処理 ---
-            # 通学路（安全）なら青色、寄り道（危険）なら黄色
-            if map_data[next_id]['is_school_route']:
-                $ btn_bg = "#3366ff" # 青
-                $ btn_txt = "通学路: "
-            else:
-                $ btn_bg = "#ffcc00" # 黄
-                $ btn_txt = "寄り道: "
-
-            # --- 選択肢ボタン ---
-            textbutton "[btn_txt] [map_data[next_id]['name']] へ":
-                # クリックすると、選んだ場所のIDを返して終了
-                action Return(next_id)
+            for direction, next_id in map_data[current_id]['next'].items():
                 
-                # デザイン設定
-                xysize (600, 80)
-                background Frame(Solid(btn_bg), 10, 10) # 色付きの枠
-                text_color "#fff"
-                text_outlines [(1, "#000", 0, 0)]
-                xalign 0.5
+                if direction == 'straight':
+                    $ dir_text = "⬆ まっすぐ進む"
+                elif direction == 'right':
+                    $ dir_text = "➡ 右へ曲がる"
+                elif direction == 'left':
+                    $ dir_text = "⬅ 左へ曲がる"
+                else:
+                    $ dir_text = direction
+
+                # ボタンの色は統一（青色）
+                $ btn_color = "#3366ff"
+
+                button:
+                    action Return(next_id)
+                    xysize (300, 100)
+                    background Frame(Solid(btn_color), 10, 10)
+                    
+                    text dir_text:
+                        size 30
+                        color "#fff"
+                        align (0.5, 0.5)
+                        outlines [(2, "#000", 0, 0)]
 
 # ===========================================================
-# 2. ゲーム情報表示（HUD）
+# 2. ゲーム情報表示（HUD：ミニマップ）
 # ===========================================================
 screen game_hud():
+    
+    # --- 左上：危険度メーター ---
     frame:
-        xalign 0.05
-        yalign 0.05
-        padding (20, 20)
-        background "#ffffffcc" # 半透明の白
-
+        align (0.02, 0.02)
+        background Solid("#ffffffcc")
+        padding (15, 10)
         vbox:
-            # 現在地名を表示
             text "現在地: [map_data[current_location_id]['name']]" size 24 color "#333"
-            
-            null height 10
-            
-            # 危険度メーター
+            null height 5
             text "キケン度" size 20 color "#333"
             bar:
-                value danger_meter
-                range 100
-                xsize 200
-                ysize 20
-                left_bar "#ff0000" # メーターの色（赤）
-                right_bar "#cccccc"
+                value danger_meter range 100 xsize 200 ysize 20
+                left_bar "#ff0000" right_bar "#cccccc"
+
+    # --- 右上：画像ミニマップ ---
+    frame:
+        align (0.98, 0.02)
+        background Solid("#ffffffcc")
+        padding (10, 10)
+        
+        fixed:
+            xysize (300, 200) 
+            
+            # 背景地図（黄色い線が引かれた画像）
+            add current_minimap_image align (0.5, 0.5)
+            
+            # 各地点のアイコン
+            for spot_id, data in map_data.items():
+                if spot_id == 'home':
+                    add "icon_home_spot.png":
+                        pos data['pos']
+                        anchor (0.5, 0.5)
+                else:
+                    add "icon_spot.png":
+                        pos data['pos']
+                        anchor (0.5, 0.5)
+            
+            # プレイヤーの現在地ピン
+            $ current_pos = map_data[current_location_id]['pos']
+            add "icon_player_pin.png":
+                pos current_pos
+                anchor (0.5, 1.0)
+                at pin_bobbing
+
+# ピンのアニメーション定義
+transform pin_bobbing:
+    linear 1.0 yoffset -5
+    linear 1.0 yoffset 0
+    repeat
 
 # ===========================================================
-# 3. クライマックス用ミニゲーム（鍵開けQTE）
+# 3. ミニゲーム（QTE）
 # ===========================================================
 screen qte_door_lock():
-    modal True # 成功/失敗するまで他の操作禁止
+    modal True
     add "#000000aa"
 
     vbox:
@@ -1707,20 +1739,14 @@ screen qte_door_lock():
         text "不審者が迫っている！" size 40 color "#fff" xalign 0.5
         text "鍵を素早く閉めろ！" size 60 color "#ffaa00" xalign 0.5 bold True
 
-    # --- 制限時間タイマー ---
-    # 2.0秒以内に押さないとゲームオーバーへ飛ぶ
     timer 2.0 action Jump("game_over_caught")
     
-    # 時間経過を示すバー
     bar value AnimatedValue(0, range=100, delay=2.0) xalign 0.5 yalign 0.3 xsize 600
 
-    # --- 成功ボタン ---
     textbutton "CLICK!!":
         text_size 60
         xysize (300, 150)
-        background "#00ff00" # 緑色のボタン
+        background "#00ff00"
         text_color "#fff"
         align (0.5, 0.6)
-        # クリックで成功イベントへ飛ぶ
         action Jump("success_enter_home")
-        

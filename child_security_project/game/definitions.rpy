@@ -1,112 +1,117 @@
 init -1 python:
-    # -----------------------------------------------------------
-    # 1. 既存のイベントリスト（名前はそのまま維持）
-    # -----------------------------------------------------------
-    # 共同作成者の方はこれまで通り、ここに追加していけばOKです
-    suspicious_events = []  # 危険イベントリスト
-    safe_events = []        # 安全イベントリスト
+    # イベントリスト
+    suspicious_events = [] 
+    safe_events = []        
 
-    # -----------------------------------------------------------
-    # 2. マップデータの定義（新規追加）
-    # -----------------------------------------------------------
+    # 山札用リスト
+    deck_suspicious = []
+    deck_safe = []
+
+    # マップデータ定義
     map_data = {
         # --- スタート地点 ---
         'school': {
-            'name': '学校',
-            'bg': 'bg_school',             # 画像ファイル名は適宜変更してください
-            'next': ['main_road_1', 'shortcut_1'], 
-            'danger_add': 0,               
-            'is_school_route': True,       
+            'name': '学校の前',
+            'bg': 'bg_school',
+            'next': {
+                'straight': 'main_road',
+                'right': 'shortcut_entrance'
+            },
+            'danger_add': 0,
+            'is_school_route': True,
+            'is_event_spot': False,       
+            'distance_to_goal': 3,        
+            'pos': (20, 20),
         },
 
-        # --- 正規ルート（安全・遠回り） ---
-        'main_road_1': {
+        # --- 正規ルート（安全） ---
+        'main_road': {
             'name': '大通り',
             'bg': 'bg_main_street',
-            'next': ['koban', 'park'],
+            'next': {
+                'straight': 'residential_area'
+            },
             'danger_add': 5,
             'is_school_route': True,
+            'is_event_spot': True,
+            'distance_to_goal': 2,
+            'pos': (100, 20),
+        },
+        'residential_area': {
+            'name': '住宅街',
+            'bg': 'bg_residential', 
+            'next': {
+                'straight': 'home'
+            },
+            'danger_add': 5,
+            'is_school_route': True,
+            'is_event_spot': True,
+            'distance_to_goal': 1,
+            'pos': (180, 20),
         },
 
-        # --- 近道（危険） ---
-        'shortcut_1': {
+        # --- 寄り道ルート（危険） ---
+        'shortcut_entrance': {
             'name': '裏道の入口',
             'bg': 'bg_alley_entrance',
-            'next': ['alley_deep'],
+            'next': {
+                'straight': 'alley_deep'
+            },
             'danger_add': 20,
-            'is_school_route': False, # 寄り道
+            'is_school_route': False,
+            'is_event_spot': False,
+            'distance_to_goal': 3,
+            'pos': (20, 100),
         },
         'alley_deep': {
             'name': '暗い路地裏',
             'bg': 'bg_alley_deep',
-            'next': ['park'], 
+            'next': {
+                'straight': 'park'
+            },
             'danger_add': 40, 
             'is_school_route': False,
+            'is_event_spot': True,
+            'distance_to_goal': 2,
+            'pos': (100, 100),
         },
-
-        # --- 合流地点 ---
         'park': {
             'name': '公園',
             'bg': 'bg_park',
-            'next': ['house_110', 'home'],
+            'next': {
+                'straight': 'home'
+            },
             'danger_add': 10,
-            'is_school_route': True,
-        },
-
-        # --- ギミック ---
-        'house_110': {
-            'name': 'こども110番の家',
-            'bg': 'bg_house110',
-            'next': ['home'],
-            'danger_add': -30, 
-            'is_school_route': True,
-        },
-        'koban': {
-            'name': '交番',
-            'bg': 'bg_koban',
-            'next': ['home'],
-            'danger_add': -50,
-            'is_school_route': True,
+            'is_school_route': False,
+            'is_event_spot': True,
+            'distance_to_goal': 1,
+            'pos': (180, 100),
         },
 
         # --- ゴール ---
         'home': {
             'name': '自宅',
             'bg': 'bg_home',
-            'next': [], 
+            'next': {}, 
             'danger_add': 0,
             'is_school_route': True,
+            'is_event_spot': False,
+            'distance_to_goal': 0,
+            'pos': (260, 60),
         }
     }
 
-    # -----------------------------------------------------------
-    # 3. システム用変数（新規追加）
-    # -----------------------------------------------------------
-    # 山札（デッキ）用リスト
-    # ゲーム開始時に suspicious_events の中身をここにコピーして使います
-    deck_suspicious = []
-    deck_safe = []
-
-
-# ===========================================================
-# 定義・変数（元のコードを維持）
-# ===========================================================
-
-# 定数
-define PROB_SUSPICIOUS = 20  # ※新システムではdanger_meterを使いますが、念のため残します
-define MAX_STEPS = 10        # ※新システムでは使いませんが、エラー防止で残します
-
-# キャラクター
+# Pythonブロック外での定義
+define PROB_SUSPICIOUS = 20
+define MAX_STEPS = 10
 define i = Character("常に右にいる人", color="#c8ffc8")
 define t = Character("伊東マンショ", color="#c8ffc8")
 
-# 変数（デフォルト値）
-default current_step = 0                  # エラー防止のため維持
-default has_encountered_suspicious = False # 危険イベント遭遇フラグ（維持）
-default flag_know_110 = False             # 110番通報を知っているか（維持）
-
-# --- 新システムで使う変数 ---
-default current_location_id = 'school'    # 現在地ID
-default current_bg_image = "bg_school"    # 背景管理用
-default danger_meter = 0                  # 危険度メーター
-default is_stalked = False                # 尾行フラグ
+default current_location_id = 'school'
+default current_bg_image = "bg_school"
+default current_minimap_image = "minimap_guide.png" 
+default danger_meter = 0
+default is_stalked = False
+default knows_safe_house = False 
+default heard_rumor_110 = False
+default visited_locations = set()
