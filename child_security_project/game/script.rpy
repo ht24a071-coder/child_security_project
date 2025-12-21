@@ -1,68 +1,73 @@
-﻿# ゲーム開始
-label start:
-    # 変数のリセット（2周目のために必要）
+﻿label start:
     $ current_step = 0
     $ has_encountered_suspicious = False
     $ flag_know_110 = False
 
-    scene bg school_road_evening
+    $ deck_suspicious = list(suspicious_events)
+    $ deck_safe = list(safe_events)
+
+    # 最初の背景セット（マネージャー呼び出し）
+    call update_walking_background
+    
     "下校時刻だ。家に帰ろう！"
 
-    # マップループ
     while current_step < MAX_STEPS: 
         
         $ current_step += 1
+
+        # ★変更点1：背景管理マネージャーを呼ぶだけにする
+        call update_walking_background
+
         "テクテク歩いて、あと [MAX_STEPS - current_step] マス..."
 
-        # 抽選システム呼び出し
         call trigger_category_event
+    
+    "家の前まで着いた……。"
+    "鍵を開けようとしたその時、背後に気配を感じた！"
 
-    # クリア
-    jump game_clear
+    jump play_minigame
 
-# 抽選ロジック
+
 label trigger_category_event:
     python:
         steps_left = MAX_STEPS - current_step
         
-        # 危険イベントか安全イベントかを判定
-        # 1. 強制出現判定（残り2マス以下で未遭遇なら必ず危険）
+        # 危険か安全かの判定
+        is_danger = False
+        
         if steps_left <= 2 and not has_encountered_suspicious:
             is_danger = True
-        # 2. それ以外なら確率で判定
         else:
             if renpy.random.randint(1, 100) <= PROB_SUSPICIOUS:
                 is_danger = True
-            else:
-                is_danger = False
 
-        # --- イベント抽選とリスト空チェック ---
-        
+        # イベント抽選と山札処理
+        target_label = "event_fallback_nothing"
+
         if is_danger:
-            # 危険イベントリストが空でなければ抽選
-            if suspicious_events: 
-                target_label = renpy.random.choice(suspicious_events)
+            if len(deck_suspicious) > 0:
+                target_label = renpy.random.choice(deck_suspicious)
+                deck_suspicious.remove(target_label)
                 has_encountered_suspicious = True
             else:
-                # 危険イベントが空なら安全イベントにフォールバック
-                if safe_events:
-                    target_label = renpy.random.choice(safe_events)
-                else:
-                    target_label = "event_fallback_nothing"
-        
-        else:
-            # 安全イベントリストが空でなければ抽選
-            if safe_events:
-                target_label = renpy.random.choice(safe_events)
+                is_danger = False 
+
+        if not is_danger:
+            if len(deck_safe) > 0:
+                target_label = renpy.random.choice(deck_safe)
+                deck_safe.remove(target_label)
             else:
                 target_label = "event_fallback_nothing"
 
-    # 抽選結果のイベントへコール
+    # 対応表(event_bg_map)に設定があれば背景を切り替える
+    if target_label in event_bg_map:
+        $ _bg_image = event_bg_map[target_label]
+        scene expression _bg_image with fade
+
     call expression target_label
 
     return
 
-# エンディング類
 label game_clear:
     "「ただいまー！」"
     "無事に家に到着した。"
@@ -75,7 +80,6 @@ label game_over:
     "GAME OVER..."
     return
 
-# 代替イベント (リストが空だった場合の安全装置)
 label event_fallback_nothing:
     "特に何も起こらなかった。" 
     return
