@@ -16,8 +16,8 @@
     # 設定完了後
     pc "よし、これで登録完了だ。"
     pc "俺の名前は [player_name]。これからよろしく頼む。"
-
-    return
+    pc "さあ、下校しよう！"
+    
 
     # 最初の背景セット（マネージャー呼び出し）
     call update_walking_background
