@@ -6,6 +6,19 @@
     $ deck_suspicious = list(suspicious_events)
     $ deck_safe = list(safe_events)
 
+    scene bg room
+    
+    "ゲームを始める前に、あなたのプロフィールを設定してください。"
+
+    # スクリーンを呼び出す
+    call screen profile_setup
+
+    # 設定完了後
+    pc "よし、これで登録完了だ。"
+    pc "俺の名前は [player_name]。これからよろしく頼む。"
+
+    return
+
     # 最初の背景セット（マネージャー呼び出し）
     call update_walking_background
     

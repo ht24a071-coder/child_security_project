@@ -1630,3 +1630,65 @@ style slider_vbox:
 style slider_slider:
     variant "small"
     xsize 900
+
+screen profile_setup():
+    modal True  # ゲーム進行を止める
+    add "#000000cc" # 背景を少し暗くする
+
+    frame:
+        xalign 0.5 yalign 0.5
+        padding (40, 40)
+        
+        vbox:
+            spacing 20
+
+            # 1. タイトル
+            text "プロフィール設定" size 40 xalign 0.5 color "#fff"
+
+            null height 10
+
+            # 2. 名前の入力欄
+            text "名前（二つ名）を入力してください" size 24 color "#aaa"
+            
+            # input: ユーザーが文字打てる場所
+            # length=10: 10文字まで
+            input value VariableInputValue("player_name") length 10 size 30 color "#0ff" pixel_width 400
+
+            null height 20
+
+            # 3. アイコン選択
+            text "アバターアイコンを選択" size 24 color "#aaa"
+            
+            hbox:
+                spacing 20
+                xalign 0.5
+                
+                # 犬ボタン
+                imagebutton:
+                    idle "images/icons/icon_dog.png"
+                    # 選ばれている時は枠をつけるなどの演出（今回はTransformで明るさを変える例）
+                    selected_idle Transform("images/icons/icon_dog.png", matrixcolor=BrightnessMatrix(0.5))
+                    action SetVariable("player_icon", "icon_dog")
+                
+                # 猫ボタン
+                imagebutton:
+                    idle "images/icons/icon_cat.png"
+                    selected_idle Transform("images/icons/icon_cat.png", matrixcolor=BrightnessMatrix(0.5))
+                    action SetVariable("player_icon", "icon_cat")
+
+                # うさぎボタン
+                imagebutton:
+                    idle "images/icons/icon_rabbit.png"
+                    selected_idle Transform("images/icons/icon_rabbit.png", matrixcolor=BrightnessMatrix(0.5))
+                    action SetVariable("player_icon", "icon_rabbit")
+
+            null height 30
+
+            # 4. 決定ボタン
+            textbutton "設定完了":
+                xalign 0.5
+                text_size 40
+                text_color "#fff"
+                text_hover_color "#0ff"
+                # 名前が空っぽだと進めないようにする（任意）
+                action If(player_name != "", Return(), NullAction())

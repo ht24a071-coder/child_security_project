@@ -24,3 +24,18 @@ default flag_know_110 = False
 # ★重複防止用の「山札（デッキ）」変数
 default deck_suspicious = []
 default deck_safe = []
+
+# スコア変数
+default current_score = 0
+
+# --- プレイヤー設定 ---
+default player_name = "ナナシ"       # デフォルトの名前
+default player_icon = "icon_dog"     # デフォルトのアイコン識別子
+
+# 主人公のキャラ定義
+# image="player" を指定することで、サイドイメージ（顔アイコン）が連動します
+define pc = Character("[player_name]", image="player")
+
+# アイコン画像を動的に切り替える定義
+# ユーザーが選んだ player_icon の値（"icon_dog"など）に合わせて画像が変わります
+image side player = "images/icons/[player_icon].png"
