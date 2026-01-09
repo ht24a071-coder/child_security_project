@@ -25,7 +25,27 @@
     "家の前まで着いた……。"
     "鍵を開けようとしたその時、背後に気配を感じた！"
 
-    jump play_minigame
+
+    # ミニゲーム-----------------------------------------------
+    python:
+        # 難易度設定: 速度4.0、判定は少し厳しめに設定してみる
+        # speed: バーの速さ
+        # perfect_range: 黄色の幅（ピクセル）
+        # good_range: 緑の幅（ピクセル）
+        lock_game = TimingMinigame(speed=4.0, perfect_range=25, good_range=60, key="K_SPACE")
+
+    "（タイミングよくスペースキーを押せ！）"
+
+    # スクリーンを呼び出し（結果は _return に入ります）
+    call screen timing_minigame(lock_game)
+
+    if (_return == "miss"):
+        jump game_over
+    else:
+        jump game_clear
+    # ----------------------------------------------------------
+
+
 
 
 label trigger_category_event:

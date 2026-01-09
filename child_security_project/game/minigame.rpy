@@ -1,166 +1,233 @@
-init python:
+## timing_minigame_fixed.rpy
+## デザイン拡張版
+
+init -1 python:
     import math
-    import random
-    import pygame
 
-    # --- 1. パーティクル単体の定義 ---
-    class NeonParticle:
-        def __init__(self, x, y):
-            self.x = x
-            self.y = y
-            # 速度（ランダムに散らす）
-            angle = random.uniform(0, 6.28)
-            speed = random.uniform(2, 10)
-            self.vx = math.cos(angle) * speed
-            self.vy = math.sin(angle) * speed
+    class TimingMinigame(object):
+        def __init__(self, 
+            # --- ゲームバランス設定 ---
+            speed=2.0, 
+            perfect_range=30, 
+            good_range=60, 
+            key="K_SPACE",
             
-            # 色（寿命とともに変化させるためHSV的な管理）
-            self.hue = random.uniform(0, 1)
-            self.life = 1.0 # 1.0(生きている) -> 0.0(消滅)
-            self.decay = random.uniform(0.005, 0.015) # 寿命の減る速さ
-            self.size = random.uniform(2, 5)
-
-    # --- 2. メインシステム (CDD) ---
-    class ParticleSystemDisplayable(renpy.Displayable):
-        def __init__(self, **kwargs):
-            super(ParticleSystemDisplayable, self).__init__(**kwargs)
-            self.particles = []
-            self.last_st = 0
-            self.mouse_x = 0
-            self.mouse_y = 0
-            self.is_mouse_pressed = False
+            # --- デザイン設定（サイズ） ---
+            width=600,
+            height=100,
+            bar_width=20,
             
-            # 初期パーティクル生成（爆発させる）
-            self.spawn_particles(640, 360, 200)
+            # --- デザイン設定（色・見た目） ---
+            # 画像ファイルパスを指定すれば画像になり、Noneなら単色(Solid)になります
+            bg_color="#2d2d5f",
+            bg_image=None,
+            
+            border_color="#1a1a3d",
+            border_image=None,
+            
+            bar_color="#ff00ff",
+            bar_image=None,
+            
+            perfect_color="#ffff00", # 判定ゾーンの色
+            good_color="#00ff00"
+        ):
+            """
+            デザイン変更可能なタイミングミニゲーム
+            """
+            # バランス設定
+            self.speed = speed
+            self.perfect_range = perfect_range
+            self.good_range = good_range
+            self.key = key
+            
+            # 状態管理
+            self.result = None
+            self.position = 0.0
+            self.direction = 1
+            self.show_result = False
+            self.last_st = -1
+            
+            # デザイン設定の保存
+            self.width = width
+            self.height = height
+            self.bar_width = bar_width
+            
+            # --- Displayable（表示物）の生成 ---
+            # 画像が指定されていれば画像を読み込み、なければ単色(Solid)を作ります
+            
+            # 1. 移動するバー
+            if bar_image:
+                self.bar_displayable = Image(bar_image)
+            else:
+                self.bar_displayable = Solid(bar_color, xsize=bar_width, ysize=height)
+                
+            # 2. 背景（ゲージ部分）
+            if bg_image:
+                self.bg_displayable = Image(bg_image)
+            else:
+                self.bg_displayable = Solid(bg_color, xsize=width, ysize=height)
 
-        def spawn_particles(self, x, y, count):
-            # 一気に大量生成
-            for _ in range(count):
-                self.particles.append(NeonParticle(x, y))
+            # 3. 外枠（ボーダー）
+            if border_image:
+                self.border_displayable = Image(border_image)
+            else:
+                # 外枠はメイン領域より少し大きくする
+                self.border_displayable = Solid(border_color, xsize=width+20, ysize=height+20)
 
-        def render(self, width, height, st, at):
-            # 経過時間計算
+            # 4. 判定ゾーン（通常は半透明の色）
+            self.perfect_displayable = Solid(perfect_color, xsize=perfect_range*2, ysize=height)
+            self.good_displayable = Solid(good_color, xsize=good_range*2, ysize=height)
+
+
+        def update(self, st, at):
+            if self.last_st == -1:
+                self.last_st = st
+            
             dt = st - self.last_st
-            if dt > 0.1: dt = 0.016
             self.last_st = st
 
-            # キャンバスを作成（ここに直接お絵かきする）
-            render = renpy.Render(width, height)
-            canvas = render.canvas()
-
-            # --- 物理演算と描画ループ ---
-            # Pythonのリスト処理は遅いので、なるべく高速化を意識
-            
-            # マウスの位置を取得（イベント外でも滑らかに取るため）
-            mx, my = renpy.get_mouse_pos()
-
-            # 生き残るパーティクル用リスト
-            alive_particles = []
-
-            for p in self.particles:
-                # 1. マウスへの引力/斥力（ブラックホール効果）
-                dx = mx - p.x
-                dy = my - p.y
-                dist_sq = dx*dx + dy*dy + 0.1 # 0除算防止
-                dist = math.sqrt(dist_sq)
-
-                if self.is_mouse_pressed:
-                    # クリック中は「強力な吸引」
-                    force = 10000 / dist_sq
-                    p.vx += (dx / dist) * force * dt
-                    p.vy += (dy / dist) * force * dt
-                else:
-                    # 普段は「マウスを避ける（斥力）」
-                    if dist < 150:
-                        force = -5000 / dist_sq
-                        p.vx += (dx / dist) * force * dt
-                        p.vy += (dy / dist) * force * dt
-
-                # 2. 摩擦（空気抵抗）
-                p.vx *= 0.96
-                p.vy *= 0.96
-
-                # 3. 座標更新
-                p.x += p.vx
-                p.y += p.vy
-
-                # 4. 壁での跳ね返り
-                if p.x < 0:
-                    p.x = 0; p.vx *= -0.8
-                elif p.x > width:
-                    p.x = width; p.vx *= -0.8
+            if not self.show_result:
+                # 移動範囲は width の半分から bar_widthの半分を引いたもの
+                max_pos = (self.width / 2) - (self.bar_width / 2)
                 
-                if p.y < 0:
-                    p.y = 0; p.vy *= -0.8
-                elif p.y > height:
-                    p.y = height; p.vy *= -0.8
+                self.position += self.direction * self.speed * dt * 200
 
-                # 5. 寿命更新
-                p.life -= p.decay
+                if self.position >= max_pos:
+                    self.position = max_pos
+                    self.direction = -1
+                elif self.position <= -max_pos:
+                    self.position = -max_pos
+                    self.direction = 1
+
+            # --- 描画 ---
+            # バーの位置を更新して返す
+            display = Transform(child=self.bar_displayable, xalign=0.5, yalign=0.5, xoffset=int(self.position))
+            return display, 0.0
+
+        def check_timing(self):
+            if self.show_result:
+                return
+            
+            distance = abs(self.position)
+            
+            if distance <= self.perfect_range:
+                self.result = "perfect"
+            elif distance <= self.good_range:
+                self.result = "good"
+            else:
+                self.result = "miss"
+            
+            self.show_result = True
+
+
+screen timing_minigame(game):
+    modal True
+    
+    # 全画面暗転
+    add Solid("#000000AA")
+    
+    # メインウィンドウ
+    frame:
+        xalign 0.5
+        yalign 0.5
+        # 全体サイズはゲージサイズに合わせて自動調整させるため固定値を廃止しても良いが
+        # ここでは余裕を持たせたサイズにしておく
+        padding (50, 50)
+        background "#00000000" # ウィンドウ自体は透明に（中のパーツで表現）
+        
+        vbox:
+            spacing 20
+            xalign 0.5
+            
+            # タイトル
+            text " [game.key.upper()] を押して振りほどこう!":
+                size 40
+                xalign 0.5
+                color "#ffffff"
+                bold True
+                outlines [(3, "#000000", 0, 0)]
+            
+            # ゲーム本体エリア
+            fixed:
+                xsize game.width + 40 # 外枠分余裕をもたせる
+                ysize game.height + 40
+                xalign 0.5
                 
-                # 描画 (Canvasに直接描く)
-                if p.life > 0:
-                    # 色の計算 (RGB)
-                    # 速度が速いほど白く光らせる演出
-                    speed = math.sqrt(p.vx*p.vx + p.vy*p.vy)
-                    r = min(255, int(255 * p.life + speed * 5))
-                    g = min(255, int(100 * p.life + speed * 2))
-                    b = min(255, int(50 * p.life))
-                    color = (r, g, b, int(255 * p.life)) # Alphaあり
+                # 1. 外枠
+                add game.border_displayable:
+                    xalign 0.5
+                    yalign 0.8
+                
+                # 2. 背景（ゲージ）
+                add game.bg_displayable:
+                    xalign 0.5
+                    yalign 0.5
+                
+                # 3. Goodゾーン（広い）
+                add game.good_displayable:
+                    xalign 0.5
+                    yalign 0.5
+                    at transform:
+                        alpha 0.3
+                
+                # 4. Perfectゾーン（狭い）
+                add game.perfect_displayable:
+                    xalign 0.5
+                    yalign 0.5
+                    at transform:
+                        alpha 0.6
+                
+                # 5. 中央線（センターマーカー）
+                frame:
+                    xalign 0.5
+                    yalign 0.5
+                    xsize 2
+                    ysize game.height + 10
+                    background "#ffffff"
 
-                    # 円を描画
-                    canvas.circle(color, (p.x, p.y), p.size)
-                    alive_particles.append(p)
+                # 6. ビジュアル
+                text "- Press Space -":
+                    size 50
+                    color "#ffffff"
+                    bold True
+                    outlines [(4, "#000000", 0, 0)]
+                    xalign 0.5
+                    yalign -0.2
+                
+                # 6. 動くバー
+                add DynamicDisplayable(game.update)
             
-            # 死んだパーティクルを削除したリストに更新
-            self.particles = alive_particles
+            # 結果表示エリア
+            frame:
+                background None
+                ysize 60
+                xalign 0.5
+                
+                if game.show_result:
+                    if game.result == "perfect":
+                        text "PERFECT!!":
+                            size 50
+                            color game.perfect_displayable.color # ゾーンと同じ色にする
+                            bold True
+                            outlines [(3, "#000000", 0, 0)]
+                            xalign 0.5
+                    elif game.result == "good":
+                        text "GOOD!":
+                            size 40
+                            color game.good_displayable.color
+                            bold True
+                            outlines [(3, "#000000", 0, 0)]
+                            xalign 0.5
+                    else:
+                        text "MISS...":
+                            size 40
+                            color "#ff0000"
+                            bold True
+                            outlines [(3, "#000000", 0, 0)]
+                            xalign 0.5
 
-            # パーティクルが減りすぎたら自動補給（賑やかし）
-            if len(self.particles) < 300:
-                self.spawn_particles(random.randint(0, width), random.randint(0, height), 5)
-
-            # 常に全力で再描画
-            renpy.redraw(self, 0)
-            return render
-
-        def event(self, ev, x, y, st):
-            # マウス入力の状態管理
-            if ev.type == pygame.MOUSEBUTTONDOWN and ev.button == 1:
-                self.is_mouse_pressed = True
-                # クリックした瞬間に爆発生成
-                self.spawn_particles(x, y, 100)
-                raise renpy.IgnoreEvent()
-            
-            elif ev.type == pygame.MOUSEBUTTONUP and ev.button == 1:
-                self.is_mouse_pressed = False
-            
-            return None
-
-# --- スクリーン定義 ---
-screen technical_demo():
-    # 背景を真っ黒に（光を際立たせるため）
-    add Solid("#050505")
-    
-    # パーティクルシステム配置
-    default system = ParticleSystemDisplayable()
-    add system
-    
-    # UIレイヤー
-    vbox:
-        align (0.05, 0.05)
-        text "Ren'Py Particle Physics Demo" size 40 color "#fff" outlines [(2, "#000")]
-        text "Mouse Click: Attract & Spawn" size 24 color "#aaa"
-        text "Mouse Hover: Repel" size 24 color "#aaa"
-
-    textbutton "EXIT":
-        action Return()
-        align (0.95, 0.05)
-        text_color "#fff"
-        text_hover_color "#f00"
-
-# --- 呼び出し用ラベル ---
-label play_minigame:
-    window hide
-    call screen technical_demo
-    window show
-    return
+    # 入力処理
+    if not game.show_result:
+        key game.key action Function(game.check_timing)
+    else:
+        timer 1.5 action Return(game.result)
