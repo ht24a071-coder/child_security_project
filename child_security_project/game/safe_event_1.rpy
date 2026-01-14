@@ -1,8 +1,8 @@
 
 init 2 python:
-    suspicious_events.append("safe_e_test_1")
+    safe_events.append("safe_e_test_1")
 
-label suspi_e_test_1:
+label safe_e_test_1:
     python:
         import random
         
