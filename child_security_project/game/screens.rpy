@@ -1631,64 +1631,140 @@ style slider_slider:
     variant "small"
     xsize 900
 
+# スロットの現在地（何番目を選んでいるか）を管理する変数
+default part1_index = 0
+default part2_index = 0
+default part3_index = 0
+
+init python:
+    import random
+
+    # スロットを回す関数（矢印ボタン用）
+    # ※ definitions.rpy で定義した list_part1 などを参照します
+    def change_slot(part, direction):
+        if part == 1:
+            store.part1_index = (store.part1_index + direction) % len(store.list_part1)
+        elif part == 2:
+            store.part2_index = (store.part2_index + direction) % len(store.list_part2)
+        elif part == 3:
+            store.part3_index = (store.part3_index + direction) % len(store.list_part3)
+        renpy.restart_interaction()
+
+    # ランダムに決める関数（ランダムボタン用）
+    def random_name_slot():
+        store.part1_index = random.randint(0, len(store.list_part1) - 1)
+        store.part2_index = random.randint(0, len(store.list_part2) - 1)
+        store.part3_index = random.randint(0, len(store.list_part3) - 1)
+        renpy.restart_interaction()
+
+
+################################################################################
+## プロフィール設定スクリーン（サイズ調整済み）
+################################################################################
 screen profile_setup():
-    modal True  # ゲーム進行を止める
-    add "#000000cc" # 背景を少し暗くする
+    modal True
+    
+    # --- 背景 ---
+    add "#1a1a1a"
 
-    frame:
-        xalign 0.5 yalign 0.5
-        padding (40, 40)
+    # --- コンテンツ全体 ---
+    vbox:
+        align (0.5, 0.5) # 画面中央
+        spacing 15       # 全体の要素間隔を少し詰める（25 -> 15）
+
+        # 1. タイトル
+        text "プロフィール設定" size 50 xalign 0.5 color "#fff" outlines [(2, "#000", 0, 0)]
+
+        # 2. 二つ名スロット
+        text "名前（二つ名）を決めてください" size 26 color "#aaa" xalign 0.5
         
+        hbox:
+            spacing 15
+            xalign 0.5
+            
+            # --- 左スロット ---
+            vbox:
+                textbutton "▲" action Function(change_slot, 1, -1) xalign 0.5 text_size 30 text_color "#888" text_hover_color "#fff"
+                frame:
+                    background Solid("#333")
+                    xsize 280 ysize 60 # 少し小さく
+                    text list_part1[part1_index] xalign 0.5 yalign 0.5 size 24
+                textbutton "▼" action Function(change_slot, 1, 1) xalign 0.5 text_size 30 text_color "#888" text_hover_color "#fff"
+            
+            # --- 中スロット ---
+            vbox:
+                textbutton "▲" action Function(change_slot, 2, -1) xalign 0.5 text_size 30 text_color "#888" text_hover_color "#fff"
+                frame:
+                    background Solid("#333")
+                    xsize 280 ysize 60
+                    text list_part2[part2_index] xalign 0.5 yalign 0.5 size 24
+                textbutton "▼" action Function(change_slot, 2, 1) xalign 0.5 text_size 30 text_color "#888" text_hover_color "#fff"
+            
+            # --- 右スロット ---
+            vbox:
+                textbutton "▲" action Function(change_slot, 3, -1) xalign 0.5 text_size 30 text_color "#888" text_hover_color "#fff"
+                frame:
+                    background Solid("#333")
+                    xsize 280 ysize 60
+                    text list_part3[part3_index] xalign 0.5 yalign 0.5 size 24
+                textbutton "▼" action Function(change_slot, 3, 1) xalign 0.5 text_size 30 text_color "#888" text_hover_color "#fff"
+
+        # ランダムボタン & 結果表示
         vbox:
-            spacing 20
-
-            # 1. タイトル
-            text "プロフィール設定" size 40 xalign 0.5 color "#fff"
-
-            null height 10
-
-            # 2. 名前の入力欄
-            text "名前（二つ名）を入力してください" size 24 color "#aaa"
+            spacing 5 # 間隔を詰める
+            xalign 0.5
             
-            # input: ユーザーが文字打てる場所
-            # length=10: 10文字まで
-            input value VariableInputValue("player_name") length 10 size 30 color "#0ff" pixel_width 400
+            textbutton "🎲 ランダムで回す":
+                xalign 0.5
+                text_size 24
+                text_color "#4db6ac"
+                action Function(random_name_slot)
 
-            null height 20
+            text "【 " + list_part1[part1_index] + list_part2[part2_index] + list_part3[part3_index] + " 】" xalign 0.5 size 32 color "#ffeb3b" outlines [(2, "#000", 0, 0)]
 
-            # 3. アイコン選択
-            text "アバターアイコンを選択" size 24 color "#aaa"
+        null height 10
+
+        # 3. アバター選択
+        text "アバターアイコンを選択" size 26 color "#aaa" xalign 0.5
+        
+        frame:
+            xalign 0.5
+            # 横幅をさらに広げて、縦幅を減らす作戦
+            xsize 1100  
+            ysize 260   # ここを減らすのが重要（350 -> 260）
+            background Solid("#00000044")
+
+            vpgrid:
+                cols 10         # 横に10個並べる（これで縦の行数が減ります）
+                spacing 10
+                draggable True
+                mousewheel True
+                scrollbars "vertical"
+
+                for icon_id, icon_path in avatar_list:
+                    button:
+                        action SetVariable("player_icon", icon_id)
+                        
+                        padding (4, 4)
+                        background None
+                        selected_background Solid("#ffeb3b")
+                        
+                        xysize (90, 90) # アイコンサイズを少しだけ小さく調整
+                        
+                        add icon_path:
+                            align (0.5, 0.5)
+                            fit "contain"
+
+        null height 20
+
+        # 4. 決定ボタン
+        textbutton "設定完了":
+            xalign 0.5
+            padding (60, 15) # 横長にして押しやすく、縦はスリムに
+            background Solid("#009688")
+            hover_background Solid("#26a69a")
             
-            hbox:
-                spacing 20
-                xalign 0.5
-                
-                # 犬ボタン
-                imagebutton:
-                    idle "images/icons/icon_dog.png"
-                    # 選ばれている時は枠をつけるなどの演出（今回はTransformで明るさを変える例）
-                    selected_idle Transform("images/icons/icon_dog.png", matrixcolor=BrightnessMatrix(0.5))
-                    action SetVariable("player_icon", "icon_dog")
-                
-                # 猫ボタン
-                imagebutton:
-                    idle "images/icons/icon_cat.png"
-                    selected_idle Transform("images/icons/icon_cat.png", matrixcolor=BrightnessMatrix(0.5))
-                    action SetVariable("player_icon", "icon_cat")
-
-                # うさぎボタン
-                imagebutton:
-                    idle "images/icons/icon_rabbit.png"
-                    selected_idle Transform("images/icons/icon_rabbit.png", matrixcolor=BrightnessMatrix(0.5))
-                    action SetVariable("player_icon", "icon_rabbit")
-
-            null height 30
-
-            # 4. 決定ボタン
-            textbutton "設定完了":
-                xalign 0.5
-                text_size 40
-                text_color "#fff"
-                text_hover_color "#0ff"
-                # 名前が空っぽだと進めないようにする（任意）
-                action If(player_name != "", Return(), NullAction())
+            text_size 36
+            text_color "#fff"
+            
+            action [SetVariable("player_name", list_part1[part1_index] + list_part2[part2_index] + list_part3[part3_index]), Return()]
