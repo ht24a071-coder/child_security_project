@@ -353,35 +353,66 @@ style navigation_button_text:
 ##
 ## https://ja.renpy.org/doc/html/screen_special.html#main-menu
 
-screen main_menu():
+################################################################################
+## 【準備】丸いボタンの素材（サイズをボタン本体に合わせました：180px）
+################################################################################
+# ピンクのボタン（開始）
+image bg_circle_pink_idle = Text("●", size=180, color="#FFAB91")
+image bg_circle_pink_hover = Text("●", size=180, color="#FFCCBC")
 
-    ## 次のコードは、同じタグを持つ他のメニュースクリーンが表示された時にスク
-    ## リーンを置換します。
+# 水色のボタン（ランキング）
+image bg_circle_blue_idle = Text("●", size=180, color="#81D4FA")
+image bg_circle_blue_hover = Text("●", size=180, color="#B3E5FC")
+
+
+################################################################################
+## タイトル画面
+################################################################################
+screen main_menu():
     tag menu
 
-    add gui.main_menu_background
+    # --- 1. 背景画像（コードでサイズ調整） ---
+    # 画像が小さくても、画面サイズ(config.screen_width/height)に合わせて引き伸ばします
+    add "images/title.png":
+        xysize (config.screen_width, config.screen_height)
 
-    ## 次の空のフレームは gui/overlay/main_menu.png を表示してメインメニューを
-    ## 暗くしています。
-    frame:
-        style "main_menu_frame"
+    # --- 2. メインボタン ---
+    hbox:
+        align (0.5, 0.75)
+        spacing 100
 
-    ## use ステートメントは、他のスクリーンを現在のスクリーンの内に表示するの
-    ## に使います。メインメニューの実際のコンテンツは navigation（ナビゲーショ
-    ## ン）スクリーンです。
-    use navigation
+        # --- 開始ボタン ---
+        button:
+            action Start()
+            xysize (180, 180) # ボタンの大きさ
+            padding (0, 0)    # 余白をゼロにしてズレを防ぐ
+            
+            # 背景の丸
+            background At("bg_circle_pink_idle", Transform(align=(0.5, 0.5)))
+            hover_background At("bg_circle_pink_hover", Transform(align=(0.5, 0.5)))
 
-    if gui.show_name:
+            # 中身のテキスト（zorderなどは不要ですが、alignを確実に）
+            vbox:
+                align (0.5, 0.5)
+                spacing 0
+                text "🐾" size 80 xalign 0.5 color "#fff" 
+                text "開始する" size 28 xalign 0.5 color "#fff" bold True outlines [(2, "#FF7043", 0, 0)]
 
-        vbox:
-            style "main_menu_vbox"
+        # --- ランキングボタン ---
+        button:
+            action NullAction()
+            xysize (180, 180)
+            padding (0, 0)
+            
+            # 背景の丸
+            background At("bg_circle_blue_idle", Transform(align=(0.5, 0.5)))
+            hover_background At("bg_circle_blue_hover", Transform(align=(0.5, 0.5)))
 
-            text "[config.name!t]":
-                style "main_menu_title"
-
-            text "[config.version]":
-                style "main_menu_version"
-
+            vbox:
+                align (0.5, 0.5)
+                spacing 0
+                text "👑" size 80 xalign 0.5 color "#fff"
+                text "ランキング" size 28 xalign 0.5 color "#fff" bold True outlines [(2, "#4FC3F7", 0, 0)]
 
 style main_menu_frame is empty
 style main_menu_vbox is vbox
