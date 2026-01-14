@@ -1,16 +1,22 @@
-default  boyu_flag = False
 
 init 2 python:
-    safe_events.append("safe_e_test_2")
+    suspicious_events.append("safe_e_test_2")
 
-label safe_e_test_2:
+label suspi_e_test_2:
+    python:
+        import random
+        
+    show rightman
+    officer "やあ、こんにちは！"
 
-    if boyu_flag:
-        "やつはきえた"
-    else:
-        show boy
-        "あ、同じクラスの伊藤博文くんだ。"
-        t "やぁ"
-        $ boyu_flag = True
-    
+    menu:
+        "こんにちは！":
+            $ a = renpy.random.choice(OfficerGreeting)
+            officer "[a]"
+
+        "...":
+            $ a = renpy.random.choice(OfficerMissGreeting)
+            #スコアが減る選択肢
+            officer "[a]"
+
     return
