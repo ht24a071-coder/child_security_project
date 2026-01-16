@@ -1,4 +1,6 @@
 ﻿label start:
+    # 時間制限のスクリーンの表示
+    show screen inactivity_guard
     $ current_step = 0
     $ has_encountered_suspicious = False
     $ flag_know_110 = False
@@ -8,6 +10,7 @@
 
     scene bg room
     
+
     "ゲームを始める前に、あなたのプロフィールを設定してください。"
 
     # スクリーンを呼び出す

@@ -1799,3 +1799,8 @@ screen profile_setup():
             text_color "#fff"
             
             action [SetVariable("player_name", list_part1[part1_index] + list_part2[part2_index] + list_part3[part3_index]), Return()]
+
+screen inactivity_guard():
+    zorder 1000
+
+    timer 30.0 action Quit(confirm=False)
