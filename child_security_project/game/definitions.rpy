@@ -68,6 +68,7 @@ define MAX_STEPS = 10
 # キャラクター定義
 define officer = Character("おまわりさん", color="#c8ffc8")
 define woman = Character("おねえさん", color="#c8ffc8")
+define pc = Character("[player_name]", image="player")
 define t = Character("伊東マンショ", color="#c8ffc8")
 
 # セリフテーブル

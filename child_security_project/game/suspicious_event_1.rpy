@@ -7,14 +7,14 @@ label suspi_e_test_1:
         import random
         
     show woman
-    woman "学校終わり？おかえり！"
+    woman "君学校帰り？おいしいケーキがあるんだけど来ない？"
 
     menu:
-        "ただいまー！":
+        "いくー！":
             $ a = renpy.random.choice(WomanGreeting)
             woman "[a]"
 
-        "...":
+        "ごめんなさい。まっすぐ帰らないといけないんです":
             $ a = renpy.random.choice(WomanMissGreeting)
             #スコアが減る選択肢
             woman "[a]"
