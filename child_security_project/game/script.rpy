@@ -1,43 +1,84 @@
 ﻿label start:
+    # --- 変数の初期化 ---
+    $ current_node = "start_point"
+    $ previous_node = None
     $ current_step = 0
-    $ has_encountered_suspicious = False
-    $ flag_know_110 = False
-
-    $ deck_suspicious = list(suspicious_events)
-    $ deck_safe = list(safe_events)
+    $ used_events = set() # 一度起きたイベントを記録
 
     scene bg room
-    
+
+    # プロフ設定-----------------------
     "ゲームを始める前に、あなたのプロフィールを設定してください。"
 
     # スクリーンを呼び出す
+
     call screen profile_setup
+    # -------------------------------
 
-    # 設定完了後
-    pc "よし、これで登録完了だ。"
-    pc "さあ、下校しよう！"
     
+    # メイン移動ループへ
+    jump travel_loop
 
-    # 最初の背景セット（マネージャー呼び出し）
-    call update_walking_background
+label travel_loop:
+    # 1. 現在地のデータを取得
+    $ node_data = world_map.get(current_node)
+    $ current_bg = node_data["bg"]
     
-    "下校時刻だ。家に帰ろう！"
+    # 2. 背景の更新
+    scene expression current_bg with fade
+    
+    # 3. ゴール判定（家の前に着いたらループ終了）
+    if current_node == "home_front":
+        jump arrival_home
 
-    while current_step < MAX_STEPS: 
+    # 4. 歩数カウントとイベント抽選
+    $ current_step += 1
+    call trigger_node_event(node_data)
+
+    # 5. 移動選択肢の生成
+    python:
+        # 選択肢のリストを作成
+        menu_items = []
         
-        $ current_step += 1
+        # マップデータにあるリンクを順に追加
+        for label_text, target_id in node_data["links"].items():
+            menu_items.append((label_text, target_id))
+        
+        # 「戻る」選択肢を自動追加（前の地点がある場合）
+        if previous_node:
+            menu_items.append(("一つ前の場所に戻る", previous_node))
+            
+        # Ren'Pyのメニューを呼び出し
+        next_location = renpy.display_menu(menu_items)
 
-        # ★変更点1：背景管理マネージャーを呼ぶだけにする
-        call update_walking_background
+    # 6. 移動処理
+    $ previous_node = current_node
+    $ current_node = next_location
+    jump travel_loop
 
-        "テクテク歩いて、あと [MAX_STEPS - current_step] マス..."
+# --- イベント抽選サブロジック ---
+label trigger_node_event(data):
+    python:
+        group_name = data["group"]
+        chance = data["chance"]
+        target_event = None
 
-        call trigger_category_event
-    
-    "家の前まで着いた……。"
-    "鍵を開けようとしたその時、背後に気配を感じた！"
+        # 確率判定とグループの存在確認
+        if renpy.random.randint(1, 100) <= chance and group_name in event_pools:
+            # まだ使っていないイベントだけを抽出
+            available = [e for e in event_pools[group_name] if e not in used_events]
+            
+            if available:
+                target_event = renpy.random.choice(available)
+                used_events.add(target_event) # 使用済みリストに追加
 
+    # イベントが当選していれば呼び出し
+    if target_event:
+        call expression target_event
+    return
 
+label arrival_home:
+    "ようやく家の前に着いた……。"
     # ミニゲーム-----------------------------------------------
     python:
         # 難易度設定: 速度4.0、判定は少し厳しめに設定してみる
@@ -55,63 +96,28 @@
         jump game_over
     else:
         jump game_clear
-    # ----------------------------------------------------------
 
+    # ---------------------------------------------------
 
-
-
-label trigger_category_event:
-    python:
-        steps_left = MAX_STEPS - current_step
-        
-        # 危険か安全かの判定
-        is_danger = False
-        
-        if steps_left <= 2 and not has_encountered_suspicious:
-            is_danger = True
-        else:
-            if renpy.random.randint(1, 100) <= PROB_SUSPICIOUS:
-                is_danger = True
-
-        # イベント抽選と山札処理
-        target_label = "event_fallback_nothing"
-
-        if is_danger:
-            if len(deck_suspicious) > 0:
-                target_label = renpy.random.choice(deck_suspicious)
-                deck_suspicious.remove(target_label)
-                has_encountered_suspicious = True
-            else:
-                is_danger = False 
-
-        if not is_danger:
-            if len(deck_safe) > 0:
-                target_label = renpy.random.choice(deck_safe)
-                deck_safe.remove(target_label)
-            else:
-                target_label = "event_fallback_nothing"
-
-    # 対応表(event_bg_map)に設定があれば背景を切り替える
-    if target_label in event_bg_map:
-        $ _bg_image = event_bg_map[target_label]
-        scene expression _bg_image with fade
-
-    call expression target_label
-
-    return
 
 label game_clear:
+
     "「ただいまー！」"
+
     "無事に家に到着した。"
+
     "GAME CLEAR!!"
+
     return
+
+
 
 label game_over:
-    scene bg black
-    "連れ去られてしまった..."
-    "GAME OVER..."
-    return
 
-label event_fallback_nothing:
-    "特に何も起こらなかった。" 
+    scene bg black
+
+    "連れ去られてしまった..."
+
+    "GAME OVER..."
+
     return
