@@ -2,6 +2,9 @@
     # --- 変数の初期化 ---
     $ current_node = "start_point"
     $ previous_node = None
+    
+    # 時間制限のスクリーンの表示
+    show screen inactivity_guard
     $ current_step = 0
     $ used_events = set() # 一度起きたイベントを記録
 
