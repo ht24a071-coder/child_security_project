@@ -40,7 +40,7 @@ init -10 python:
     # 2. イベントグループの設定
     # 地点ごとに設定されたグループ名から、未実行のラベルが抽選されます
     event_pools = {
-        "safe": ["safe_e_test_1", "safe_e_test_2"],
+        "safe": ["safe_e_test_1", "safe_e_test_2", "safe_e_railway"],
         "suspicious": ["suspi_e_test_1", "suspi_e_test_2"],
         "none": []
     }

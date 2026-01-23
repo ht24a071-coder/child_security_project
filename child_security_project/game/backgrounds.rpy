@@ -5,7 +5,8 @@ init -1 python:
         # "イベントラベル名" : "画像名（またはimage定義名）",
         "safe_e_test_1"      : "back_town",      # 例のイベント
         "suspicious_event_1" : "back_danger",  # 路地裏
-        "suspicious_event_2" : "back_dark"
+        "suspicious_event_2" : "back_dark",
+        "safe_e_railway"     : "back_railway"
     }
 
 label update_walking_background:
@@ -21,3 +22,5 @@ label update_walking_background:
 image back_town = "images/back/back_town.png"
 image back_dark = "images/back/back_dark.png"
 image back_danger = "images/back/back_danger.png"
+image back_railway = "images/back/back_railway.png"
+image black = "images/black.png"

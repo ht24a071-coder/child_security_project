@@ -1803,4 +1803,4 @@ screen profile_setup():
 screen inactivity_guard():
     zorder 1000
 
-    timer 30.0 action Quit(confirm=False)
+    timer 600.0 action Quit(confirm=False)

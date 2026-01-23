@@ -8,7 +8,7 @@
     $ current_step = 0
     $ used_events = set() # 一度起きたイベントを記録
 
-    scene bg room
+    scene black
 
     # プロフ設定-----------------------
     "ゲームを始める前に、あなたのプロフィールを設定してください。"
