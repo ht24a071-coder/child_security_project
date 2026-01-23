@@ -1704,10 +1704,12 @@ screen profile_setup():
         spacing 15       # 全体の要素間隔を少し詰める（25 -> 15）
 
         # 1. タイトル
-        text "プロフィール設定" size 50 xalign 0.5 color "#fff" outlines [(2, "#000", 0, 0)]
+        # "設定" -> "せってい"
+        text "プロフィール{rb}設定{/rb}{rt}せってい{/rt}" size 35 xalign 0.5 color "#00c603" outlines [(2, "#000", 0, 0)]
 
         # 2. 二つ名スロット
-        text "名前（二つ名）を決めてください" size 26 color "#aaa" xalign 0.5
+        # タイトルのルビも「一括」にしてきれいにしました
+        text "{rb}名前{/rb}{rt}なまえ{/rt}（{rb}二つ名{/rb}{rt}ふたつな{/rt}）を{rb}決{/rb}{rt}き{/rt}めてください" size 26 color "#aaa" xalign 0.5
         
         hbox:
             spacing 15
@@ -1715,37 +1717,47 @@ screen profile_setup():
             
             # --- 左スロット ---
             vbox:
-                textbutton "▲" action Function(change_slot, 1, -1) xalign 0.5 text_size 30 text_color "#888" text_hover_color "#fff"
+                textbutton "▲" action Function(change_slot, 1, -1) xalign 0.5 text_size 40 text_color "#888" text_hover_color "#fff"
                 frame:
                     background Solid("#333")
-                    xsize 280 ysize 60 # 少し小さく
-                    text list_part1[part1_index] xalign 0.5 yalign 0.5 size 24
-                textbutton "▼" action Function(change_slot, 1, 1) xalign 0.5 text_size 30 text_color "#888" text_hover_color "#fff"
+                    xsize 320 ysize 80 
+                    
+                    # ★ここに追加！ (yoffset 4 で少し下に下げる)
+                    text list_part1[part1_index] xalign 0.5 yalign 0.5 size 34 yoffset 4
+
+                textbutton "▼" action Function(change_slot, 1, 1) xalign 0.5 text_size 40 text_color "#888" text_hover_color "#fff"
             
             # --- 中スロット ---
             vbox:
-                textbutton "▲" action Function(change_slot, 2, -1) xalign 0.5 text_size 30 text_color "#888" text_hover_color "#fff"
+                textbutton "▲" action Function(change_slot, 2, -1) xalign 0.5 text_size 40 text_color "#888" text_hover_color "#fff"
                 frame:
                     background Solid("#333")
-                    xsize 280 ysize 60
-                    text list_part2[part2_index] xalign 0.5 yalign 0.5 size 24
-                textbutton "▼" action Function(change_slot, 2, 1) xalign 0.5 text_size 30 text_color "#888" text_hover_color "#fff"
+                    xsize 320 ysize 80
+                    
+                    # ★ここにも追加！
+                    text list_part2[part2_index] xalign 0.5 yalign 0.5 size 34 yoffset 4
+
+                textbutton "▼" action Function(change_slot, 2, 1) xalign 0.5 text_size 40 text_color "#888" text_hover_color "#fff"
             
             # --- 右スロット ---
             vbox:
-                textbutton "▲" action Function(change_slot, 3, -1) xalign 0.5 text_size 30 text_color "#888" text_hover_color "#fff"
+                textbutton "▲" action Function(change_slot, 3, -1) xalign 0.5 text_size 40 text_color "#888" text_hover_color "#fff"
                 frame:
                     background Solid("#333")
-                    xsize 280 ysize 60
-                    text list_part3[part3_index] xalign 0.5 yalign 0.5 size 24
-                textbutton "▼" action Function(change_slot, 3, 1) xalign 0.5 text_size 30 text_color "#888" text_hover_color "#fff"
+                    xsize 320 ysize 80
+                    
+                    # ★ここにも追加！
+                    text list_part3[part3_index] xalign 0.5 yalign 0.5 size 34 yoffset 4
+
+                textbutton "▼" action Function(change_slot, 3, 1) xalign 0.5 text_size 40 text_color "#888" text_hover_color "#fff"
 
         # ランダムボタン & 結果表示
         vbox:
             spacing 5 # 間隔を詰める
             xalign 0.5
             
-            textbutton "🎲 ランダムで回す":
+            # "回" -> "まわ"
+            textbutton "🎲 ランダムで{rb}回{/rb}{rt}まわ{/rt}す":
                 xalign 0.5
                 text_size 24
                 text_color "#4db6ac"
@@ -1756,12 +1768,13 @@ screen profile_setup():
         null height 10
 
         # 3. アバター選択
-        text "アバターアイコンを選択" size 26 color "#aaa" xalign 0.5
+        # "選択" -> "せんたく"
+        text "アバターアイコンを{rb}選択{/rb}{rt}せんたく{/rt}" size 26 color "#aaa" xalign 0.5
         
         frame:
             xalign 0.5
             # 横幅をさらに広げて、縦幅を減らす作戦
-            xsize 1100  
+            xsize 1025  
             ysize 260   # ここを減らすのが重要（350 -> 260）
             background Solid("#00000044")
 
@@ -1789,9 +1802,13 @@ screen profile_setup():
         null height 20
 
         # 4. 決定ボタン
-        textbutton "設定完了":
+        # ★修正: 漢字とルビを全部つなげました。これでバランス良く配置されます。
+        textbutton "{rb}設定完了{/rb}{rt}せっていかんりょう{/rt}":
             xalign 0.5
-            padding (60, 15) # 横長にして押しやすく、縦はスリムに
+            yoffset -30
+            text_yoffset 8
+
+            padding (35, 5)
             background Solid("#009688")
             hover_background Solid("#26a69a")
             

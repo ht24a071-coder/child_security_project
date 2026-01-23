@@ -74,6 +74,9 @@ define gui.interface_text_font = "SourceHanSansLite.ttf"
 ## 一般的な台詞のテキストサイズ。
 define gui.text_size = 33
 
+## ルビが重なる場合は、ここの数字を 10 ～ 20 くらいに増やして調整します。
+define gui.text_line_spacing = 15
+
 ## キャラクターの名前のテキストサイズ。
 define gui.name_text_size = 45
 
@@ -498,3 +501,9 @@ init python:
 
         gui.nvl_button_width = 1860
         gui.nvl_button_xpos = 30
+
+init python:
+    # ルビのテキストの垂直位置を調整します。
+    # マイナスの値にすると上に、プラスの値にすると下に移動します。
+    # 重なり具合を見て、この数字（-15）を調整してください。
+    style.ruby_text.yoffset = -30
