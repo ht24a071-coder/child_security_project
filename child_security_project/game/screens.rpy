@@ -400,7 +400,7 @@ screen main_menu():
 
         # --- ランキングボタン ---
         button:
-            action NullAction()
+            action ShowMenu("ranking_menu")
             xysize (180, 180)
             padding (0, 0)
             
