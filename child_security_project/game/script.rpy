@@ -8,16 +8,21 @@
     $ current_step = 0
     $ used_events = set() # 一度起きたイベントを記録
 
+    # スコアと演出のリセット（念のため）
+    $ total_score = 0
+    hide screen score_hud
+
     scene black
 
     # プロフ設定-----------------------
     "ゲームを始める前に、あなたのプロフィールを設定してください。"
 
     # スクリーンを呼び出す
-
     call screen profile_setup
     # -------------------------------
 
+    # ★ここでスコアボードを表示！
+    show screen score_hud
     
     # メイン移動ループへ
     jump travel_loop
@@ -84,10 +89,7 @@ label arrival_home:
     "ようやく家の前に着いた……。"
     # ミニゲーム-----------------------------------------------
     python:
-        # 難易度設定: 速度4.0、判定は少し厳しめに設定してみる
-        # speed: バーの速さ
-        # perfect_range: 黄色の幅（ピクセル）
-        # good_range: 緑の幅（ピクセル）
+        # 難易度設定
         lock_game = TimingMinigame(speed=4.0, perfect_range=25, good_range=60, key="K_SPACE")
 
     "（タイミングよくスペースキーを押せ！）"
@@ -111,9 +113,10 @@ label game_clear:
 
     "GAME CLEAR!!"
 
+    # ★スコアを記録してランキング保存（ranking_system.rpyが必要です）
+    call game_end_processing
+
     return
-
-
 
 label game_over:
 
