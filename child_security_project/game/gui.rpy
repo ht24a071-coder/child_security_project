@@ -505,5 +505,6 @@ init python:
 init python:
     # ルビのテキストの垂直位置を調整します。
     # マイナスの値にすると上に、プラスの値にすると下に移動します。
-    # 重なり具合を見て、この数字（-15）を調整してください。
-    style.ruby_text.yoffset = -30
+    # 重なり具合を見て、この数字を調整してください。
+    style.ruby_text.yoffset = -45
+    style.ruby_text.size = 18
