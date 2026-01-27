@@ -426,6 +426,21 @@ screen main_menu():
                 text "👑" size 70 xalign 0.5 color "#fff"
                 text "ランキング" size 24 xalign 0.5 color "#fff" bold True outlines [(2, "#4FC3F7", 0, 0)]
 
+        # --- おおごえテストボタン ---
+        button:
+            action Start("test_mic_minigame")
+            xysize (180, 180)
+            padding (0, 0)
+            
+            background At("bg_circle_blue_idle", Transform(align=(0.5, 0.5)))
+            hover_background At("bg_circle_blue_hover", Transform(align=(0.5, 0.5)))
+
+            vbox:
+                align (0.5, 0.5)
+                spacing 0
+                text "📢" size 70 xalign 0.5 color "#fff"
+                text "おおごえ" size 22 xalign 0.5 color "#fff" bold True outlines [(2, "#4FC3F7", 0, 0)]
+
 style main_menu_frame is empty
 style main_menu_vbox is vbox
 style main_menu_text is gui_text

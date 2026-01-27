@@ -166,3 +166,39 @@ label game_over:
     
     call screen game_feedback
     return
+
+# =============================================================================
+# おおごえテスト用ラベル
+# =============================================================================
+label test_mic_minigame:
+    scene black with fade
+    
+    "おおごえの テストを はじめます！"
+    
+    # 設定画面を表示
+    call screen mic_settings
+    
+    menu:
+        "テストを開始する":
+            pass
+        "タイトルに戻る":
+            return
+    
+    python:
+        shout_game = ShoutMinigame(
+            threshold=0.25,    # 音量閾値（少し下げて反応しやすく）
+            duration=5.0,
+            hold_time=0.3      # 必要な維持時間（短めに）
+        )
+    
+    call screen shout_minigame(shout_game)
+    
+    if _return == "perfect":
+        "PERFECT!! すごい おおごえだね！"
+    elif _return == "good":
+        "GOOD! いい こえが でていたよ！"
+    else:
+        "もう すこし がんばろう！"
+    
+    "テストを おわります。"
+    return

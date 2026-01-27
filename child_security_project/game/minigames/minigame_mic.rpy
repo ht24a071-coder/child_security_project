@@ -1,30 +1,212 @@
 # =============================================================================
-# マイク音量検出ミニゲーム
-# 「おおごえを出す」を実際にマイクで検出
+# Windows ネイティブ マイク音量検出
+# 外部ライブラリ不要 - Windows API (winmm.dll) を直接使用
 # =============================================================================
 
 init -1 python:
+    import sys
+    import struct
     import threading
     import time
     
-    # マイク機能が使えるかチェック
-    _mic_available = False
-    try:
-        import sounddevice as sd
-        import numpy as np
-        _mic_available = True
-    except ImportError:
-        pass
+    # Windows専用マイク機能
+    _win_mic_available = False
+    _win_mic_error = ""
+    
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            from ctypes import wintypes
+            
+            # Windows Multimedia API
+            winmm = ctypes.windll.winmm
+            
+            # 定数
+            WAVE_FORMAT_PCM = 1
+            WAVE_MAPPER = -1
+            CALLBACK_NULL = 0
+            WHDR_DONE = 0x00000001
+            
+            # WAVEFORMATEX構造体
+            class WAVEFORMATEX(ctypes.Structure):
+                _fields_ = [
+                    ("wFormatTag", wintypes.WORD),
+                    ("nChannels", wintypes.WORD),
+                    ("nSamplesPerSec", wintypes.DWORD),
+                    ("nAvgBytesPerSec", wintypes.DWORD),
+                    ("nBlockAlign", wintypes.WORD),
+                    ("wBitsPerSample", wintypes.WORD),
+                    ("cbSize", wintypes.WORD),
+                ]
+            
+            # WAVEHDR構造体
+            class WAVEHDR(ctypes.Structure):
+                _fields_ = [
+                    ("lpData", ctypes.POINTER(ctypes.c_char)),
+                    ("dwBufferLength", wintypes.DWORD),
+                    ("dwBytesRecorded", wintypes.DWORD),
+                    ("dwUser", ctypes.POINTER(wintypes.DWORD)),
+                    ("dwFlags", wintypes.DWORD),
+                    ("dwLoops", wintypes.DWORD),
+                    ("lpNext", ctypes.c_void_p),
+                    ("reserved", ctypes.POINTER(wintypes.DWORD)),
+                ]
+            
+            _win_mic_available = True
+            
+        except Exception as e:
+            _win_mic_error = str(e)
+    else:
+        _win_mic_error = "Windows以外のOSです"
 
-    class ShoutMinigame(object):
+
+    class WinMicRecorder:
+        """Windows APIを使ったマイク録音クラス（ダブルバッファリング）"""
+        
+        NUM_BUFFERS = 8  # バッファ数を増加
+        
+        def __init__(self, sample_rate=44100, buffer_size=4096):
+            self.sample_rate = sample_rate
+            self.buffer_size = buffer_size
+            self.hwi = ctypes.c_void_p()
+            self.is_recording = False
+            self.current_volume = 0.0
+            self.buffers = []
+            self.headers = []
+            self._lock = threading.Lock()
+            self.debug_info = ""
+        
+        def start(self):
+            """録音開始"""
+            if not _win_mic_available:
+                self.debug_info = "not available"
+                return False
+            
+            try:
+                # フォーマット設定
+                fmt = WAVEFORMATEX()
+                fmt.wFormatTag = WAVE_FORMAT_PCM
+                fmt.nChannels = 1
+                fmt.nSamplesPerSec = self.sample_rate
+                fmt.wBitsPerSample = 16
+                fmt.nBlockAlign = fmt.nChannels * fmt.wBitsPerSample // 8
+                fmt.nAvgBytesPerSec = fmt.nSamplesPerSec * fmt.nBlockAlign
+                fmt.cbSize = 0
+                
+                # デバイスオープン
+                result = winmm.waveInOpen(
+                    ctypes.byref(self.hwi),
+                    WAVE_MAPPER,
+                    ctypes.byref(fmt),
+                    0,
+                    0,
+                    CALLBACK_NULL
+                )
+                
+                if result != 0:
+                    self.debug_info = f"open error: {result}"
+                    return False
+                
+                # 複数バッファ準備
+                buf_size = self.buffer_size * 2  # 16bit = 2bytes per sample
+                
+                for i in range(self.NUM_BUFFERS):
+                    buf = ctypes.create_string_buffer(buf_size)
+                    hdr = WAVEHDR()
+                    hdr.lpData = ctypes.cast(buf, ctypes.POINTER(ctypes.c_char))
+                    hdr.dwBufferLength = buf_size
+                    hdr.dwFlags = 0
+                    hdr.dwBytesRecorded = 0
+                    
+                    winmm.waveInPrepareHeader(self.hwi, ctypes.byref(hdr), ctypes.sizeof(WAVEHDR))
+                    winmm.waveInAddBuffer(self.hwi, ctypes.byref(hdr), ctypes.sizeof(WAVEHDR))
+                    
+                    self.buffers.append(buf)
+                    self.headers.append(hdr)
+                
+                # 録音開始
+                result = winmm.waveInStart(self.hwi)
+                if result != 0:
+                    self.debug_info = f"start error: {result}"
+                    return False
+                
+                self.is_recording = True
+                self.debug_info = "recording"
+                
+                # 音量取得スレッド開始
+                self._thread = threading.Thread(target=self._update_volume, daemon=True)
+                self._thread.start()
+                
+                return True
+                
+            except Exception as e:
+                self.debug_info = f"exception: {e}"
+                return False
+        
+        def _update_volume(self):
+            """音量を継続的に更新"""
+            while self.is_recording:
+                try:
+                    for i, hdr in enumerate(self.headers):
+                        if hdr.dwFlags & WHDR_DONE:
+                            # バッファからデータ取得
+                            recorded = hdr.dwBytesRecorded
+                            if recorded >= 2:
+                                data = self.buffers[i].raw[:recorded]
+                                # 16bit PCMデータから音量計算
+                                num_samples = len(data) // 2
+                                samples = struct.unpack(f"<{num_samples}h", data)
+                                if samples:
+                                    # RMS計算
+                                    sum_sq = sum(s*s for s in samples)
+                                    rms = (sum_sq / num_samples) ** 0.5
+                                    # 0-1に正規化（感度を上げる）
+                                    with self._lock:
+                                        self.current_volume = min(1.0, rms / 3000)
+                            
+                            # バッファを再度キューに追加
+                            hdr.dwFlags = 0
+                            hdr.dwBytesRecorded = 0
+                            winmm.waveInAddBuffer(self.hwi, ctypes.byref(hdr), ctypes.sizeof(WAVEHDR))
+                    
+                    time.sleep(0.01)
+                    
+                except Exception as e:
+                    self.debug_info = f"update error: {e}"
+        
+        def get_volume(self):
+            """現在の音量を取得 (0.0-1.0)"""
+            with self._lock:
+                return self.current_volume
+        
+        def stop(self):
+            """録音停止"""
+            self.is_recording = False
+            time.sleep(0.05)  # スレッド終了を待つ
+            try:
+                if self.hwi:
+                    winmm.waveInStop(self.hwi)
+                    winmm.waveInReset(self.hwi)
+                    for hdr in self.headers:
+                        winmm.waveInUnprepareHeader(self.hwi, ctypes.byref(hdr), ctypes.sizeof(WAVEHDR))
+                    winmm.waveInClose(self.hwi)
+                    self.hwi = ctypes.c_void_p()
+                    self.buffers = []
+                    self.headers = []
+            except:
+                pass
+
+
+    class ShoutMinigame:
         """
-        マイクから音量を取得し、一定以上の声が出たらクリア
-        マイクが使えない場合は自動的にフォールバック
+        おおごえミニゲーム
+        Windows: マイク使用
+        その他: ボタン連打フォールバック
         """
         def __init__(self, 
-                     threshold=0.3,      # 音量閾値 (0.0〜1.0)
-                     duration=3.0,       # 制限時間
-                     hold_time=0.5):     # この時間以上大声を維持したらクリア
+                     threshold=0.3,
+                     duration=3.0,
+                     hold_time=0.5):
             self.threshold = threshold
             self.duration = duration
             self.hold_time = hold_time
@@ -41,53 +223,42 @@ init -1 python:
             self.loud_duration = 0.0
             
             # マイク機能チェック
-            self.mic_available = _mic_available
-            self.stream = None
-            self.running = False
+            self.mic_available = _win_mic_available
+            self.recorder = None
             
             # フォールバック用（連打カウント）
             self.mash_count = 0
             self.mash_target = 12
+            
+            # デバッグ情報
+            self.debug_info = ""
+            self.mic_started = False
 
         def start_mic(self):
             """マイク入力を開始"""
             if not self.mic_available:
+                self.debug_info = "mic not available"
                 return False
             
             try:
-                import sounddevice as sd
-                import numpy as np
-                
-                def audio_callback(indata, frames, time_info, status):
-                    if self.running:
-                        # 音量計算（RMS）
-                        volume = np.sqrt(np.mean(indata**2))
-                        self.current_volume = min(1.0, volume * 3)  # スケール調整
-                        self.max_volume = max(self.max_volume, self.current_volume)
-                
-                self.stream = sd.InputStream(
-                    channels=1,
-                    samplerate=44100,
-                    callback=audio_callback
-                )
-                self.stream.start()
-                self.running = True
-                return True
+                self.recorder = WinMicRecorder()
+                result = self.recorder.start()
+                if result:
+                    self.debug_info = "recording started"
+                    self.mic_started = True
+                else:
+                    self.debug_info = f"start failed: {self.recorder.debug_info}"
+                return result
             except Exception as e:
-                print(f"Mic error: {e}")
+                self.debug_info = f"exception: {e}"
                 self.mic_available = False
                 return False
 
         def stop_mic(self):
             """マイク入力を停止"""
-            self.running = False
-            if self.stream:
-                try:
-                    self.stream.stop()
-                    self.stream.close()
-                except:
-                    pass
-                self.stream = None
+            if self.recorder:
+                self.recorder.stop()
+                self.recorder = None
 
         def update(self, st, at):
             """画面更新"""
@@ -97,6 +268,11 @@ init -1 python:
                     self.start_mic()
             
             self.elapsed = st - self.start_time
+            
+            # マイクから音量取得
+            if self.mic_available and self.recorder:
+                self.current_volume = self.recorder.get_volume()
+                self.max_volume = max(self.max_volume, self.current_volume)
             
             # 時間切れチェック
             if not self.show_result and self.elapsed >= self.duration:
@@ -145,8 +321,17 @@ init -1 python:
                 self.show_result = True
 
 
+    def mic_get_status():
+        """マイクの状態を取得"""
+        return {
+            "available": _win_mic_available,
+            "error": _win_mic_error,
+            "platform": sys.platform
+        }
+
+
 # =============================================================================
-# マイク音量ミニゲーム画面
+# おおごえミニゲーム画面
 # =============================================================================
 screen shout_minigame(game):
     modal True
@@ -181,7 +366,7 @@ screen shout_minigame(game):
                     color "#ffffff"
                     bold True
                 
-                text "（マイクが つかえません）":
+                text "（スペースキーを れんだ！）":
                     size 20
                     xalign 0.5
                     color "#888888"
@@ -222,6 +407,13 @@ screen shout_minigame(game):
                     size 24
                     xalign 0.5
                     color "#aaaaaa"
+                
+                # デバッグ情報
+                $ dbg = game.debug_info
+                text "[dbg]":
+                    size 14
+                    xalign 0.5
+                    color "#666666"
             else:
                 # フォールバック：連打カウント
                 text "[game.mash_count] / [game.mash_target]":
@@ -259,3 +451,66 @@ screen shout_minigame(game):
     
     if game.show_result:
         timer 1.5 action Return(game.result)
+
+
+# =============================================================================
+# マイク設定・デバッグ画面
+# =============================================================================
+screen mic_settings():
+    modal True
+    add Solid("#000000DD")
+    
+    frame:
+        xalign 0.5
+        yalign 0.5
+        xsize 700
+        padding (40, 40)
+        background "#222244"
+        
+        vbox:
+            spacing 20
+            xalign 0.5
+            
+            text "マイク設定":
+                size 40
+                color "#ffffff"
+                bold True
+                xalign 0.5
+            
+            null height 20
+            
+            # 状態表示
+            $ status = mic_get_status()
+            $ mic_ok = status["available"]
+            $ mic_err = status["error"]
+            $ mic_platform = status["platform"]
+            
+            text "OS: [mic_platform]":
+                size 20
+                color "#aaaaaa"
+            
+            if mic_ok:
+                text "✓ マイク: 使用可能":
+                    size 28
+                    color "#00ff00"
+            else:
+                text "✗ マイク: 使用不可":
+                    size 28
+                    color "#ff0000"
+                if mic_err:
+                    $ err_msg = mic_err
+                    text "[err_msg]":
+                        size 16
+                        color "#ff6666"
+                text "（ボタン連打モードで動作します）":
+                    size 18
+                    color "#888888"
+            
+            null height 30
+            
+            # 閉じるボタン
+            textbutton "閉じる":
+                xalign 0.5
+                action Return()
+                text_size 28
+                text_color "#ffffff"
