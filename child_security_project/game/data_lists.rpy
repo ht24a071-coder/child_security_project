@@ -5,6 +5,7 @@ init -10 python:
     # 他のファイルから safe_events.append(...) するのはこのリストです
     suspicious_events = [] 
     safe_events = []
+    special_events = []
 
     # ---------------------------------------------------------
     # 二つ名用単語リスト（小学生向け・ルビ修正版）

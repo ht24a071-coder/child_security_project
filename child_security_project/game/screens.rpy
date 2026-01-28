@@ -379,24 +379,37 @@ screen main_menu():
     # --- 2. メインボタン ---
     hbox:
         align (0.5, 0.75)
-        spacing 100
+        spacing 60
 
-        # --- 開始ボタン ---
+        # --- 登校ボタン ---
         button:
-            action Start()
-            xysize (180, 180) # ボタンの大きさ
-            padding (0, 0)    # 余白をゼロにしてズレを防ぐ
+            action Start("going_school_start")
+            xysize (180, 180)
+            padding (0, 0)
             
-            # 背景の丸
             background At("bg_circle_pink_idle", Transform(align=(0.5, 0.5)))
             hover_background At("bg_circle_pink_hover", Transform(align=(0.5, 0.5)))
 
-            # 中身のテキスト（zorderなどは不要ですが、alignを確実に）
             vbox:
                 align (0.5, 0.5)
                 spacing 0
-                text "🐾" size 80 xalign 0.5 color "#fff" 
-                text "開始する" size 28 xalign 0.5 color "#fff" bold True outlines [(2, "#FF7043", 0, 0)]
+                text "🎒" size 70 xalign 0.5 color "#fff" 
+                text "{rb}登校{/rb}{rt}とうこう{/rt}する" size 24 xalign 0.5 color "#fff" bold True outlines [(2, "#FF7043", 0, 0)]
+
+        # --- 下校ボタン ---
+        button:
+            action Start("going_home_start")
+            xysize (180, 180)
+            padding (0, 0)
+            
+            background At("bg_circle_pink_idle", Transform(align=(0.5, 0.5)))
+            hover_background At("bg_circle_pink_hover", Transform(align=(0.5, 0.5)))
+
+            vbox:
+                align (0.5, 0.5)
+                spacing 0
+                text "🏠" size 70 xalign 0.5 color "#fff" 
+                text "{rb}下校{/rb}{rt}げこう{/rt}する" size 24 xalign 0.5 color "#fff" bold True outlines [(2, "#FF7043", 0, 0)]
 
         # --- ランキングボタン ---
         button:
@@ -404,15 +417,29 @@ screen main_menu():
             xysize (180, 180)
             padding (0, 0)
             
-            # 背景の丸
             background At("bg_circle_blue_idle", Transform(align=(0.5, 0.5)))
             hover_background At("bg_circle_blue_hover", Transform(align=(0.5, 0.5)))
 
             vbox:
                 align (0.5, 0.5)
                 spacing 0
-                text "👑" size 80 xalign 0.5 color "#fff"
-                text "ランキング" size 28 xalign 0.5 color "#fff" bold True outlines [(2, "#4FC3F7", 0, 0)]
+                text "👑" size 70 xalign 0.5 color "#fff"
+                text "ランキング" size 24 xalign 0.5 color "#fff" bold True outlines [(2, "#4FC3F7", 0, 0)]
+
+        # --- おおごえテストボタン ---
+        button:
+            action Start("test_mic_minigame")
+            xysize (180, 180)
+            padding (0, 0)
+            
+            background At("bg_circle_blue_idle", Transform(align=(0.5, 0.5)))
+            hover_background At("bg_circle_blue_hover", Transform(align=(0.5, 0.5)))
+
+            vbox:
+                align (0.5, 0.5)
+                spacing 0
+                text "📢" size 70 xalign 0.5 color "#fff"
+                text "おおごえ" size 22 xalign 0.5 color "#fff" bold True outlines [(2, "#4FC3F7", 0, 0)]
 
 style main_menu_frame is empty
 style main_menu_vbox is vbox

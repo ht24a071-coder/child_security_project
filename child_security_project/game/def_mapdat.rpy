@@ -1,54 +1,78 @@
-# ここでマップ関連のデータを管理します
-# JSON形式の記述になります
+# =============================================================================
+# マップ関連データ管理
+# =============================================================================
 
 init -10 python:
+    # =========================================================================
     # 1. 地点（ノード）の設定
-    # "地点ID": {"name": "表示名", "bg": "画像名", "links": {"方向名": "移動先ID"}, "group": "イベント群", "chance": 発生率}
+    # =========================================================================
+    # 注意：選択肢テキストにもルビタグを使用可能
+    
     world_map = {
         "start_point": {
             "bg": "back_danger",
-            "links": {"外に出る": "street_1"},
+            "links": {"{rb}外{/rb}{rt}そと{/rt}に{rb}出{/rb}{rt}で{/rt}る": "street_1"},
             "group": "safe",
             "chance": 0
         },
         "street_1": {
             "bg": "back_dark",
-            "links": {"左の路地へ": "dark_alley", "大通りへ": "main_road", "踏切を渡る": "railway_point"},
+            "links": {
+                "{rb}左{/rb}{rt}ひだり{/rt}の{rb}路地{/rb}{rt}ろじ{/rt}へ": "dark_alley",
+                "{rb}大通{/rb}{rt}おおどお{/rt}りへ": "main_road",
+                "{rb}踏切{/rb}{rt}ふみきり{/rt}を{rb}渡{/rb}{rt}わた{/rt}る": "railway_point"
+            },
             "group": "safe",
             "chance": 30
         },
         "dark_alley": {
             "bg": "back_tunnel",
-            "links": {"奥へ進む": "home_front"},
+            "links": {"{rb}奥{/rb}{rt}おく{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "home_front"},
             "group": "suspicious",
             "chance": 60
         },
         "main_road": {
             "bg": "back_town",
-            "links": {"近道に入る": "home_front"},
+            "links": {"{rb}近道{/rb}{rt}ちかみち{/rt}に{rb}入{/rb}{rt}はい{/rt}る": "home_front"},
             "group": "safe",
             "chance": 20
         },
         "railway_point": {
-            "bg": "back_railway",          # ここに来た時点で背景が back_railway になります
-            "links": {"家へ向かう": "home_front"}, # 渡った後の行き先
-            "group": "crossing",           # 踏切専用のグループを指定
-            "chance": 100                  # 100%の確率でイベント発生
+            "bg": "back_railway",
+            "links": {"{rb}家{/rb}{rt}いえ{/rt}へ{rb}向{/rb}{rt}む{/rt}かう": "home_front"},
+            "group": "crossing",
+            "chance": 100
         },
         "home_front": {
             "bg": "back_town",
-            "links": {}, # 空にするとゴール判定用
+            "links": {},
             "group": "none",
             "chance": 0
         }
     }
 
+    # =========================================================================
     # 2. イベントグループの設定
-    # 地点ごとに設定されたグループ名から、未実行のラベルが抽選されます
+    # =========================================================================
     event_pools = {
-        "safe": ["safe_e_test_1", "safe_e_test_2"],
-        "suspicious": ["suspi_e_test_1", "suspi_e_test_2"],
-        "special": ["special_e_find_110", "special_e_encounter_flow"],
-        "crossing": ["safe_e_railway"],
+        "safe": [
+            "safe_e_test_1",
+            "safe_e_test_2",
+            "encounter_e_safe_person",
+            "daily_e_find_110house"
+        ],
+        "suspicious": [
+            "suspi_e_test_1",
+            "suspi_e_test_2",
+            "encounter_e_stranger",
+            "suspi_e_car"
+        ],
+        "special": [
+            "special_e_find_110",
+            "special_e_encounter_flow"
+        ],
+        "crossing": [
+            "safe_e_railway"
+        ],
         "none": []
     }
