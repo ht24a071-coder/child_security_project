@@ -28,6 +28,7 @@ init -10 python:
             "bg": "back_street_0",
             "links": {
                 "{rb}左{/rb}{rt}ひだり{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "school_park",
+                "{rb}右{/rb}{rt}みぎ{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_a",
                 "{rb}真{/rb}{rt}ま{/rt}っ{rb}直{/rb}{rt}す{/rt}ぐ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
             },
             "group": "safe",
@@ -41,6 +42,35 @@ init -10 python:
                 "{rb}踏切{/rb}{rt}ふみきり{/rt}を{rb}渡{/rb}{rt}わた{/rt}る": "railway_point"
             },
             "group": "safe",
+            "chance": 30
+        },
+        "street_a": {
+            "bg": "back_street_a",
+            "links": {
+                "{rb}後{/rb}{rt}うし{/rt}ろの{rb}道{/rb}{rt}みち{/rt}へ": "street_1",
+                "{rb}真{/rb}{rt}ま{/rt}っ{rb}直{/rb}{rt}す{/rt}ぐ{rb}進{/rb}{rt}すす{/rt}む": "street_b",
+            },
+            "group": "safe",
+            "chance": 30
+        },
+        "street_b": {
+            "bg": "back_street_b",
+            "links": {
+                "{rb}右{/rb}{rt}みぎ{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "danchi_0",
+                "{rb}後{/rb}{rt}うし{/rt}ろの{rb}道{/rb}{rt}みち{/rt}へ": "street_a",
+                "{rb}真{/rb}{rt}ま{/rt}っ{rb}直{/rb}{rt}す{/rt}ぐ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
+            },
+            "group": "safe",
+            "chance": 30
+        },
+        "danchi_0": {
+            "bg": "back_danchi_0",
+            "links": {
+                "{rb}右{/rb}{rt}みぎ{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "danchi_0",
+                "{rb}後{/rb}{rt}うし{/rt}ろの{rb}道{/rb}{rt}みち{/rt}へ": "street_b",
+                "{rb}真{/rb}{rt}ま{/rt}っ{rb}直{/rb}{rt}す{/rt}ぐ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
+            },
+            "group": "suspicious",
             "chance": 30
         },
         "dark_alley": {
