@@ -3,7 +3,6 @@
 # =============================================================================
 
 label safe_e_railway:
-    scene back_railway with dissolve
     play sound "audio/humikiri.mp3" loop
 
     pc "あ、ふみきりだ。"
@@ -121,5 +120,4 @@ label .choice_hand:
 label .event_end:
     stop sound fadeout 1.0
     "もとの みちに もどろう。"
-    scene back_town with dissolve
     return

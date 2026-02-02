@@ -3,7 +3,6 @@
 # =============================================================================
 
 label suspi_e_car:
-    scene back_town with dissolve
 
     "くるまが ゆっくり ちかづいてきた。"
     
@@ -120,7 +119,6 @@ label .forceful_shout:
         "ふしんしゃは くるまに のって にげていった！"
         hide stranger with dissolve
         
-        scene back_town with dissolve
         show woman with dissolve
         woman "どうしたの！？ だいじょうぶ！？"
         pc "くるまに のせられそうに...！"
@@ -149,7 +147,6 @@ label .forceful_run:
     if _return == "success":
         $ total_score += 25
         hide stranger
-        scene back_town with dissolve
         
         "なんとか にげきった！"
         
@@ -182,8 +179,6 @@ label .forceful_buzzer:
     
     "ふしんしゃは あわてて くるまに のって にげていった！"
     hide stranger with dissolve
-    
-    scene back_town with dissolve
     
     show woman with dissolve
     woman "どうしたの！？ おおきな おとが！"
@@ -224,7 +219,6 @@ label .run_away_car:
     call screen escape_minigame(escape_game)
     
     hide stranger
-    scene back_town with dissolve
     
     if _return == "success":
         $ total_score += 10
@@ -248,9 +242,7 @@ label .buzzer_car:
     
     "くるまは あわてて はしりさった！"
     hide stranger with dissolve
-    
-    scene back_town with dissolve
-    
+        
     show woman with dissolve
     woman "どうしたの！？"
     pc "くるまの ひとに こえを かけられて..."

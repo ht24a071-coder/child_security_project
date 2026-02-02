@@ -6,7 +6,6 @@
 # こども110番の家を発見するイベント
 # =====================================================
 label daily_e_find_110house:
-    scene back_town with dissolve
 
     "{rb}歩{/rb}{rt}ある{/rt}いていると、{rb}公園{/rb}{rt}こうえん{/rt}のベンチで{rb}町{/rb}{rt}まち{/rt}の{rb}人{/rb}{rt}ひと{/rt}たちが{rb}話{/rb}{rt}はな{/rt}しているのが{rb}見{/rb}{rt}み{/rt}えた。"
     

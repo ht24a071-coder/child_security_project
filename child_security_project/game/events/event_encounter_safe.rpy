@@ -3,7 +3,6 @@
 # =============================================================================
 
 label encounter_e_safe_person:
-    scene back_town with dissolve
 
     "だれかが ちかづいてきた。"
     

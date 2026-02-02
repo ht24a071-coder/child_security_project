@@ -10,13 +10,31 @@ init -10 python:
     
     world_map = {
         "start_point": {
-            "bg": "back_danger",
-            "links": {"{rb}外{/rb}{rt}そと{/rt}に{rb}出{/rb}{rt}で{/rt}る": "street_1"},
+            "bg": "back_school",
+            "links": {"{rb}外{/rb}{rt}そと{/rt}に{rb}出{/rb}{rt}で{/rt}る": "school_park"},
+            "group": "safe",
+            "chance": 0
+        },
+        "school_park": {
+            "bg": "back_school_park",
+            "links": {
+                "{rb}左{/rb}{rt}ひだり{/rt}に{rb}曲{/rb}{rt}ま{/rt}がる": "street_1",
+                "{rb}学校{/rb}{rt}がっこう{/rt}に{rb}行{/rb}{rt}い{/rt}く": "start_point"
+            },
             "group": "safe",
             "chance": 0
         },
         "street_1": {
-            "bg": "back_dark",
+            "bg": "back_street_0",
+            "links": {
+                "{rb}左{/rb}{rt}ひだり{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "school_park",
+                "{rb}真{/rb}{rt}ま{/rt}っ{rb}直{/rb}{rt}す{/rt}ぐ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
+            },
+            "group": "safe",
+            "chance": 30
+        },
+        "street_2": {
+            "bg": "back_street_1",
             "links": {
                 "{rb}左{/rb}{rt}ひだり{/rt}の{rb}路地{/rb}{rt}ろじ{/rt}へ": "dark_alley",
                 "{rb}大通{/rb}{rt}おおどお{/rt}りへ": "main_road",

@@ -3,8 +3,6 @@
 # =============================================================================
 
 label encounter_e_stranger:
-    scene back_dark with dissolve
-
     "だれかが ちかづいてきた。"
     
     show stranger with dissolve
@@ -56,9 +54,7 @@ label .buzzer_stranger:
     hide stranger with dissolve
     
     $ total_score += 20
-    
-    scene back_town with dissolve
-    
+        
     show woman with dissolve
     woman "どうしたの！？ おおきな おとが したけど..."
     pc "しらない ひとに こえを かけられて..."
@@ -80,7 +76,6 @@ label .follow_stranger:
     
     "…しばらく あるいたあと…"
     
-    scene back_tunnel with fade
     show stranger with dissolve
     
     stranger "さあ、もうすこしだよ…"
@@ -111,7 +106,6 @@ label .escape_buzzer:
     stranger "うわっ！？"
     
     hide stranger with dissolve
-    scene back_town with dissolve
     
     $ total_score += 15
     
@@ -135,7 +129,6 @@ label .escape_110:
     call screen escape_minigame(escape_game)
     
     hide stranger
-    scene back_town with dissolve
     
     if _return == "success":
         $ total_score += 30
@@ -166,7 +159,6 @@ label .escape_fail_no_110:
     
     if _return == "success":
         $ total_score += 5
-        scene back_town with dissolve
         "なんとか にげきった……"
         "{i}あぶなかったね。「110ばんの いえ」を おぼえておけば もっと あんぜんだよ。{/i}"
         return
@@ -188,7 +180,6 @@ label .escape_home:
     hide stranger
     
     if _return == "success":
-        scene back_town with dissolve
         "なんとか にげきった……"
         
         "いえの まえに ついた！"
@@ -234,7 +225,6 @@ label .escape_shout:
         stranger "うわっ…！"
         hide stranger with dissolve
         
-        scene back_town with dissolve
         show woman with dissolve
         woman "どうしたの！？ だいじょうぶ！？"
         pc "しらない ひとに……"
@@ -261,7 +251,6 @@ label .refuse_stranger:
     "しっかり ことわって、そのばを はなれた。"
     
     hide stranger with dissolve
-    scene back_town with dissolve
     
     "{i}よくできた！しらない ひとの さそいは きっぱり ことわろう！{/i}"
     return
@@ -297,7 +286,6 @@ label .shout_stranger:
     
     "ふしんしゃは にげていった！"
     
-    scene back_town with dissolve
     
     show woman with dissolve
     woman "どうしたの！？ だいじょうぶ！？"
@@ -328,7 +316,6 @@ label .flee_success:
     call screen escape_minigame(flee_game)
     
     hide stranger
-    scene back_town with dissolve
     
     if _return == "success":
         $ total_score += 35
