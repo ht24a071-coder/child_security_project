@@ -12,90 +12,132 @@ init -10 python:
         "start_point": {
             "bg": "back_school",
             "links": {"{rb}外{/rb}{rt}そと{/rt}に{rb}出{/rb}{rt}で{/rt}る": "school_park"},
-            "group": "safe",
-            "chance": 0
+            "group": "safe", "chance": 0
         },
         "school_park": {
             "bg": "back_school_park",
             "links": {
-                "{rb}左{/rb}{rt}ひだり{/rt}に{rb}曲{/rb}{rt}ま{/rt}がる": "street_1",
-                "{rb}学校{/rb}{rt}がっこう{/rt}に{rb}行{/rb}{rt}い{/rt}く": "start_point"
+                "{rb}道{/rb}{rt}みち{/rt}を{rb}進{/rb}{rt}すす{/rt}む": "street_1",
+                "{rb}団地{/rb}{rt}だんち{/rt}の{rb}公園{/rb}{rt}こうえん{/rt}へ": "danchi_park",
+                "{rb}学校{/rb}{rt}がっこう{/rt}の{rb}中{/rb}{rt}なか{/rt}へ": "start_point"
             },
-            "group": "safe",
-            "chance": 0
+            "group": "safe", "chance": 10
         },
         "street_1": {
             "bg": "back_street_0",
             "links": {
-                "{rb}左{/rb}{rt}ひだり{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "school_park",
-                "{rb}右{/rb}{rt}みぎ{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_a",
-                "{rb}真{/rb}{rt}ま{/rt}っ{rb}直{/rb}{rt}す{/rt}ぐ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
+                "{rb}先{/rb}{rt}さき{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
+                "{rb}学校{/rb}{rt}がっこう{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "school_park"
             },
-            "group": "safe",
-            "chance": 30
+            "group": "safe", "chance": 20
         },
         "street_2": {
             "bg": "back_street_1",
             "links": {
-                "{rb}左{/rb}{rt}ひだり{/rt}の{rb}路地{/rb}{rt}ろじ{/rt}へ": "dark_alley",
-                "{rb}大通{/rb}{rt}おおどお{/rt}りへ": "main_road",
-                "{rb}踏切{/rb}{rt}ふみきり{/rt}を{rb}渡{/rb}{rt}わた{/rt}る": "railway_point"
+                "{rb}左{/rb}{rt}ひだり{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_a",
+                "{rb}遮断機{/rb}{rt}しゃだんき{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "railway_point",
+                "{rb}学校{/rb}{rt}がっこう{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "street_1"
             },
-            "group": "safe",
-            "chance": 30
+            "group": "safe", "chance": 20
         },
         "street_a": {
             "bg": "back_street_a",
             "links": {
-                "{rb}後{/rb}{rt}うし{/rt}ろの{rb}道{/rb}{rt}みち{/rt}へ": "street_1",
-                "{rb}真{/rb}{rt}ま{/rt}っ{rb}直{/rb}{rt}す{/rt}ぐ{rb}進{/rb}{rt}すす{/rt}む": "street_b",
+                "{rb}先{/rb}{rt}さき{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "street_b",
+                "{rb}元{/rb}{rt}もと{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_2"
             },
-            "group": "safe",
-            "chance": 30
+            "group": "safe", "chance": 20
         },
         "street_b": {
             "bg": "back_street_b",
             "links": {
-                "{rb}右{/rb}{rt}みぎ{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "danchi_0",
-                "{rb}後{/rb}{rt}うし{/rt}ろの{rb}道{/rb}{rt}みち{/rt}へ": "street_a",
-                "{rb}真{/rb}{rt}ま{/rt}っ{rb}直{/rb}{rt}す{/rt}ぐ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
+                "{rb}先{/rb}{rt}さき{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "crossing_point",
+                "{rb}元{/rb}{rt}もと{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_a"
             },
-            "group": "safe",
-            "chance": 30
+            "group": "safe", "chance": 20
         },
-        "danchi_0": {
+        "crossing_point": {
+            "bg": "back_town",
+            "links": {
+                "{rb}渡{/rb}{rt}わた{/rt}って{rb}進{/rb}{rt}すす{/rt}む": "factory_road",
+                "{rb}道{/rb}{rt}みち{/rt}を{rb}戻{/rb}{rt}もど{/rt}る": "street_b"
+            },
+            "group": "suspicious", "chance": 30
+        },
+        "factory_road": {
+            "bg": "back_street_0",
+            "links": {
+                "{rb}細道{/rb}{rt}ほそみち{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "narrow_path_entry",
+                "{rb}横断歩道{/rb}{rt}おうだんほどう{/rt}へ": "crossing_point"
+            },
+            "group": "suspicious", "chance": 40
+        },
+        "narrow_path_entry": {
+            "bg": "back_town",
+            "links": {
+                "{rb}細道{/rb}{rt}ほそみち{/rt}に{rb}入{/rb}{rt}はい{/rt}る": "narrow_path_mid",
+                "{rb}工場{/rb}{rt}こうじょう{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "factory_road"
+            },
+            "group": "suspicious", "chance": 50
+        },
+        "narrow_path_mid": {
+            "bg": "back_tunnel",
+            "links": {
+                "{rb}奥{/rb}{rt}おく{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "narrow_path_exit",
+                "{rb}脇道{/rb}{rt}わきみち{/rt}（上家）": "home_up",
+                "{rb}入{/rb}{rt}い{/rt}り{rb}口{/rb}{rt}ぐち{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "narrow_path_entry"
+            },
+            "group": "suspicious", "chance": 60
+        },
+        "narrow_path_exit": {
+            "bg": "back_town",
+            "links": {
+                "{rb}広{/rb}{rt}ひろ{/rt}い{rb}所{/rb}{rt}ところ{/rt}に出る": "public_hall",
+                "{rb}細道{/rb}{rt}ほそみち{/rt}へ": "narrow_path_mid"
+            },
+            "group": "safe", "chance": 20
+        },
+        "public_hall": {
             "bg": "back_danchi_0",
             "links": {
-                "{rb}右{/rb}{rt}みぎ{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "danchi_0",
-                "{rb}後{/rb}{rt}うし{/rt}ろの{rb}道{/rb}{rt}みち{/rt}へ": "street_b",
-                "{rb}真{/rb}{rt}ま{/rt}っ{rb}直{/rb}{rt}す{/rt}ぐ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
+                "{rb}並木道{/rb}{rt}なみきみち{/rt}へ": "tree_lined_road",
+                "{rb}細道{/rb}{rt}ほそみち{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "narrow_path_exit"
             },
-            "group": "suspicious",
-            "chance": 30
+            "group": "safe", "chance": 10
         },
-        "dark_alley": {
-            "bg": "back_tunnel",
-            "links": {"{rb}奥{/rb}{rt}おく{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "home_front"},
-            "group": "suspicious",
-            "chance": 60
+        "tree_lined_road": {
+            "bg": "back_danchi_0",
+            "links": {
+                "{rb}公園{/rb}{rt}こうえん{/rt}へ": "danchi_park",
+                "{rb}公民館{/rb}{rt}こうみんかん{/rt}へ": "public_hall"
+            },
+            "group": "safe", "chance": 10
         },
-        "main_road": {
-            "bg": "back_town",
-            "links": {"{rb}近道{/rb}{rt}ちかみち{/rt}に{rb}入{/rb}{rt}はい{/rt}る": "home_front"},
-            "group": "safe",
-            "chance": 20
+        "danchi_park": {
+            "bg": "back_danchi_0",
+            "links": {
+                "{rb}学校{/rb}{rt}がっこう{/rt}へ{rb}抜{/rb}{rt}ぬ{/rt}ける": "school_park",
+                "{rb}並木道{/rb}{rt}なみきみち{/rt}へ": "tree_lined_road"
+            },
+            "group": "safe", "chance": 10
         },
         "railway_point": {
             "bg": "back_railway",
-            "links": {"{rb}家{/rb}{rt}いえ{/rt}へ{rb}向{/rb}{rt}む{/rt}かう": "home_front"},
-            "group": "crossing",
-            "chance": 100
+            "links": {
+                "{rb}下{/rb}{rt}した{/rt}の{rb}家{/rb}{rt}いえ{/rt}へ": "home_down",
+                "{rb}元{/rb}{rt}もと{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_2"
+            },
+            "group": "crossing", "chance": 100
         },
-        "home_front": {
+        "home_up": {
             "bg": "back_town",
             "links": {},
-            "group": "none",
-            "chance": 0
+            "group": "none", "chance": 0
+        },
+        "home_down": {
+            "bg": "back_town",
+            "links": {},
+            "group": "none", "chance": 0
         }
     }
 
