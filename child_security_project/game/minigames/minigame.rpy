@@ -72,20 +72,31 @@ init -1 python:
             self.current_count = 0
             self.result = None
             self.show_result = False
+            self.finished = False  # スクリーン終了フラグ
             self.start_time = None
             self.elapsed = 0.0
             self.bar_color = bar_color
             self.bg_color = bg_color
+            self._real_start_time = None
+
+        def get_remaining(self):
+            """残り時間をリアルタイムで取得"""
+            if self._real_start_time is None:
+                return self.time_limit
+            elapsed = renpy.get_game_runtime() - self._real_start_time
+            return max(0, self.time_limit - elapsed)
 
         def update(self, st, at):
             if self.start_time is None:
                 self.start_time = st
+                self._real_start_time = renpy.get_game_runtime()
             self.elapsed = st - self.start_time
             
             # 時間切れチェック
             if not self.show_result and self.elapsed >= self.time_limit:
                 self.result = "miss"
                 self.show_result = True
+                self.finished = True
             
             # 進捗バー
             progress = min(1.0, self.current_count / self.target_count)
@@ -94,7 +105,7 @@ init -1 python:
             return bar, 0.01
 
         def on_mash(self):
-            if self.show_result:
+            if self.show_result or self.finished:
                 return
             self.current_count += 1
             if self.current_count >= self.target_count:
@@ -105,6 +116,7 @@ init -1 python:
                 else:
                     self.result = "good"
                 self.show_result = True
+                self.finished = True
 
     # =========================================================================
     # 3. 難しい脱出ミニゲーム（新規）
@@ -262,6 +274,12 @@ screen timing_minigame(game):
 # =============================================================================
 screen mashing_minigame(game):
     modal True
+    
+    # 画面を定期的に再描画（残り時間を更新するため）
+    # 結果表示後は停止
+    if not game.finished:
+        timer 0.05 repeat True action Function(renpy.restart_interaction)
+    
     add Solid("#000000CC")
     
     frame:
@@ -281,7 +299,7 @@ screen mashing_minigame(game):
                 bold True
             
             # 残り時間
-            $ remaining = max(0, game.time_limit - game.elapsed)
+            $ remaining = game.get_remaining()
             text "のこり: [remaining:.1f] びょう":
                 size 28
                 xalign 0.5

@@ -232,6 +232,7 @@ init -1 python:
             
             self.result = None
             self.show_result = False
+            self.finished = False  # スクリーン終了フラグ
             self.start_time = None
             self.elapsed = 0.0
             
@@ -252,6 +253,14 @@ init -1 python:
             # デバッグ情報
             self.debug_info = ""
             self.mic_started = False
+            self._real_start_time = None  # リアルタイム用
+
+        def get_remaining(self):
+            """残り時間をリアルタイムで取得"""
+            if self._real_start_time is None:
+                return self.duration
+            elapsed = renpy.get_game_runtime() - self._real_start_time
+            return max(0, self.duration - elapsed)
 
         def start_mic(self):
             """マイク入力を開始"""
@@ -283,6 +292,7 @@ init -1 python:
             """画面更新"""
             if self.start_time is None:
                 self.start_time = st
+                self._real_start_time = renpy.get_game_runtime()
                 if self.mic_available:
                     self.start_mic()
             
@@ -298,6 +308,7 @@ init -1 python:
                 self.stop_mic()
                 self.result = "miss"
                 self.show_result = True
+                self.finished = True
             
             # 大声継続チェック（マイクモード）
             if self.mic_available and not self.show_result:
@@ -313,6 +324,7 @@ init -1 python:
                         else:
                             self.result = "good"
                         self.show_result = True
+                        self.finished = True
                 else:
                     self.loud_start_time = None
                     self.loud_duration = 0.0
@@ -329,7 +341,7 @@ init -1 python:
 
         def on_mash(self):
             """フォールバック用：連打入力"""
-            if self.show_result:
+            if self.show_result or self.finished:
                 return
             self.mash_count += 1
             if self.mash_count >= self.mash_target:
@@ -338,6 +350,7 @@ init -1 python:
                 else:
                     self.result = "good"
                 self.show_result = True
+                self.finished = True
 
 
     def mic_get_status():
@@ -354,6 +367,12 @@ init -1 python:
 # =============================================================================
 screen shout_minigame(game):
     modal True
+    
+    # 画面を定期的に再描画（残り時間を更新するため）
+    # 結果表示後は停止
+    if not game.finished:
+        timer 0.05 repeat True action Function(renpy.restart_interaction)
+    
     add Solid("#000000DD")
     
     frame:
@@ -393,7 +412,7 @@ screen shout_minigame(game):
             null height 10
             
             # 残り時間
-            $ remaining = max(0, game.duration - game.elapsed)
+            $ remaining = game.get_remaining()
             text "のこり: [remaining:.1f] びょう":
                 size 28
                 xalign 0.5
