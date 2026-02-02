@@ -89,6 +89,10 @@ label save_and_sort:
     python:
         # スコアが高い順に並び替え
         persistent.ranking_list.sort(key=lambda x: x['score'], reverse=True)
+        
+        # 上位10件のみ保持
+        if len(persistent.ranking_list) > 10:
+            persistent.ranking_list = persistent.ranking_list[:10]
 
         # データを保存
         renpy.save_persistent()
