@@ -26,6 +26,7 @@ init -1 python:
             WAVE_MAPPER = -1
             CALLBACK_NULL = 0
             WHDR_DONE = 0x00000001
+            WHDR_PREPARED = 0x00000002
             
             # WAVEFORMATEX構造体
             class WAVEFORMATEX(ctypes.Structure):
@@ -63,18 +64,19 @@ init -1 python:
     class WinMicRecorder:
         """Windows APIを使ったマイク録音クラス（ダブルバッファリング）"""
         
-        NUM_BUFFERS = 8  # バッファ数を増加
+        NUM_BUFFERS = 4
         
-        def __init__(self, sample_rate=44100, buffer_size=4096):
+        def __init__(self, sample_rate=22050, buffer_size=2048):
             self.sample_rate = sample_rate
             self.buffer_size = buffer_size
             self.hwi = ctypes.c_void_p()
             self.is_recording = False
             self.current_volume = 0.0
             self.buffers = []
-            self.headers = []
+            self.headers = None  # ctypes配列として保持
             self._lock = threading.Lock()
             self.debug_info = ""
+            self._buffer_count = 0  # デバッグ用カウンタ
         
         def start(self):
             """録音開始"""
@@ -107,22 +109,28 @@ init -1 python:
                     self.debug_info = f"open error: {result}"
                     return False
                 
-                # 複数バッファ準備
+                # 複数バッファ準備 - ctypes配列として確保
                 buf_size = self.buffer_size * 2  # 16bit = 2bytes per sample
+                self.headers = (WAVEHDR * self.NUM_BUFFERS)()
                 
                 for i in range(self.NUM_BUFFERS):
                     buf = ctypes.create_string_buffer(buf_size)
-                    hdr = WAVEHDR()
-                    hdr.lpData = ctypes.cast(buf, ctypes.POINTER(ctypes.c_char))
-                    hdr.dwBufferLength = buf_size
-                    hdr.dwFlags = 0
-                    hdr.dwBytesRecorded = 0
-                    
-                    winmm.waveInPrepareHeader(self.hwi, ctypes.byref(hdr), ctypes.sizeof(WAVEHDR))
-                    winmm.waveInAddBuffer(self.hwi, ctypes.byref(hdr), ctypes.sizeof(WAVEHDR))
-                    
                     self.buffers.append(buf)
-                    self.headers.append(hdr)
+                    
+                    self.headers[i].lpData = ctypes.cast(buf, ctypes.POINTER(ctypes.c_char))
+                    self.headers[i].dwBufferLength = buf_size
+                    self.headers[i].dwFlags = 0
+                    self.headers[i].dwBytesRecorded = 0
+                    
+                    result = winmm.waveInPrepareHeader(self.hwi, ctypes.byref(self.headers[i]), ctypes.sizeof(WAVEHDR))
+                    if result != 0:
+                        self.debug_info = f"prepare error: {result}"
+                        return False
+                    
+                    result = winmm.waveInAddBuffer(self.hwi, ctypes.byref(self.headers[i]), ctypes.sizeof(WAVEHDR))
+                    if result != 0:
+                        self.debug_info = f"addbuf error: {result}"
+                        return False
                 
                 # 録音開始
                 result = winmm.waveInStart(self.hwi)
@@ -147,10 +155,14 @@ init -1 python:
             """音量を継続的に更新"""
             while self.is_recording:
                 try:
-                    for i, hdr in enumerate(self.headers):
-                        if hdr.dwFlags & WHDR_DONE:
+                    found_done = False
+                    for i in range(self.NUM_BUFFERS):
+                        flags = self.headers[i].dwFlags
+                        if flags & WHDR_DONE:
+                            found_done = True
+                            self._buffer_count += 1
                             # バッファからデータ取得
-                            recorded = hdr.dwBytesRecorded
+                            recorded = self.headers[i].dwBytesRecorded
                             if recorded >= 2:
                                 data = self.buffers[i].raw[:recorded]
                                 # 16bit PCMデータから音量計算
@@ -162,17 +174,23 @@ init -1 python:
                                     rms = (sum_sq / num_samples) ** 0.5
                                     # 0-1に正規化（感度を上げる）
                                     with self._lock:
-                                        self.current_volume = min(1.0, rms / 3000)
+                                        self.current_volume = min(1.0, rms / 2000)
+                                        self.debug_info = f"vol:{int(rms)} buf:{self._buffer_count}"
                             
-                            # バッファを再度キューに追加
-                            hdr.dwFlags = 0
-                            hdr.dwBytesRecorded = 0
-                            winmm.waveInAddBuffer(self.hwi, ctypes.byref(hdr), ctypes.sizeof(WAVEHDR))
+                            # バッファを再度キューに追加（PREPAREDフラグは維持）
+                            self.headers[i].dwFlags = WHDR_PREPARED
+                            self.headers[i].dwBytesRecorded = 0
+                            winmm.waveInAddBuffer(self.hwi, ctypes.byref(self.headers[i]), ctypes.sizeof(WAVEHDR))
+                    
+                    if not found_done:
+                        with self._lock:
+                            self.debug_info = f"waiting buf:{self._buffer_count}"
                     
                     time.sleep(0.01)
                     
                 except Exception as e:
-                    self.debug_info = f"update error: {e}"
+                    with self._lock:
+                        self.debug_info = f"update error: {e}"
         
         def get_volume(self):
             """現在の音量を取得 (0.0-1.0)"""
@@ -187,12 +205,13 @@ init -1 python:
                 if self.hwi:
                     winmm.waveInStop(self.hwi)
                     winmm.waveInReset(self.hwi)
-                    for hdr in self.headers:
-                        winmm.waveInUnprepareHeader(self.hwi, ctypes.byref(hdr), ctypes.sizeof(WAVEHDR))
+                    if self.headers:
+                        for i in range(self.NUM_BUFFERS):
+                            winmm.waveInUnprepareHeader(self.hwi, ctypes.byref(self.headers[i]), ctypes.sizeof(WAVEHDR))
                     winmm.waveInClose(self.hwi)
                     self.hwi = ctypes.c_void_p()
                     self.buffers = []
-                    self.headers = []
+                    self.headers = None
             except:
                 pass
 
