@@ -13,7 +13,7 @@ default player_icon = "bear"
 # 山札変数
 default deck_suspicious = []
 default deck_safe = []
-
+ 
 # キャラクター定義
 define officer = Character("おまわりさん", color="#c8ffc8")
 define woman = Character("おねえさん", color="#c8ffc8")

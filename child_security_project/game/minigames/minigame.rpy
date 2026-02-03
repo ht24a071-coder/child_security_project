@@ -18,7 +18,7 @@ init -1 python:
             self.good_range = good_range
             self.key = key
             self.result = None
-            self.position = 0.0
+            self.position = 2.5
             self.direction = 1
             self.show_result = False
             self.last_st = -1
