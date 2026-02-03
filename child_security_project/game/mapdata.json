@@ -16,40 +16,39 @@
       "bg": "back_school_park",
       "links": {
         "{rb}学校{/rb}{rt}がっこう{/rt}へ{rb}戻{/rb}{rt}もど{/rt}る": "start_point",
-        "{rb}道{/rb}{rt}みち{/rt}なりに{rb}進{/rb}{rt}すす{/rt}む": "street_1"
+        "{rb}学校{/rb}{rt}がっこう{/rt}から{rb}左{/rb}{rt}ひだり{/rt}に{rb}進{/rb}{rt}すす{/rt}む": "bunki_1"
       },
       "group": "safe",
       "chance": 10,
       "minimap": [
-        518,
+        572,
         275
       ]
     },
     "street_1": {
       "bg": "back_street_0",
       "links": {
-        "{rb}先{/rb}{rt}さき{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
-        "{rb}学校{/rb}{rt}がっこう{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "school_park"
+        "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
+        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_1"
       },
       "group": "safe",
       "chance": 20,
       "minimap": [
-        527,
-        263
+        507,
+        321
       ]
     },
     "street_2": {
       "bg": "back_street_1",
       "links": {
-        "{rb}左{/rb}{rt}ひだり{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_a",
-        "{rb}遮断機{/rb}{rt}しゃだんき{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "railway_point",
-        "{rb}学校{/rb}{rt}がっこう{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "street_1"
+        "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_2",
+        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_1"
       },
       "group": "safe",
       "chance": 20,
       "minimap": [
-        0,
-        0
+        495,
+        370
       ]
     },
     "street_a": {
@@ -225,6 +224,42 @@
       "minimap": [
         634,
         445
+      ]
+    },
+    "bunki_1": {
+      "bg": "back_street_a",
+      "links": {
+        "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_1",
+        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "school_park",
+        "{rb}中学校{/rb}{rt}ちゅうがっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_3"
+      },
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        524,
+        271
+      ]
+    },
+    "street_3": {
+      "bg": "back_street_b",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        530,
+        225
+      ]
+    },
+    "bunki_2": {
+      "bg": "back_bunki",
+      "links": {
+        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_2"
+      },
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        478,
+        447
       ]
     }
   },
