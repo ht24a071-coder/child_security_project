@@ -12,7 +12,7 @@ label initialize_game:
     $ current_node = "start_point"
     $ previous_node = None
     
-    show screen inactivity_guard
+    #show screen inactivity_guard
     $ current_step = 0
     $ used_events = set()
 
