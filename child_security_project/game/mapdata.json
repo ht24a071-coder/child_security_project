@@ -21,6 +21,8 @@
       "group": "safe",
       "chance": 10,
       "minimap": [
+        518,
+        275
         567,
         291
       ]

@@ -1067,20 +1067,20 @@ screen link_editor():
                 if node_pos:
                     $ _nx = int(node_pos[0] * _zoom_factor)
                     $ _ny = int(node_pos[1] * _zoom_factor)
-                    # 移動中は選択中のノードを色変え
+                    # 移動中は選択中のノードをズーム変え
                     python:
                         if state["mode"] == "move_node_confirm" and node_id == state["selected_node"]:
-                            _m_color = "#00ff00"
-                            _m_size = 22
+                            _m_zoom = 0.6
+                            _m_alpha = 1.0
                         else:
-                            _m_color = "#ffcc00"
-                            _m_size = 18
+                            _m_zoom = cfg["marker_scale"]  # ミニマップと同じ 0.5
+                            _m_alpha = 0.8
 
-                    text "●":
+                    add cfg["node_marker"]:
                         pos (_nx, _ny)
                         anchor (0.5, 0.5)
-                        color _m_color
-                        size _m_size
+                        zoom _m_zoom
+                        alpha _m_alpha
             
             # クロスヘア描画
             if _in_map:
@@ -1217,35 +1217,19 @@ screen link_editor():
                 background "#222222"
                 padding (10, 10)
                 
-                vbox:
-                    spacing 10
-                    
-                    # マウス座標表示
-                    python:
-                        _mx, _my = renpy.get_mouse_pos()
-                        _frame_offset_x = 20
-                        _frame_offset_y = 60
-                        # TODO: 通常モードのzoomも再確認。現在は0.65固定
-                        _map_x = int((_mx - _frame_offset_x) / 0.65)
-                        _map_y = int((_my - _frame_offset_y) / 0.65)
-                        _in_map = (0 <= _map_x <= 1000 and 0 <= _map_y <= 754)
-                    
-                    hbox:
-                        spacing 20
-                        if _in_map:
-                            text "座標: ([_map_x], [_map_y])" color "#00ffff" size 14
-                        else:
-                            text "マップ外" color "#888888" size 14
-                    
-                    # ホバー中ノード表示
-                    if state.get("hover_node"):
-                        text "Hover: [state['hover_node']]" color "#ffcc00" size 14
-                    elif state.get("pending_node"):
-                        text "Selected: [state['pending_node']]" color "#00ff00" size 14
-                    else:
-                        if _in_map:
-                            text "マップをクリックしてノード追加" color "#88ff88" size 14
+                # マウス座標計算（フレーム内座標を正しく計算）
+                python:
+                    _mx, _my = renpy.get_mouse_pos()
+                    # フレームの左上座標を考慮（padding 10 + 10）
+                    _frame_offset_x = 20
+                    _frame_offset_y = 20
+                    _zoom = 0.65
+                    # ズームを逆変換してオリジナル座標を取得
+                    _map_x = int((_mx - _frame_offset_x) / _zoom)
+                    _map_y = int((_my - _frame_offset_y) / _zoom)
+                    _in_map = (0 <= _map_x <= 1000 and 0 <= _map_y <= 754)
                 
+                # マップ表示エリア（すべてfixed内に配置）
                 fixed:
                     fit_first True
                     
@@ -1264,6 +1248,7 @@ screen link_editor():
                             action Function(link_editor_map_click_for_new_node)
                     
                     # 各ノードをクリック可能なボタンとして表示
+                    # ミニマップと同じ方法で node_marker 画像を使用
                     for node_id, node_pos in map_coordinates.items():
                         if node_pos:
                             $ btn_x = int(node_pos[0] * 0.65)
@@ -1272,29 +1257,53 @@ screen link_editor():
                             $ is_pending = (state.get("pending_node") == node_id)
                             $ is_hover = (state.get("hover_node") == node_id)
                             
-                            # 色分け: 緑=選択済み, シアン=確認中, 黄=ホバー, オレンジ=通常
+                            # マーカーズームを状態に応じて変更
                             python:
                                 if is_pending:
-                                    _btn_color = "#00ffff"
-                                    _btn_size = 24
+                                    _marker_zoom = 0.7
                                 elif is_selected:
-                                    _btn_color = "#00ff00"
-                                    _btn_size = 22
+                                    _marker_zoom = 0.65
                                 elif is_hover:
-                                    _btn_color = "#ffff00"
-                                    _btn_size = 22
+                                    _marker_zoom = 0.6
                                 else:
-                                    _btn_color = "#ffcc00"
-                                    _btn_size = 20
+                                    _marker_zoom = cfg["marker_scale"]  # ミニマップと同じ 0.5
                             
-                            textbutton "●":
+                            # ミニマップと同じ方法で配置（add + pos + anchor）
+                            # クリック領域用の透明ボタンを上に配置
+                            add cfg["node_marker"]:
                                 pos (btn_x, btn_y)
                                 anchor (0.5, 0.5)
-                                text_size _btn_size
-                                text_color _btn_color
+                                zoom _marker_zoom
+                            
+                            # クリック可能領域（透明ボタン）
+                            imagebutton:
+                                pos (btn_x - 15, btn_y - 15)
+                                idle Solid("#00000001")
+                                xsize 30
+                                ysize 30
                                 hovered Function(link_editor_hover_node, node_id)
                                 unhovered Function(link_editor_hover_node, None)
                                 action Function(link_editor_click_node, node_id)
+                    
+                    # 座標・ホバー情報をオーバーレイで表示（マップ上部）
+                    frame:
+                        pos (0, 0)
+                        background "#000000AA"
+                        padding (8, 5)
+                        
+                        hbox:
+                            spacing 15
+                            if _in_map:
+                                text "座標: ([_map_x], [_map_y])" color "#00ffff" size 14
+                            else:
+                                text "マップ外" color "#888888" size 14
+                            
+                            if state.get("hover_node"):
+                                text "| Hover: [state['hover_node']]" color "#ffcc00" size 14
+                            elif state.get("pending_node"):
+                                text "| Selected: [state['pending_node']]" color "#00ff00" size 14
+                            elif _in_map:
+                                text "| クリックでノード追加" color "#88ff88" size 14
             
             # 右側: ノード情報とリンク編集
             frame:
