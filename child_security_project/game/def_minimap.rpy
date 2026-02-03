@@ -510,11 +510,17 @@ init python:
         "dest_node": None,
         "hover_node": None,      # ホバー中のノード
         "pending_node": None,    # 確認待ちのノード
+        "hover_dest_node": None, # 遷移先選択時にホバー中のノード（マップ上でハイライト用）
     }
     
     def link_editor_hover_node(node_name):
         """ノードにホバー"""
         _link_editor_state["hover_node"] = node_name
+        renpy.restart_interaction()
+    
+    def link_editor_hover_dest(node_name):
+        """遷移先リストでホバー（マップ上のノードをハイライト）"""
+        _link_editor_state["hover_dest_node"] = node_name
         renpy.restart_interaction()
     
     def link_editor_click_node(node_name):
@@ -529,6 +535,7 @@ init python:
         if node:
             _link_editor_state["selected_node"] = node
             _link_editor_state["pending_node"] = None
+            _link_editor_state["hover_dest_node"] = None  # ハイライトをクリア
             _link_editor_state["mode"] = "edit_links"
         renpy.restart_interaction()
     
@@ -662,10 +669,13 @@ init python:
     # =========================================================================
     # 背景画像選択
     # =========================================================================
-    # 利用可能な背景画像リスト
+    # 利用可能な背景画像リスト（images/back/フォルダ内の全画像）
     _available_bg_images = [
+        "back_bunki",
+        "back_danchi",
         "back_danger",
-        "back_dark", 
+        "back_dark",
+        "back_home",
         "back_railway",
         "back_school",
         "back_school_park",
@@ -673,6 +683,7 @@ init python:
         "back_street_1",
         "back_street_a",
         "back_street_b",
+        "back_street_c",
         "back_town",
         "back_tunnel",
     ]
@@ -868,6 +879,7 @@ init python:
         link_text = _link_editor_state.get("pending_link_text", "")
         if link_text:
             _do_add_link_from_input(link_text, dest_node)
+        _link_editor_state["hover_dest_node"] = None  # ハイライトをクリア
         renpy.restart_interaction()
     
     def strip_ruby_tags(text):
@@ -1146,7 +1158,7 @@ screen link_editor():
                         scrollbars "vertical"
                         mousewheel True
                         xsize 500
-                        ysize 300
+                        ysize 450
                         
                         vbox:
                             spacing 8
@@ -1212,7 +1224,7 @@ screen link_editor():
             
             # 左側: マップ表示（ノードクリック可能）
             frame:
-                xsize 700
+                xsize 780
                 yfill True
                 background "#222222"
                 padding (10, 10)
@@ -1223,7 +1235,7 @@ screen link_editor():
                     # フレームの左上座標を考慮（padding 10 + 10）
                     _frame_offset_x = 20
                     _frame_offset_y = 20
-                    _zoom = 0.65
+                    _zoom = 0.75  # 拡大して余白を減らす
                     # ズームを逆変換してオリジナル座標を取得
                     _map_x = int((_mx - _frame_offset_x) / _zoom)
                     _map_y = int((_my - _frame_offset_y) / _zoom)
@@ -1234,13 +1246,13 @@ screen link_editor():
                     fit_first True
                     
                     add cfg["image"]:
-                        zoom 0.65
+                        zoom _zoom
                     
                     # マップクリック可能エリア（空いている場所をクリックでノード追加）
                     # select_nodeモードまたはnew_node_coordモードでマップクリック有効
                     if state["mode"] in ["select_node", "new_node_coord"]:
-                        $ _map_w = int(1000 * 0.65)
-                        $ _map_h = int(754 * 0.65)
+                        $ _map_w = int(1000 * _zoom)
+                        $ _map_h = int(754 * _zoom)
                         imagebutton:
                             idle Solid("#00000001")
                             xsize _map_w
@@ -1251,11 +1263,12 @@ screen link_editor():
                     # ミニマップと同じ方法で node_marker 画像を使用
                     for node_id, node_pos in map_coordinates.items():
                         if node_pos:
-                            $ btn_x = int(node_pos[0] * 0.65)
-                            $ btn_y = int(node_pos[1] * 0.65)
+                            $ btn_x = int(node_pos[0] * _zoom)
+                            $ btn_y = int(node_pos[1] * _zoom)
                             $ is_selected = (state["selected_node"] == node_id)
                             $ is_pending = (state.get("pending_node") == node_id)
                             $ is_hover = (state.get("hover_node") == node_id)
+                            $ is_dest_hover = (state.get("hover_dest_node") == node_id)  # 遷移先ホバー
                             
                             # マーカーズームを状態に応じて変更
                             python:
@@ -1263,19 +1276,36 @@ screen link_editor():
                                     _marker_zoom = 0.7
                                 elif is_selected:
                                     _marker_zoom = 0.65
-                                elif is_hover:
+                                elif is_hover or is_dest_hover:
                                     _marker_zoom = 0.6
                                 else:
                                     _marker_zoom = cfg["marker_scale"]  # ミニマップと同じ 0.5
                             
                             # ミニマップと同じ方法で配置（add + pos + anchor）
-                            # クリック領域用の透明ボタンを上に配置
                             add cfg["node_marker"]:
                                 pos (btn_x, btn_y)
                                 anchor (0.5, 0.5)
                                 zoom _marker_zoom
                             
+                            # 遷移先ホバー時はノード名を表示
+                            if is_dest_hover:
+                                frame:
+                                    pos (btn_x + 10, btn_y - 20)
+                                    background "#000000CC"
+                                    padding (5, 2)
+                                    text "[node_id]" color "#ffff00" size 12
+                            
                             # クリック可能領域（透明ボタン）
+                            # select_dest モードでは遷移先として選択
+                            python:
+                                if state["mode"] == "select_dest":
+                                    if node_id != state["selected_node"]:
+                                        _node_action = Function(link_editor_select_dest, node_id)
+                                    else:
+                                        _node_action = NullAction()
+                                else:
+                                    _node_action = Function(link_editor_click_node, node_id)
+                            
                             imagebutton:
                                 pos (btn_x - 15, btn_y - 15)
                                 idle Solid("#00000001")
@@ -1283,7 +1313,7 @@ screen link_editor():
                                 ysize 30
                                 hovered Function(link_editor_hover_node, node_id)
                                 unhovered Function(link_editor_hover_node, None)
-                                action Function(link_editor_click_node, node_id)
+                                action _node_action
                     
                     # 座標・ホバー情報をオーバーレイで表示（マップ上部）
                     frame:
@@ -1382,11 +1412,12 @@ screen link_editor():
                         
                         null height 20
                         text "ノードリスト:" color "#88ff88" size 18
+                        text "(ホバーでマップ上にハイライト)" color "#888888" size 12
                         
                         viewport:
                             scrollbars "vertical"
                             mousewheel True
-                            ysize 300
+                            ysize 400
                             
                             vbox:
                                 spacing 5
@@ -1396,6 +1427,8 @@ screen link_editor():
                                     textbutton "[node_id] (links: [link_count])":
                                         text_size 14
                                         text_color "#ffffff"
+                                        hovered Function(link_editor_hover_dest, node_id)
+                                        unhovered Function(link_editor_hover_dest, None)
                                         action Function(link_editor_select_node, node_id)
                         
                         null height 15
@@ -1480,7 +1513,7 @@ screen link_editor():
                         viewport:
                             scrollbars "vertical"
                             mousewheel True
-                            ysize 300
+                            ysize 700
                             
                             vbox:
                                 spacing 8
@@ -1615,12 +1648,13 @@ screen link_editor():
                         text "Text: [display_text]" color "#88ff88" size 14
                         
                         null height 10
-                        text "クリックで遷移先を選択:" color "#ffff00" size 16
+                        text "リストまたはマップから選択:" color "#ffff00" size 16
+                        text "(ホバーでマップ上にハイライト)" color "#888888" size 12
                         
                         viewport:
                             scrollbars "vertical"
                             mousewheel True
-                            ysize 300
+                            ysize 280
                             
                             vbox:
                                 spacing 5
@@ -1629,13 +1663,15 @@ screen link_editor():
                                         textbutton "→ [node_id]":
                                             text_size 16
                                             text_color "#00ffff"
+                                            hovered Function(link_editor_hover_dest, node_id)
+                                            unhovered Function(link_editor_hover_dest, None)
                                             action Function(link_editor_select_dest, node_id)
                         
                         null height 10
                         textbutton "【キャンセル】":
                             text_size 16
                             text_color "#ff8888"
-                            action [SetDict(_link_editor_state, "mode", "edit_links"), SetDict(_link_editor_state, "pending_link_text", None)]
+                            action [SetDict(_link_editor_state, "mode", "edit_links"), SetDict(_link_editor_state, "pending_link_text", None), SetDict(_link_editor_state, "hover_dest_node", None)]
                     
                     else:
                         # ノード選択済み - リンク編集モード
@@ -1648,9 +1684,9 @@ screen link_editor():
                         # bg表示と変更ボタン
                         hbox:
                             spacing 10
-                            text "bg: [node_data.get('bg', '?')]" color "#aaaaaa" size 14
+                            text "bg: [node_data.get('bg', '?')]" color "#aaaaaa" size 18
                             textbutton "【変更】":
-                                text_size 12
+                                text_size 18
                                 text_color "#ffcc00"
                                 action Function(show_bg_selector, "edit")
                         
@@ -1658,11 +1694,11 @@ screen link_editor():
                         hbox:
                             spacing 15
                             textbutton "【名前変更】":
-                                text_size 14
+                                text_size 18
                                 text_color "#00ffff"
                                 action Function(link_editor_start_rename)
                             textbutton "【位置移動】":
-                                text_size 14
+                                text_size 18
                                 text_color "#00ffff"
                                 action Function(link_editor_start_move)
                         
@@ -1681,14 +1717,14 @@ screen link_editor():
                                         $ _disp_text = strip_ruby_tags(link_text)
                                         hbox:
                                             spacing 10
-                                            text "-> [dest]" color "#ffffff" size 14
+                                            text "-> [dest]" color "#ffffff" size 18
                                             textbutton "x":
-                                                text_size 14
+                                                text_size 18
                                                 text_color "#ff6666"
                                                 action Function(link_editor_delete_link, link_text)
-                                        text "   [_disp_text]" color "#aaaaaa" size 12
+                                        text "   [_disp_text]" color "#aaaaaa" size 16
                                 else:
-                                    text "(リンクなし)" color "#888888" size 14
+                                    text "(リンクなし)" color "#888888" size 18
                         
                         null height 15
                         
@@ -1706,7 +1742,7 @@ screen link_editor():
                         
                         null height 10
                         textbutton "【ノード削除】":
-                            text_size 14
+                            text_size 18
                             text_color "#ff4444"
                             action Function(link_editor_start_delete_node)
                         

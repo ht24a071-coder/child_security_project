@@ -198,7 +198,7 @@
       ]
     },
     "home_up": {
-      "bg": "back_town",
+      "bg": "back_home",
       "links": {},
       "group": "none",
       "chance": 0,
@@ -208,7 +208,7 @@
       ]
     },
     "home_down": {
-      "bg": "back_town",
+      "bg": "back_home",
       "links": {},
       "group": "none",
       "chance": 0,
