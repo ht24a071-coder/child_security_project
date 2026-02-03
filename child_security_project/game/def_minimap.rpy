@@ -26,7 +26,7 @@ init -5 python:
     map_coordinates = {
         # --- ゲームで使用するノードID（world_map と一致）---
         "start_point":       (609, 271),   # 学校
-        "school_park":       (520, 276),   # 学校左の公園近く
+        "school_park":       (580, 276),   # 学校左の公園近く
         "street_1":          (499, 369),   # 学校左の下
         "street_2":          (482, 446),   # そのさらに下
         "street_a":          (382, 451),   # その左
