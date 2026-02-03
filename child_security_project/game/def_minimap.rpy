@@ -47,6 +47,133 @@ init -5 python:
         "home_down":         (930, 602),   # 下家
     }
 
+    # mapdata.json の内容で map_coordinates を更新（永続化対応）
+    # init -10 で読み込まれている world_map を利用
+    if 'world_map' in globals():
+        for k, v in world_map.items():
+            if "minimap" in v:
+                mx, my = v["minimap"]
+                # [0, 0] 以外なら上書き（有効な座標とみなす）
+                if mx != 0 or my != 0:
+                     map_coordinates[k] = (mx, my)
+
+    # =========================================================================
+    # リンクエディタ用ヘルパー関数 (Def Missing Functions Fix)
+    # =========================================================================
+    def link_editor_rename_node(new_name):
+        """ノード名を変更し、リンク参照も更新する"""
+        state = _link_editor_state
+        old_name = state.get("selected_node")
+        
+        if not old_name:
+            return
+            
+        if not new_name:
+            renpy.notify("名前を入力してください")
+            return
+        
+        if new_name in world_map:
+            renpy.notify("その名前は既に使用されています")
+            return
+            
+        # 1. データをコピー
+        world_map[new_name] = world_map[old_name]
+        
+        # 2. 古いデータを削除
+        del world_map[old_name]
+        
+        # 3. 座標マップ更新
+        if old_name in map_coordinates:
+            map_coordinates[new_name] = map_coordinates[old_name]
+            del map_coordinates[old_name]
+            
+        # 4. 全ノードのリンク参照を更新 (重要)
+        count = 0
+        for node_id, node_data in world_map.items():
+            links = node_data.get("links", {})
+            updated_links = {}
+            modified = False
+            for link_text, dest in links.items():
+                if dest == old_name:
+                    updated_links[link_text] = new_name
+                    count += 1
+                    modified = True
+                else:
+                    updated_links[link_text] = dest
+            
+            if modified:
+                node_data["links"] = updated_links
+        
+        # 5. 保存
+        save_map_data()
+        
+        # 6. UI状態更新
+        state["selected_node"] = new_name
+        state["mode"] = "edit_links"
+        renpy.notify("リネーム完了: {} -> {} (リンク更新: {}件)".format(old_name, new_name, count))
+        renpy.restart_interaction()
+
+    def link_editor_start_rename():
+        """リネームモード開始"""
+        _link_editor_state["mode"] = "rename_node"
+        _link_editor_state["temp_input"] = ""
+
+    def link_editor_start_move():
+        """移動モード開始"""
+        _link_editor_state["mode"] = "move_node_confirm"
+        renpy.notify("移動モード: 新しい位置をクリックしてください")
+
+    def link_editor_set_move_coord(x, y):
+        """移動先の座標をセットして保存"""
+        global map_coordinates
+        node_id = _link_editor_state.get("selected_node")
+        
+        try:
+            if node_id and node_id in world_map:
+                world_map[node_id]["minimap"] = [x, y]
+                
+                # 辞書の変更をScreenに通知するために再代入
+                map_coordinates[node_id] = (x, y)
+                map_coordinates = map_coordinates.copy()
+                
+                # save_map_data()
+                save_map_data()
+                
+                msg = "移動完了: ({}, {})".format(x, y)
+                renpy.notify(msg)
+                _link_editor_state["last_message"] = msg
+                _link_editor_state["mode"] = "edit_links"
+            else:
+                msg = "エラー: ノードなし ({})".format(node_id)
+                renpy.notify(msg)
+                _link_editor_state["last_message"] = msg
+                _link_editor_state["mode"] = "edit_links"
+        except Exception as e:
+            msg = "移動Ex: " + str(e)
+            renpy.notify(msg)
+            _link_editor_state["last_message"] = msg
+            print("Move Error: " + str(e))
+
+    def link_editor_cancel_move():
+        _link_editor_state["mode"] = "edit_links"
+
+    def save_map_data():
+        """現在のマップデータを保存（互換性用ラッパー）"""
+        try:
+            # def_map_editor.rpy の関数を利用
+            # まだ定義されていない場合の対策
+            if "_load_mapdata" not in globals() or "_save_mapdata" not in globals():
+                renpy.notify("保存機能が利用できません（関数未定義）")
+                return
+
+            data = _load_mapdata()
+            # メモリ上で変更された world_map を反映
+            data["world_map"] = world_map
+            _save_mapdata(data)
+        except Exception as e:
+            renpy.notify("保存失敗: " + str(e))
+            print("Save Error: " + str(e))
+
 # =============================================================================
 # ミニマップスクリーン
 # =============================================================================
@@ -857,9 +984,11 @@ screen link_editor():
     
     # 背景
     add "#000000DD"
+
+
     
-    # Create Node モード - フルスクリーンマップ + クロスヘア
-    if state["mode"] in ["create_node", "create_node_bg"]:
+    # 共通: マップ描画 (create_node系モード または move_node_confirm 用)
+    if state["mode"] in ["create_node", "create_node_bg", "move_node_confirm"]:
         # マウス座標計算
         python:
             _mx, _my = renpy.get_mouse_pos()
@@ -909,7 +1038,10 @@ screen link_editor():
             # クリック可能エリア
             python:
                 if _in_map:
-                    _click_action = Function(create_node_set_coord, _orig_x, _orig_y)
+                    if state["mode"] == "move_node_confirm":
+                         _click_action = Function(link_editor_set_move_coord, _orig_x, _orig_y)
+                    else:
+                         _click_action = Function(create_node_set_coord, _orig_x, _orig_y)
                 else:
                     _click_action = NullAction()
             
@@ -925,11 +1057,20 @@ screen link_editor():
                 if node_pos:
                     $ _nx = int(node_pos[0] * _zoom_factor)
                     $ _ny = int(node_pos[1] * _zoom_factor)
+                    # 移動中は選択中のノードを色変え
+                    python:
+                        if state["mode"] == "move_node_confirm" and node_id == state["selected_node"]:
+                            _m_color = "#00ff00"
+                            _m_size = 22
+                        else:
+                            _m_color = "#ffcc00"
+                            _m_size = 18
+
                     text "●":
                         pos (_nx, _ny)
                         anchor (0.5, 0.5)
-                        color "#ffcc00"
-                        size 18
+                        color _m_color
+                        size _m_size
             
             # クロスヘア描画
             if _in_map:
@@ -1024,6 +1165,33 @@ screen link_editor():
                         text_size 16
                         text_color "#ff8888"
                         action Function(cancel_create_node)
+
+        elif state["mode"] == "move_node_confirm":
+            # 移動モードのオーバーレイ
+            $ m_node = state["selected_node"]
+            frame:
+                 xalign 0.5 yalign 0.0
+                 yoffset 10
+                 padding (20, 10)
+                 background "#000000CC"
+                 
+                 vbox:
+                     spacing 5
+                     text "【ノード移動モード】: [m_node]" color "#ffff00" size 24
+                     if _in_map:
+                         text "新座標: ([_orig_x], [_orig_y])" color "#00ffff" size 20
+                     else:
+                         text "新しい位置をクリックしてください" color "#aaaaaa" size 16
+            
+            frame:
+                xalign 0.5 yalign 1.0
+                yoffset -20
+                padding (20, 10)
+                background "#000000CC"
+                textbutton "【キャンセル】":
+                     text_size 20
+                     text_color "#ff8888"
+                     action Function(link_editor_cancel_move)
     
     else:
         # 通常モード（既存のhbox UI）
@@ -1047,6 +1215,7 @@ screen link_editor():
                         _mx, _my = renpy.get_mouse_pos()
                         _frame_offset_x = 20
                         _frame_offset_y = 60
+                        # TODO: 通常モードのzoomも再確認。現在は0.65固定
                         _map_x = int((_mx - _frame_offset_x) / 0.65)
                         _map_y = int((_my - _frame_offset_y) / 0.65)
                         _in_map = (0 <= _map_x <= 1000 and 0 <= _map_y <= 754)
@@ -1127,7 +1296,32 @@ screen link_editor():
                 vbox:
                     spacing 10
                     
-                    if state["mode"] == "confirm_node":
+                    if state["mode"] == "rename_node":
+                        # 名前変更モード
+                        text "【ノード名の変更】" color "#00ffff" size 24
+                        text "新しい名前を入力してください" color "#aaaaaa" size 16
+                        
+                        null height 20
+                        
+                        input:
+                            value DictInputValue(_link_editor_state, "temp_input")
+                            size 24
+                            color "#ffffff"
+                        
+                        null height 20
+                        
+                        hbox:
+                            spacing 20
+                            textbutton "【変更する】":
+                                text_size 18
+                                text_color "#00ff00"
+                                action Function(link_editor_rename_node, _link_editor_state["temp_input"])
+                            textbutton "【キャンセル】":
+                                text_size 18
+                                text_color "#ff8888"
+                                action SetDict(_link_editor_state, "mode", "edit_links")
+
+                    elif state["mode"] == "confirm_node":
                         # ノード選択確認モード
                         $ pending = state.get("pending_node", "")
                         $ pending_data = world_map.get(pending, {})
@@ -1441,6 +1635,18 @@ screen link_editor():
                                 text_color "#ffcc00"
                                 action Function(show_bg_selector, "edit")
                         
+                        # 名前の変更と移動
+                        hbox:
+                            spacing 15
+                            textbutton "【名前変更】":
+                                text_size 14
+                                text_color "#00ffff"
+                                action Function(link_editor_start_rename)
+                            textbutton "【位置移動】":
+                                text_size 14
+                                text_color "#00ffff"
+                                action Function(link_editor_start_move)
+                        
                         null height 10
                         text "リンク一覧:" color "#88ff88" size 18
                         
@@ -1490,3 +1696,11 @@ screen link_editor():
                             text_size 18
                             text_color "#ff8888"
                             action Hide("link_editor")
+
+    # デバッグメッセージ表示エリア (最前面)
+    if _link_editor_state.get("last_message"):
+        text _link_editor_state["last_message"]:
+            align (0.5, 0.1)
+            color "#ffff00"
+            size 30
+            outlines [(2, "#000000", 0, 0)]
