@@ -7,18 +7,10 @@
       },
       "group": "safe",
       "chance": 0,
-      "minimap": [609, 271]
-    },
-    "school_park": {
-      "bg": "back_school_park",
-      "links": {
-        "{rb}道{/rb}{rt}みち{/rt}を{rb}進{/rb}{rt}すす{/rt}む": "street_1",
-        "{rb}団地{/rb}{rt}だんち{/rt}の{rb}公園{/rb}{rt}こうえん{/rt}へ": "danchi_park",
-        "{rb}学校{/rb}{rt}がっこう{/rt}の{rb}中{/rb}{rt}なか{/rt}へ": "start_point"
-      },
-      "group": "safe",
-      "chance": 10,
-      "minimap": [0, 0]
+      "minimap": [
+        609,
+        271
+      ]
     },
     "street_1": {
       "bg": "back_street_0",
@@ -28,7 +20,10 @@
       },
       "group": "safe",
       "chance": 20,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "street_2": {
       "bg": "back_street_1",
@@ -39,7 +34,10 @@
       },
       "group": "safe",
       "chance": 20,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "street_a": {
       "bg": "back_street_a",
@@ -49,7 +47,10 @@
       },
       "group": "safe",
       "chance": 20,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "street_b": {
       "bg": "back_street_b",
@@ -59,17 +60,24 @@
       },
       "group": "safe",
       "chance": 20,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "crossing_point": {
       "bg": "back_town",
       "links": {
         "{rb}渡{/rb}{rt}わた{/rt}って{rb}進{/rb}{rt}すす{/rt}む": "factory_road",
-        "{rb}道{/rb}{rt}みち{/rt}を{rb}戻{/rb}{rt}もど{/rt}る": "street_b"
+        "{rb}道{/rb}{rt}みち{/rt}を{rb}戻{/rb}{rt}もど{/rt}る": "street_b",
+        "まっすぐ{rb}進{/rb}{rt}すす{/rt}む": "home_down"
       },
       "group": "suspicious",
       "chance": 30,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "factory_road": {
       "bg": "back_street_0",
@@ -79,7 +87,10 @@
       },
       "group": "suspicious",
       "chance": 40,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "narrow_path_entry": {
       "bg": "back_town",
@@ -89,7 +100,10 @@
       },
       "group": "suspicious",
       "chance": 50,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "narrow_path_mid": {
       "bg": "back_tunnel",
@@ -100,7 +114,10 @@
       },
       "group": "suspicious",
       "chance": 60,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "narrow_path_exit": {
       "bg": "back_town",
@@ -110,7 +127,10 @@
       },
       "group": "safe",
       "chance": 20,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "public_hall": {
       "bg": "back_danchi_0",
@@ -120,7 +140,10 @@
       },
       "group": "safe",
       "chance": 10,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "tree_lined_road": {
       "bg": "back_danchi_0",
@@ -130,7 +153,10 @@
       },
       "group": "safe",
       "chance": 10,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "danchi_park": {
       "bg": "back_danchi_0",
@@ -140,7 +166,10 @@
       },
       "group": "safe",
       "chance": 10,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "railway_point": {
       "bg": "back_railway",
@@ -150,21 +179,30 @@
       },
       "group": "crossing",
       "chance": 100,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "home_up": {
       "bg": "back_town",
       "links": {},
       "group": "none",
       "chance": 0,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     },
     "home_down": {
       "bg": "back_town",
       "links": {},
       "group": "none",
       "chance": 0,
-      "minimap": [0, 0]
+      "minimap": [
+        0,
+        0
+      ]
     }
   },
   "event_pools": {
