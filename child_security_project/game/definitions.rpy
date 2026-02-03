@@ -27,6 +27,9 @@ define MAX_STEPS = 10
 
 # 画像定義
 image side player = "images/icons/[player_icon].png"
+image side officer = "images/actor/officer.png"
+image side woman = "images/actor/woman.png"
+image side stranger = "images/actor/stranger.png"
 
 # -----------------------------------------------------------
 # スコア表示システム
