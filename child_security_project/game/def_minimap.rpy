@@ -11,6 +11,7 @@ init -5 python:
         "image": "images/gui/minimap.jpg",
         "pin_image": "images/gui/pin.png",
         "node_marker": "images/gui/node_marker.png",  # ノードマーカー画像
+        "home_marker": "images/gui/icon_home.png",    # ★追加: お家のアイコン
         "zoom": 0.4,            # 通常表示用
         "pin_scale": 1.0,       # ピンのサイズ倍率
         "marker_scale": 0.5,    # ノードマーカーのサイズ倍率
@@ -208,10 +209,19 @@ screen minimap():
                     # マーカーの中心(0.5, 0.5)を座標に合わせる
                     $ marker_x = int(node_pos[0] * zoom)
                     $ marker_y = int(node_pos[1] * zoom)
-                    add cfg["node_marker"]:
-                        pos (marker_x, marker_y)
-                        anchor (0.5, 0.5)
-                        zoom cfg["marker_scale"]
+                    
+                    if node_id in ("home_up", "home_down"):
+                        # お家アイコン（リサイズ調整：他のマーカーより少し大きくてもOK）
+                        add cfg["home_marker"]:
+                            pos (marker_x, marker_y)
+                            anchor (0.5, 0.5)
+                            zoom 1.5  # アイコンのサイズ感を調整
+                    else:
+                        # 通常の丸いマーカー
+                        add cfg["node_marker"]:
+                            pos (marker_x, marker_y)
+                            anchor (0.5, 0.5)
+                            zoom cfg["marker_scale"]
             
             # 現在地にピン画像を表示
             if pos:
