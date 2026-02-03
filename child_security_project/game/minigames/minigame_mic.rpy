@@ -375,57 +375,32 @@ screen shout_minigame(game):
     
     add Solid("#000000DD")
     
-    frame:
-        xalign 0.5
-        yalign 0.5
-        padding (60, 60)
-        background "#222244"
+    # 2. Main Content Panel (using Semantic UI)
+    use ui_panel(style="panel_minigame"):
         
         vbox:
             spacing 25
             xalign 0.5
             
-            # タイトル
+            # --- Title Section ---
             if game.mic_available:
-                text "おおごえを だそう！":
-                    size 42
-                    xalign 0.5
-                    color "#ffffff"
-                    bold True
-                
-                text "「たすけて！」と さけぼう！":
-                    size 28
-                    xalign 0.5
-                    color "#ffff00"
+                use ui_text("おおごえを だそう！", style="text_h1", size=42)
+                use ui_text("「たすけて！」と さけぼう！", style="text_h2", size=28, color="#ffff00")
             else:
-                text "れんだ！おおごえを だそう！":
-                    size 36
-                    xalign 0.5
-                    color "#ffffff"
-                    bold True
-                
-                text "（スペースキーを れんだ！）":
-                    size 20
-                    xalign 0.5
-                    color "#888888"
+                use ui_text("れんだ！おおごえを だそう！", style="text_h1", size=36)
+                use ui_text("（スペースキーを れんだ！）", style="text_body", size=20, color="#888888")
             
             null height 10
             
-            # 残り時間
+            # --- Timer ---
             $ remaining = game.get_remaining()
-            text "のこり: [remaining:.1f] びょう":
-                size 28
-                xalign 0.5
-                color "#ffff00"
+            use ui_text("のこり: {:.1f} びょう".format(remaining), style="text_h2", color="#ffff00")
             
-            # 音量メーター
-            frame:
-                xsize 320
-                ysize 60
-                xalign 0.5
-                background "#333333"
+            # --- Volume Meter ---
+            # Using a panel for the Gauge container
+            use ui_panel(style="gauge_mic_container", xsize=320, ysize=60, background=Color("#333333")):
                 
-                # 閾値ライン
+                # Threshold Line
                 frame:
                     xpos int(300 * game.threshold)
                     yalign 0.5
@@ -433,55 +408,33 @@ screen shout_minigame(game):
                     ysize 50
                     background "#ffffff"
                 
-                # 音量バー
+                # Dynamic Bar (Keeping logic, wrapping visually)
                 add DynamicDisplayable(game.update):
                     xalign 0.0
                     yalign 0.5
             
-            # 音量表示（マイクモード）
+            # --- Status Text ---
             if game.mic_available:
                 $ vol_percent = int(game.current_volume * 100)
-                text "おんりょう: [vol_percent]%":
-                    size 24
-                    xalign 0.5
-                    color "#aaaaaa"
+                use ui_text("おんりょう: {}%".format(vol_percent), style="text_body", color="#aaaaaa", size=24)
                 
-                # デバッグ情報
+                # Debug Info
                 $ dbg = game.debug_info
-                text "[dbg]":
-                    size 14
-                    xalign 0.5
-                    color "#666666"
+                use ui_text(dbg, style="text_body", size=14, color="#666666")
             else:
-                # フォールバック：連打カウント
-                text "[game.mash_count] / [game.mash_target]":
-                    size 40
-                    xalign 0.5
-                    color "#ff6600"
-                    bold True
+                # Fallback Count
+                use ui_text("{} / {}".format(game.mash_count, game.mash_target), style="text_h1", color="#ff6600")
             
             null height 10
             
-            # 結果表示
+            # --- Result Display ---
             if game.show_result:
                 if game.result == "perfect":
-                    text "PERFECT!!":
-                        size 50
-                        color "#ffff00"
-                        bold True
-                        xalign 0.5
+                    use ui_text("PERFECT!!", style="text_h1", size=50, color="#ffff00")
                 elif game.result == "good":
-                    text "GOOD!":
-                        size 40
-                        color "#00ff00"
-                        bold True
-                        xalign 0.5
+                    use ui_text("GOOD!", style="text_h1", size=40, color="#00ff00")
                 else:
-                    text "こえが ちいさい...":
-                        size 36
-                        color "#ff0000"
-                        bold True
-                        xalign 0.5
+                    use ui_text("こえが ちいさい...", style="text_h1", size=36, color="#ff0000")
 
     # 入力処理（フォールバックモード用）
     if not game.show_result and not game.mic_available:
@@ -498,22 +451,13 @@ screen mic_settings():
     modal True
     add Solid("#000000DD")
     
-    frame:
-        xalign 0.5
-        yalign 0.5
-        xsize 700
-        padding (40, 40)
-        background "#222244"
+    use ui_panel(style="panel_minigame", xsize=700, padding=(40, 40)):
         
         vbox:
             spacing 20
             xalign 0.5
             
-            text "マイク設定":
-                size 40
-                color "#ffffff"
-                bold True
-                xalign 0.5
+            use ui_text("マイク設定", style="text_h2", size=40, color="#ffffff")
             
             null height 20
             
@@ -523,32 +467,17 @@ screen mic_settings():
             $ mic_err = status["error"]
             $ mic_platform = status["platform"]
             
-            text "OS: [mic_platform]":
-                size 20
-                color "#aaaaaa"
+            use ui_text("OS: " + str(mic_platform), style="text_body", size=20, color="#aaaaaa")
             
             if mic_ok:
-                text "✓ マイク: 使用可能":
-                    size 28
-                    color "#00ff00"
+                use ui_text("✓ マイク: 使用可能", style="text_body", size=28, color="#00ff00")
             else:
-                text "✗ マイク: 使用不可":
-                    size 28
-                    color "#ff0000"
+                use ui_text("✗ マイク: 使用不可", style="text_body", size=28, color="#ff0000")
                 if mic_err:
-                    $ err_msg = mic_err
-                    text "[err_msg]":
-                        size 16
-                        color "#ff6666"
-                text "（ボタン連打モードで動作します）":
-                    size 18
-                    color "#888888"
+                    use ui_text(str(mic_err), style="text_body", size=16, color="#ff6666")
+                use ui_text("（ボタン連打モードで動作します）", style="text_body", size=18, color="#888888")
             
             null height 30
             
             # 閉じるボタン
-            textbutton "閉じる":
-                xalign 0.5
-                action Return()
-                text_size 28
-                text_color "#ffffff"
+            use ui_button("閉じる", action=Return(), style="btn_primary")
