@@ -8,12 +8,12 @@
       "group": "safe",
       "chance": 0,
       "minimap": [
-        609,
-        271
+        607,
+        293
       ]
     },
     "school_park": {
-      "bg": "back_town",
+      "bg": "back_school_park",
       "links": {
         "{rb}学校{/rb}{rt}がっこう{/rt}へ{rb}戻{/rb}{rt}もど{/rt}る": "start_point",
         "{rb}道{/rb}{rt}みち{/rt}なりに{rb}進{/rb}{rt}すす{/rt}む": "street_1"
@@ -21,8 +21,8 @@
       "group": "safe",
       "chance": 10,
       "minimap": [
-        518,
-        274
+        567,
+        291
       ]
     },
     "street_1": {
@@ -34,8 +34,8 @@
       "group": "safe",
       "chance": 20,
       "minimap": [
-        0,
-        0
+        527,
+        263
       ]
     },
     "street_2": {
@@ -74,8 +74,8 @@
       "group": "safe",
       "chance": 20,
       "minimap": [
-        0,
-        0
+        281,
+        445
       ]
     },
     "crossing_point": {
