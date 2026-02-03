@@ -27,6 +27,7 @@ label initialize_game:
     call screen profile_setup
 
     show screen score_hud
+    show screen minimap
     return
 
 # =============================================================================
@@ -62,7 +63,7 @@ label travel_loop:
     
     scene expression current_bg with fade
     
-    if current_node == "home_front":
+    if current_node == "home_up" or current_node == "home_down":
         jump arrival_home
 
     $ current_step += 1
@@ -72,8 +73,6 @@ label travel_loop:
         menu_items = []
         for label_text, target_id in node_data["links"].items():
             menu_items.append((label_text, target_id))
-        if previous_node:
-            menu_items.append(("ひとつ{rb}前{/rb}{rt}まえ{/rt}に もどる", previous_node))
         next_location = renpy.display_menu(menu_items)
 
     $ previous_node = current_node
@@ -103,6 +102,7 @@ label trigger_node_event(data):
 # 到着処理
 # =============================================================================
 label arrival_home:
+    hide screen minimap
     "ようやく いえの まえに ついた……。"
     
     python:
@@ -165,7 +165,7 @@ label game_over:
     ]
     
     call screen game_feedback
-    return
+    $ renpy.full_restart()
 
 # =============================================================================
 # おおごえテスト用ラベル
