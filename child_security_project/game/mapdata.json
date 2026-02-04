@@ -52,10 +52,10 @@
       ]
     },
     "street_a": {
-      "bg": "back_street_a",
+      "bg": "back_river_0",
       "links": {
-        "{rb}先{/rb}{rt}さき{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "street_b",
-        "{rb}元{/rb}{rt}もと{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_2"
+        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "crossing_point",
+        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_2"
       },
       "group": "suspicious",
       "chance": 50,
@@ -64,24 +64,10 @@
         0
       ]
     },
-    "street_b": {
-      "bg": "back_street_b",
-      "links": {
-        "{rb}先{/rb}{rt}さき{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "crossing_point",
-        "{rb}元{/rb}{rt}もと{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_a"
-      },
-      "group": "suspicious",
-      "chance": 50,
-      "minimap": [
-        281,
-        445
-      ]
-    },
     "crossing_point": {
-      "bg": "back_town",
+      "bg": "back_oudan",
       "links": {
         "{rb}渡{/rb}{rt}わた{/rt}って{rb}進{/rb}{rt}すす{/rt}む": "factory_road",
-        "{rb}道{/rb}{rt}みち{/rt}を{rb}戻{/rb}{rt}もど{/rt}る": "street_b",
         "まっすぐ{rb}進{/rb}{rt}すす{/rt}む": "home_down"
       },
       "group": "suspicious",
@@ -92,7 +78,7 @@
       ]
     },
     "factory_road": {
-      "bg": "back_street_0",
+      "bg": "back_area0_0",
       "links": {
         "{rb}細道{/rb}{rt}ほそみち{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "narrow_path_entry",
         "{rb}横断歩道{/rb}{rt}おうだんほどう{/rt}へ": "crossing_point"
@@ -118,7 +104,7 @@
       ]
     },
     "narrow_path_mid": {
-      "bg": "back_tunnel",
+      "bg": "back_dark",
       "links": {
         "{rb}奥{/rb}{rt}おく{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "narrow_path_exit",
         "{rb}脇道{/rb}{rt}わきみち{/rt}（上家）": "home_up",
@@ -243,7 +229,9 @@
     "bunki_2": {
       "bg": "back_bunki",
       "links": {
-        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_2"
+        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
+        "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "train_area",
+        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_a"
       },
       "group": "safe",
       "chance": 0,
@@ -253,8 +241,11 @@
       ]
     },
     "train_area": {
-      "bg": "back_danger",
-      "links": {},
+      "bg": "back_river_1",
+      "links": {
+        "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "railway_point",
+        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_2"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
