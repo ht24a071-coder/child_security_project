@@ -57,8 +57,8 @@
         "{rb}先{/rb}{rt}さき{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "street_b",
         "{rb}元{/rb}{rt}もと{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_2"
       },
-      "group": "safe",
-      "chance": 20,
+      "group": "suspicious",
+      "chance": 50,
       "minimap": [
         0,
         0
@@ -70,8 +70,8 @@
         "{rb}先{/rb}{rt}さき{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "crossing_point",
         "{rb}元{/rb}{rt}もと{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_a"
       },
-      "group": "safe",
-      "chance": 20,
+      "group": "suspicious",
+      "chance": 50,
       "minimap": [
         281,
         445
@@ -216,16 +216,6 @@
         0
       ]
     },
-    "test": {
-      "bg": "back_danger",
-      "links": {},
-      "group": "safe",
-      "chance": 0,
-      "minimap": [
-        634,
-        445
-      ]
-    },
     "bunki_1": {
       "bg": "back_street_a",
       "links": {
@@ -260,6 +250,16 @@
       "minimap": [
         478,
         447
+      ]
+    },
+    "train_area": {
+      "bg": "back_danger",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        634,
+        445
       ]
     }
   },
