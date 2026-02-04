@@ -669,24 +669,16 @@ init python:
     # =========================================================================
     # 背景画像選択
     # =========================================================================
-    # 利用可能な背景画像リスト（images/back/フォルダ内の全画像）
-    _available_bg_images = [
-        "back_bunki",
-        "back_danchi",
-        "back_danger",
-        "back_dark",
-        "back_home",
-        "back_railway",
-        "back_school",
-        "back_school_park",
-        "back_street_0",
-        "back_street_1",
-        "back_street_a",
-        "back_street_b",
-        "back_street_c",
-        "back_town",
-        "back_tunnel",
-    ]
+    # 利用可能な背景画像リスト（images/back/フォルダ内の全画像を動的に取得）
+    _available_bg_images = []
+    for fn in renpy.list_files():
+        if fn.startswith("images/back/") and fn.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
+            # 拡張子を除去し、パスの最後の部分（ファイル名）のみを取得
+            # 例: images/back/back_town.png -> back_town
+            name = fn.rsplit(".", 1)[0].split("/")[-1]
+            _available_bg_images.append(name)
+    
+    _available_bg_images.sort()
     
     _bg_selector_state = {
         "selected_bg": None,
