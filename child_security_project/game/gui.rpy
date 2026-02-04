@@ -508,3 +508,5 @@ init python:
     # 重なり具合を見て、この数字を調整してください。
     style.ruby_text.yoffset = -45
     style.ruby_text.size = 18
+    # ルビの視認性向上のため黒いアウトライン（枠線）を追加
+    style.ruby_text.outlines = [(2, "#000000", 0, 0)]
