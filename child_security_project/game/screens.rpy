@@ -1787,7 +1787,7 @@ screen profile_setup():
     modal True
     
     # --- 背景 ---
-    add "#1a1a1a"
+    use adventure_bg_v2
 
     # --- コンテンツ全体 ---
     vbox:

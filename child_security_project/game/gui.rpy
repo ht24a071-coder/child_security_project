@@ -63,19 +63,19 @@ define gui.interface_text_color = '#ffffff'
 ## フォントとフォントサイズ ################################################################
 
 ## ゲーム内の台詞や選択肢に使われるフォント。
-define gui.text_font = "SourceHanSansLite.ttf"
+define gui.text_font = "font/KiwiMaru-Medium.ttf"
 
 ## キャラクターの名前に使われるフォント。
-define gui.name_text_font = "SourceHanSansLite.ttf"
+define gui.name_text_font = "font/KiwiMaru-Medium.ttf"
 
 ## ゲームメニューなどのインターフェースに使われるテキストのフォント。
 define gui.interface_text_font = "SourceHanSansLite.ttf"
 
 ## 一般的な台詞のテキストサイズ。
-define gui.text_size = 33
+define gui.text_size = 40
 
 ## ルビが重なる場合は、ここの数字を 10 ～ 20 くらいに増やして調整します。
-define gui.text_line_spacing = 15
+define gui.text_line_spacing = 3
 
 ## キャラクターの名前のテキストサイズ。
 define gui.name_text_size = 45
@@ -119,8 +119,8 @@ define gui.textbox_yalign = 1.0
 
 ## テキストボックスに対する、キャラクター名の位置。左上からのピクセル数で指定
 ## するか 0.0 から 1.0 までの小数で指定します。 0.5 は中央に表示。
-define gui.name_xpos = 360
-define gui.name_ypos = 0
+define gui.name_xpos = 310
+define gui.name_ypos = -60
 
 ## キャラクター名の文字揃え。 0.0 は左揃え、0.5 は中央揃え、 1.0 は右揃えにな
 ## ります。0.0 以外にした場合、キャラクター名の位置の調整も必要になります。
@@ -144,11 +144,11 @@ define gui.namebox_tile = False
 
 ## テキストボックスに対する、台詞の位置。左上からのピクセル数で指定するか 0.0
 ## から 1.0 までの小数で指定します。 0.5 だと中央に表示。
-define gui.dialogue_xpos = 402
-define gui.dialogue_ypos = 75
+define gui.dialogue_xpos = 350
+define gui.dialogue_ypos = 30
 
 ## 台詞の最大ピクセル幅。このピクセル幅以上の台詞は折り返して表示されます。
-define gui.dialogue_width = 1116
+define gui.dialogue_width = 1300
 
 ## 台詞の文字揃え。 0.0 は左揃え、0.5 は中央揃え、 1.0 は右揃えになります。0.0
 ## 以外にした場合、台詞の位置の調整も必要になります。
@@ -506,7 +506,7 @@ init python:
     # ルビのテキストの垂直位置を調整します。
     # マイナスの値にすると上に、プラスの値にすると下に移動します。
     # 重なり具合を見て、この数字を調整してください。
-    style.ruby_text.yoffset = -45
+    style.ruby_text.yoffset = -38
     style.ruby_text.size = 18
     # ルビの視認性向上のため黒いアウトライン（枠線）を追加
     style.ruby_text.outlines = [(2, "#000000", 0, 0)]
