@@ -53,7 +53,7 @@ label .buzzer_stranger:
     "ふしんしゃは あわてて にげていった！"
     hide stranger with dissolve
     
-    $ total_score += 20
+    $ update_score(20)
         
     show woman with dissolve
     woman "どうしたの！？ おおきな おとが したけど..."
@@ -107,7 +107,7 @@ label .escape_buzzer:
     
     hide stranger with dissolve
     
-    $ total_score += 15
+    $ update_score(15)
     
     show woman with dissolve
     woman "どうしたの！？"
@@ -131,7 +131,7 @@ label .escape_110:
     hide stranger
     
     if _return == "success":
-        $ total_score += 30
+        $ update_score(30)
         "「こども110ばんの いえ」に かけこんだ！"
         show officer with dissolve
         officer "どうしたの！？"
@@ -140,7 +140,7 @@ label .escape_110:
         hide officer with dissolve
         "{i}すばらしい！110ばんの いえを おぼえていたから にげられたね！{/i}"
     else:
-        $ total_score += 10
+        $ update_score(10)
         "なんとか にげきった…でも こわかった…"
         "{i}あぶなかったね。さいしょから ついていかないように しよう。{/i}"
     return
@@ -158,7 +158,7 @@ label .escape_fail_no_110:
     hide stranger
     
     if _return == "success":
-        $ total_score += 5
+        $ update_score(5)
         "なんとか にげきった……"
         "{i}あぶなかったね。「110ばんの いえ」を おぼえておけば もっと あんぜんだよ。{/i}"
         return
@@ -198,7 +198,7 @@ label .escape_home:
             "{i}いえに にげるより、110ばんの いえや おみせに にげるほうが あんぜんだよ。{/i}"
             jump game_over
         else:
-            $ total_score += 5
+            $ update_score(5)
             "なんとか いえに にげこめた…"
             "{i}あぶなかったね。つぎからは さいしょから ついていかないようにね。{/i}"
             return
@@ -220,7 +220,7 @@ label .escape_shout:
     call screen shout_minigame(shout_game)
     
     if _return != "miss":
-        $ total_score += 15
+        $ update_score(15)
         play audio "audio/buzzer.mp3"
         stranger "うわっ…！"
         hide stranger with dissolve
@@ -242,7 +242,7 @@ label .escape_shout:
 # 断って離れるルート（正解）
 # -----------------------------------------------------------------------------
 label .refuse_stranger:
-    $ total_score += 15
+    $ update_score(15)
     
     pc "ごめんなさい！まっすぐ かえらないといけないんです！"
     stranger "えー、ちょっとだけだよ～"
@@ -269,16 +269,16 @@ label .shout_stranger:
     call screen shout_minigame(shout_game)
     
     if _return == "perfect":
-        $ total_score += 25
+        $ update_score(25)
         play audio "audio/buzzer.mp3"
         "「たすけてーーー！！！」"
         "PERFECT!! ものすごく おおきな こえが でた！"
     elif _return == "good":
-        $ total_score += 20
+        $ update_score(20)
         play audio "audio/buzzer.mp3"
         "GOOD! おおきな こえが でた！"
     else:
-        $ total_score += 10
+        $ update_score(10)
         "こえは ちいさかったけど、がんばった！"
     
     stranger "うわっ！ ちょ、ちょっと……！"
@@ -318,10 +318,10 @@ label .flee_success:
     hide stranger
     
     if _return == "success":
-        $ total_score += 35
+        $ update_score(35)
         "PERFECT!! 「こども110ばんの いえ」に かけこんだ！"
     else:
-        $ total_score += 20
+        $ update_score(20)
         "なんとか にげられた！"
     
     show officer with dissolve

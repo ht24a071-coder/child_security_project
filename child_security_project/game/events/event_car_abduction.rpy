@@ -60,7 +60,7 @@ label .get_in_car:
 # 断るルート（強引に乗せようとしてくる場合あり）
 # -----------------------------------------------------------------------------
 label .refuse_car:
-    $ total_score += 10
+    $ update_score(10)
     
     pc "だいじょうぶです。じぶんで かえれますから。"
     
@@ -113,7 +113,7 @@ label .forceful_shout:
     call screen shout_minigame(shout_game)
     
     if _return != "miss":
-        $ total_score += 20
+        $ update_score(20)
         play audio "audio/buzzer.mp3"
         stranger "ちっ...！"
         "ふしんしゃは くるまに のって にげていった！"
@@ -145,7 +145,7 @@ label .forceful_run:
     call screen escape_minigame(escape_game)
     
     if _return == "success":
-        $ total_score += 25
+        $ update_score(25)
         hide stranger
         
         "なんとか にげきった！"
@@ -157,7 +157,7 @@ label .forceful_run:
             pc "くるまに のせられそうに...！"
             officer "だいじょうぶ、すぐ パトロールする！"
             hide officer with dissolve
-            $ total_score += 10
+            $ update_score(10)
         
         "{i}よく にげられたね！あやしい くるまには ちかづかないようにしよう。{/i}"
         return
@@ -172,7 +172,7 @@ label .forceful_run:
 label .forceful_buzzer:
     play audio "audio/buzzer.mp3"
     
-    $ total_score += 25
+    $ update_score(25)
     
     "ピピピピピ！！"
     stranger "うわっ！？"
@@ -211,7 +211,7 @@ label .forceful_fight:
 label .run_away_car:
     pc "（にげよう！）"
     
-    $ total_score += 15
+    $ update_score(15)
     
     python:
         escape_game = EscapeMinigame(difficulty="normal", key="K_SPACE")
@@ -221,7 +221,7 @@ label .run_away_car:
     hide stranger
     
     if _return == "success":
-        $ total_score += 10
+        $ update_score(10)
         "うまく にげられた！"
     else:
         "なんとか にげられた..."
@@ -235,7 +235,7 @@ label .run_away_car:
 label .buzzer_car:
     play audio "audio/buzzer.mp3"
     
-    $ total_score += 20
+    $ update_score(20)
     
     "ピピピピピ！！"
     stranger "な、なんだ！？"

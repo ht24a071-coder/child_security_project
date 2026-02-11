@@ -19,7 +19,7 @@ label special_e_encounter_flow:
             "{i}・し（{rb}知{/rb}{rt}し{/rt}らせる）{/i}"
 
         "（{rb}無視{/rb}{rt}むし{/rt}して{rb}歩{/rb}{rt}ある{/rt}き{rb}続{/rb}{rt}つづ{/rt}ける）":
-            $ total_score += 15
+            $ update_score(15)
             stranger "あら、{rb}行{/rb}{rt}い{/rt}っちゃうの…"
             hide stranger with dissolve
             "{i}よくできました！{rb}知{/rb}{rt}し{/rt}らない{rb}人{/rb}{rt}ひと{/rt}には{rb}近{/rb}{rt}ちか{/rt}づかないのが{rb}正解{/rb}{rt}せいかい{/rt}です。{/i}"
@@ -27,7 +27,7 @@ label special_e_encounter_flow:
             return
 
         "（{rb}大{/rb}{rt}おお{/rt}きな{rb}声{/rb}{rt}こえ{/rt}で）{rb}助{/rb}{rt}たす{/rt}けてー！":
-            $ total_score += 20
+            $ update_score(20)
             stranger "うわっ…！（{rb}逃{/rb}{rt}に{/rt}げていく）"
             hide stranger with dissolve
             "{i}いい{rb}判断{/rb}{rt}はんだん{/rt}だね！{/i}"

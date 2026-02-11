@@ -4,12 +4,20 @@
 # =============================================================================
 
 default game_mode = "going_home"
+default _nav_color_map = {}
+default show_quick_menu = False  # クイックメニューの初期表示状態（非表示）
+default minimap_hover_node = None  # 選択肢ホバー時の仮の行き先ノードID
 
 # =============================================================================
 # 共通初期化処理
 # =============================================================================
 label initialize_game:
-    $ current_node = "start_point"
+    # 変数初期化
+    $ current_node = "start_point" if game_mode == "going_home" else "home_down"
+    $ visited_nodes = []
+    $ total_score = 0  # スコア初期化
+    
+    # 立ち絵などリセット
     $ previous_node = None
     
     #show screen inactivity_guard
@@ -70,10 +78,24 @@ label travel_loop:
     call trigger_node_event(node_data)
 
     python:
+        # 行き先ノードに色＋マーカー画像を割り当て（ミニマップと選択肢で共有）
+        _nav_color_map = {}
+        _nav_markers = [
+            ("#0072B2", "images/gui/nav_marker_blue.png"),
+            ("#E69F00", "images/gui/nav_marker_orange.png"),
+            ("#D55E00", "images/gui/nav_marker_red.png"),
+            ("#56B4E9", "images/gui/nav_marker_sky.png"),
+            ("#F0E442", "images/gui/nav_marker_yellow.png"),
+        ]
         menu_items = []
-        for label_text, target_id in node_data["links"].items():
-            menu_items.append((label_text, target_id))
+        for idx, (label_text, target_id) in enumerate(node_data["links"].items()):
+            color, marker_img = _nav_markers[idx % len(_nav_markers)]
+            _nav_color_map[target_id] = (color, marker_img)
+            # 色丸＋テキスト全体を行き先の色に変更（マップの色と対応）
+            colored_text = "{color=" + color + "}\u25cf " + label_text + "{/color}"
+            menu_items.append((colored_text, target_id))
         next_location = renpy.display_menu(menu_items)
+        _nav_color_map = {}
 
     $ previous_node = current_node
     $ current_node = next_location
