@@ -40,7 +40,7 @@ define gui.idle_small_color = '#aaaaaa'
 
 ## hover（フォーカス中）のテキストボタンのカラー。また、バーの充足部分（左側）
 ## やスライダーのつまみ等の画像を再生成するときにも使われます。
-define gui.hover_color = '#66c1e0'
+define gui.hover_color = '#ffffff'
 
 ## selected（選択中）のテキストボタンのカラー。ボタンが現在のスクリーンであっ
 ## たり、環境設定の値と一致したりすると、ボタンは選択中になります。

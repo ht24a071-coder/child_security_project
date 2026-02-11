@@ -27,6 +27,7 @@ style gui_text:
 
 style button:
     properties gui.button_properties("button")
+    hover_foreground Solid("#ffffff30")
 
 style button_text is gui_text:
     properties gui.text_properties("button")
@@ -228,6 +229,7 @@ style choice_vbox:
 
 style choice_button is default:
     properties gui.button_properties("choice_button")
+    hover_foreground Frame(Solid("#FFD54F80"), 4, 4)
 
 style choice_button_text is default:
     properties gui.text_properties("choice_button")
@@ -265,6 +267,50 @@ screen quick_menu():
 ## スクリーンが常にゲーム中に表示されるようにしています。
 init python:
     config.overlay_screens.append("quick_menu")
+
+
+################################################################################
+## コントローラーボタンガイド
+################################################################################
+## コントローラー接続時に画面下部にボタン操作ガイドを表示します。
+
+screen controller_guide():
+    zorder 101
+
+    if GamepadExists():
+        frame:
+            style "controller_guide_frame"
+
+            hbox:
+                spacing 25
+
+                hbox:
+                    spacing 5
+                    text "Ⓐ" size 28 color "#4FC3F7" bold True
+                    text "決定" size 20 color "#ddd" yalign 0.5
+
+                hbox:
+                    spacing 5
+                    text "Ⓑ" size 28 color "#FF8A65" bold True
+                    text "戻る" size 20 color "#ddd" yalign 0.5
+
+                hbox:
+                    spacing 5
+                    text "◁▷△▽" size 20 color "#aaa" bold True
+                    text "移動" size 20 color "#ddd" yalign 0.5
+
+
+style controller_guide_frame:
+    background Solid("#00000099")
+    padding (15, 8, 15, 8)
+    xalign 0.0
+    yalign 1.0
+    yoffset -40
+    xoffset 10
+
+
+init python:
+    config.overlay_screens.append("controller_guide")
 
 default quick_menu = True
 
@@ -344,6 +390,7 @@ style navigation_button_text is gui_button_text
 style navigation_button:
     size_group "navigation"
     properties gui.button_properties("navigation_button")
+    hover_foreground Solid("#ffffff20")
 
 style navigation_button_text:
     properties gui.text_properties("navigation_button")
@@ -366,6 +413,13 @@ image bg_circle_pink_hover = Text("●", size=180, color="#FFCCBC")
 image bg_circle_blue_idle = Text("●", size=180, color="#81D4FA")
 image bg_circle_blue_hover = Text("●", size=180, color="#B3E5FC")
 
+## コントローラー操作時のフォーカス視認性向上用Transform
+transform button_hover_pop:
+    on hover:
+        easein 0.1 zoom 1.15
+    on idle:
+        easeout 0.1 zoom 1.0
+
 
 ################################################################################
 ## タイトル画面
@@ -385,9 +439,11 @@ screen main_menu():
 
         # --- 登校ボタン ---
         button:
+            at button_hover_pop
             action Start("going_school_start")
             xysize (180, 180)
             padding (0, 0)
+            hover_foreground Solid("#ffffff00")
             
             background At("bg_circle_pink_idle", Transform(align=(0.5, 0.5)))
             hover_background At("bg_circle_pink_hover", Transform(align=(0.5, 0.5)))
@@ -400,9 +456,11 @@ screen main_menu():
 
         # --- 下校ボタン ---
         button:
+            at button_hover_pop
             action Start("going_home_start")
             xysize (180, 180)
             padding (0, 0)
+            hover_foreground Solid("#ffffff00")
             
             background At("bg_circle_pink_idle", Transform(align=(0.5, 0.5)))
             hover_background At("bg_circle_pink_hover", Transform(align=(0.5, 0.5)))
@@ -415,9 +473,11 @@ screen main_menu():
 
         # --- ランキングボタン ---
         button:
+            at button_hover_pop
             action ShowMenu("ranking_menu")
             xysize (180, 180)
             padding (0, 0)
+            hover_foreground Solid("#ffffff00")
             
             background At("bg_circle_blue_idle", Transform(align=(0.5, 0.5)))
             hover_background At("bg_circle_blue_hover", Transform(align=(0.5, 0.5)))
@@ -430,9 +490,11 @@ screen main_menu():
 
         # --- おおごえテストボタン ---
         button:
+            at button_hover_pop
             action Start("test_mic_minigame")
             xysize (180, 180)
             padding (0, 0)
+            hover_foreground Solid("#ffffff00")
             
             background At("bg_circle_blue_idle", Transform(align=(0.5, 0.5)))
             hover_background At("bg_circle_blue_hover", Transform(align=(0.5, 0.5)))
@@ -1820,7 +1882,9 @@ screen profile_setup():
                         
                         padding (4, 4)
                         background None
-                        selected_background Solid("#ffeb3b")
+                        hover_foreground Frame(Solid("#FFD54F40"), 3, 3)
+                        selected_background Solid("#FFD54F20")
+                        selected_foreground Frame(Solid("#FFD54F90"), 3, 3)
                         
                         xysize (90, 90) # アイコンサイズを少しだけ小さく調整
                         
