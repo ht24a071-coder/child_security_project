@@ -13,7 +13,7 @@ label encounter_e_safe_person:
     # まず挨拶への反応
     menu:
         "こんにちは！":
-            $ total_score += 5
+            $ update_score(5)
             pc "こんにちは！"
             woman "げんきな あいさつだね！"
         
@@ -52,17 +52,17 @@ label .greet_back:
     call screen timing_minigame(greet_game)
     
     if _return == "perfect":
-        $ total_score += 15
+        $ update_score(15)
         pc "さようなら！きを つけます！"
         "PERFECT!! とても げんきな あいさつだ！"
         woman "まあ、げんきね！いいこだわ。バイバイ！"
     elif _return == "good":
-        $ total_score += 10
+        $ update_score(10)
         pc "さようなら！"
         "GOOD! ちゃんと あいさつできたね！"
         woman "いいこね。バイバイ！"
     else:
-        $ total_score += 5
+        $ update_score(5)
         pc "…さようなら"
         woman "バイバイ！"
     
@@ -90,7 +90,7 @@ label .buzzer_safe:
     
     hide officer with dissolve
     
-    $ total_score -= 5
+    $ update_score(-5)
     
     "{i}ぼうはんブザーは ほんとうに あぶないときだけ つかおうね。{/i}"
     "{i}でも、あやしいと おもったら つかうゆうきも だいじだよ。{/i}"

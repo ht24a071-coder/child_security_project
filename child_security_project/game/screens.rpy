@@ -247,7 +247,11 @@ screen quick_menu():
     ## 他のスクリーンの上に表示する。
     zorder 100
 
-    if quick_menu:
+    # クイックメニューの表示切り替え（L1 or Tab）
+    key "pad_left_shoulder" action ToggleVariable("show_quick_menu")
+    key "K_TAB" action ToggleVariable("show_quick_menu")
+
+    if quick_menu and show_quick_menu:
 
         hbox:
             style_prefix "quick"
@@ -303,10 +307,10 @@ screen controller_guide():
 style controller_guide_frame:
     background Solid("#00000099")
     padding (15, 8, 15, 8)
-    xalign 0.0
+    xalign 1.0
     yalign 1.0
     yoffset -40
-    xoffset 10
+    xoffset -10
 
 
 init python:

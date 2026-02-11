@@ -46,7 +46,7 @@ label .choice_dash:
     "{i}ふみきりが なっているときは、ぜったいに わたってはいけないよ！{/i}"
     "{i}でんしゃは きゅうには とまれないんだ。{/i}"
     
-    $ total_score -= 10
+    $ update_score(-10)
     
     jump .event_end
 
@@ -54,7 +54,7 @@ label .choice_dash:
 # 待つルート（正解）
 # -----------------------------------------------------------------------------
 label .choice_wait:
-    $ total_score += 10
+    $ update_score(10)
     
     pc "あぶないから まっていよう。"
 
@@ -77,7 +77,7 @@ label .choice_wait:
 # 手を上げて準備ルート（ベスト回答）
 # -----------------------------------------------------------------------------
 label .choice_hand:
-    $ total_score += 15
+    $ update_score(15)
     
     pc "まずは しゃだんきが あがるのを まとう。"
     
@@ -97,11 +97,11 @@ label .choice_hand:
     call screen timing_minigame(check_game)
     
     if _return == "perfect":
-        $ total_score += 10
+        $ update_score(10)
         pc "てを あげて、さゆうを かくにん！よし！"
         "PERFECT!! かんぺきな かくにんだ！"
     elif _return == "good":
-        $ total_score += 5
+        $ update_score(5)
         pc "てを あげて、さゆうを かくにん！"
         "GOOD! ちゃんと かくにんできたね！"
     else:

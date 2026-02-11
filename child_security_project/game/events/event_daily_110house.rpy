@@ -21,7 +21,7 @@ label daily_e_find_110house:
             jump .ignore_110
 
 label .greet_110:
-    $ total_score += 5
+    $ update_score(5)
     
     woman "{rb}元気{/rb}{rt}げんき{/rt}ね！えらいえらい。"
     woman "ねえ、あそこに{rb}見{/rb}{rt}み{/rt}える「こども110{rb}番{/rb}{rt}ばん{/rt}の{rb}家{/rb}{rt}いえ{/rt}」って{rb}知{/rb}{rt}し{/rt}ってる？"
@@ -30,7 +30,7 @@ label .greet_110:
         "{rb}知{/rb}{rt}し{/rt}ってる！":
             woman "すごい！ちゃんと{rb}覚{/rb}{rt}おぼ{/rt}えてるんだね。"
             $ flag_know_110 = True
-            $ total_score += 10
+            $ update_score(10)
             jump .explain_110
         
         "{rb}知{/rb}{rt}し{/rt}らない...":
@@ -51,12 +51,12 @@ label .explain_110:
     # フラグ獲得
     $ flag_know_110 = True
     
-    "★ 「こども110{rb}番{/rb}{rt}ばん{/rt}の{rb}家{/rb}{rt}いえ{/rt}」の{rb}場所{/rb}{rt}ばしょ{/rt}を{rb}覚{/rb}{rt}おぼ{/rt}えた！"
+    "「こども110{rb}番{/rb}{rt}ばん{/rt}の{rb}家{/rb}{rt}いえ{/rt}」の{rb}場所{/rb}{rt}ばしょ{/rt}を{rb}覚{/rb}{rt}おぼ{/rt}えた！"
     
     woman "{rb}何{/rb}{rt}なに{/rt}かあったら、あそこに{rb}逃{/rb}{rt}に{/rt}げ{rb}込{/rb}{rt}こ{/rt}むんだよ。"
     woman "{rb}気{/rb}{rt}き{/rt}をつけて{rb}帰{/rb}{rt}かえ{/rt}ってね！"
     
-    $ total_score += 15
+    $ update_score(15)
     
     "{i}すばらしい！{rb}町{/rb}{rt}まち{/rt}の{rb}人{/rb}{rt}ひと{/rt}と{rb}挨拶{/rb}{rt}あいさつ{/rt}して、{rb}大切{/rb}{rt}たいせつ{/rt}なことを{rb}教{/rb}{rt}おし{/rt}えてもらったね。{/i}"
     
