@@ -300,7 +300,7 @@ screen controller_guide():
 
                 hbox:
                     spacing 5
-                    text "◁▷△▽" size 20 color "#aaa" bold True
+                    text "◁▷△▽" size 28 color "#aaa" bold True yalign 0.5
                     text "移動" size 20 color "#ddd" yalign 0.5
 
 
