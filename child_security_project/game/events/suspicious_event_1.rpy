@@ -17,7 +17,7 @@ label suspi_e_test_1:
             jump game_over
 
         "ごめんなさい。まっすぐ{rb}帰{/rb}{rt}かえ{/rt}らないといけないんです":
-            $ total_score += 15
+            $ update_score(15)
             stranger "えー、つまんないな～"
             hide stranger with dissolve
             

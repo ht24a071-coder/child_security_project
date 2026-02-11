@@ -7,7 +7,7 @@ label safe_e_test_1:
 
     menu:
         "ただいまー！":
-            $ total_score += 10
+            $ update_score(10)
             $ a = renpy.random.choice(WomanGreeting)
             woman "[a]"
             "{i}{rb}挨拶{/rb}{rt}あいさつ{/rt}できたね！えらい！{/i}"

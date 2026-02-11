@@ -12,6 +12,8 @@ init -5 python:
         "pin_image": "images/gui/pin.png",
         "node_marker": "images/gui/node_marker.png",  # ノードマーカー画像
         "home_marker": "images/gui/icon_home.png",    # ★追加: お家のアイコン
+        "nav_marker": "images/gui/nav_marker.png",    # 移動先マーカー画像（差し替え可能）
+        "nav_marker_scale": 0.6, # 移動先マーカーのサイズ倍率（30px*0.6=18px。元のノード(10px)より大きくして目立たせる）
         "zoom": 0.4,            # 通常表示用
         "pin_scale": 1.0,       # ピンのサイズ倍率
         "marker_scale": 0.5,    # ノードマーカーのサイズ倍率
@@ -186,8 +188,9 @@ screen minimap():
     $ zoom = cfg["zoom"]
     $ pin_scale = cfg["pin_scale"]
     
-    # 現在地の座標を取得（なければ None）
-    $ pos = map_coordinates.get(current_node, None) if current_node else None
+    # 現在地の座標を取得（ホバー時はその場所、なければ現在地）
+    $ current_pos_node = minimap_hover_node if minimap_hover_node else current_node
+    $ pos = map_coordinates.get(current_pos_node, None) if current_pos_node else None
     
     frame:
         xalign 1.0 yalign 0.0
@@ -203,7 +206,7 @@ screen minimap():
             add cfg["image"]:
                 zoom zoom
             
-            # 全ノードにマーカーを表示
+            # 全ノードにマーカーを表示（行き先ノードは色付きマーカーに差し替え）
             for node_id, node_pos in map_coordinates.items():
                 if node_pos:
                     # マーカーの中心(0.5, 0.5)を座標に合わせる
@@ -211,27 +214,139 @@ screen minimap():
                     $ marker_y = int(node_pos[1] * zoom)
                     
                     if node_id in ("home_up", "home_down"):
-                        # お家アイコン（リサイズ調整：他のマーカーより少し大きくてもOK）
+                        # お家アイコン
                         add cfg["home_marker"]:
                             pos (marker_x, marker_y)
                             anchor (0.5, 0.5)
-                            zoom 1.5  # アイコンのサイズ感を調整
+                            zoom 1.5
+                    elif _nav_color_map and node_id in _nav_color_map:
+                        # 行き先ノード → カラーマーカー画像に差し替え
+                        $ nav_color, nav_img = _nav_color_map[node_id]
+                        if renpy.loadable(nav_img):
+                            add nav_img:
+                                pos (marker_x, marker_y)
+                                anchor (0.30, 0.30)
+                                zoom cfg["nav_marker_scale"]
+                        else:
+                            add Text("\u25cf", size=28, color=nav_color, font=gui.text_font):
+                                pos (marker_x, marker_y)
+                                anchor (0.5, 0.5)
                     else:
                         # 通常の丸いマーカー
                         add cfg["node_marker"]:
                             pos (marker_x, marker_y)
                             anchor (0.5, 0.5)
                             zoom cfg["marker_scale"]
-            
-            # 現在地にピン画像を表示
+
+            # 現在地（またはホバー先）にピン画像を表示
             if pos:
-                # ピンの下端中央(0.5, 1.0)を座標に合わせる
                 $ pin_x = int(pos[0] * zoom)
                 $ pin_y = int(pos[1] * zoom)
                 add cfg["pin_image"]:
                     pos (pin_x, pin_y)
                     anchor (0.5, 1.0)
                     zoom pin_scale
+
+    # ミニマップの下にマップ表示ボタン（コントローラーⒾボタンでも開ける）
+    textbutton "🗺 マップ {size=22}{color=#FFE66D}Ⓨ{/color}{/size}":
+        xalign 1.0 yalign 0.0
+        xoffset -cfg["margin_x"]
+        yoffset cfg["margin_y"] + 310
+        text_size 28
+        text_color "#ffffff"
+        background Solid("#00000080")
+        padding (18, 10, 18, 10)
+        hover_foreground Solid("#ffffff30")
+        action Show("fullscreen_map")
+
+    key "K_y" action Show("fullscreen_map")
+
+# =============================================================================
+# フルスクリーンマップ表示
+# ミニマップをタップすると大きいマップを表示
+# =============================================================================
+screen fullscreen_map():
+    zorder 150
+    modal True
+
+    # 設定値を取得
+    $ cfg = minimap_config
+    $ fzoom = 0.85
+    $ pos = map_coordinates.get(current_node, None) if current_node else None
+
+    # 背景を暗く
+    add Solid("#000000CC")
+
+    # タイトル
+    text "🗺 マップ" xalign 0.5 yalign 0.02 size 28 color "#ffffff" bold True
+
+    # マップ表示（中央に大きく）
+    frame:
+        xalign 0.5 yalign 0.5
+        padding (8, 8)
+        background "#222222DD"
+
+        fixed:
+            fit_first True
+            # マップ画像のサイズ * ズーム率
+            $ p_zoom = 1.0
+
+            # マップ画像
+            add cfg["image"]:
+                zoom p_zoom
+
+            # 全ノードにマーカーを表示
+            for node_id, node_pos in map_coordinates.items():
+                if node_pos and (node_pos[0] != 0 or node_pos[1] != 0):
+                    $ marker_x = int(node_pos[0] * p_zoom)
+                    $ marker_y = int(node_pos[1] * p_zoom)
+
+                    if node_id in ("home_up", "home_down"):
+                        add cfg["home_marker"]:
+                            pos (marker_x, marker_y)
+                            anchor (0.5, 0.5)
+                            zoom 1.6
+                    elif _nav_color_map and node_id in _nav_color_map:
+                        # 行き先ノード → カラーマーカー画像に差し替え
+                        $ nav_color, nav_img = _nav_color_map[node_id]
+                        if renpy.loadable(nav_img):
+                            add nav_img:
+                                pos (marker_x, marker_y)
+                                anchor (0.30, 0.30)
+                                zoom cfg["nav_marker_scale"] * 1.6 # 少し大きめに
+                        else:
+                            add Text("\u25cf", size=48, color=nav_color, font=gui.text_font):
+                                pos (marker_x, marker_y)
+                                anchor (0.5, 0.5)
+                    else:
+                        add cfg["node_marker"]:
+                            pos (marker_x, marker_y)
+                            anchor (0.5, 0.5)
+                            zoom 0.8
+
+            # 現在地ピン（最前面）
+            if current_node in map_coordinates:
+                $ c_pos = map_coordinates[current_node]
+                if c_pos:
+                    $ pin_x = int(c_pos[0] * p_zoom)
+                    $ pin_y = int(c_pos[1] * p_zoom)
+                    add cfg["pin_image"]:
+                        pos (pin_x, pin_y)
+                        anchor (0.5, 1.0)
+                        zoom cfg["pin_scale"] * 1.0
+
+
+
+    # 閉じるボタン
+    textbutton "× とじる":
+        text_font gui.text_font
+        xalign 0.5 yalign 0.96
+        text_size 24
+        text_color "#ffffff"
+        background Solid("#00000099")
+        padding (20, 8, 20, 8)
+        hover_foreground Solid("#ffffff30")
+        action Hide("fullscreen_map")
 
 # =============================================================================
 # 座標デバッグツール（フルスクリーン版）

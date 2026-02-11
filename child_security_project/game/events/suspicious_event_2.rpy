@@ -17,7 +17,7 @@ label suspi_e_test_2:
             jump game_over
 
         "{rb}大丈夫{/rb}{rt}だいじょうぶ{/rt}です。{rb}自分{/rb}{rt}じぶん{/rt}で{rb}帰{/rb}{rt}かえ{/rt}れます":
-            $ total_score += 15
+            $ update_score(15)
             stranger "そう...じゃあね..."
             hide stranger with dissolve
             
