@@ -77,6 +77,8 @@ label travel_loop:
     $ current_step += 1
     call trigger_node_event(node_data)
 
+    window hide
+
     python:
         # 行き先ノードに色＋マーカー画像を割り当て（ミニマップと選択肢で共有）
         _nav_color_map = {}
