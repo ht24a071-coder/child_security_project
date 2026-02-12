@@ -25,6 +25,8 @@ label initialize_game:
     
     #show screen inactivity_guard
     $ current_step = 0
+    
+    # 重要: used_eventsは文字列のセットとして管理
     $ used_events = set()
 
     $ flag_know_110 = False
@@ -123,6 +125,12 @@ label travel_loop:
 # =============================================================================
 # イベント抽選
 # =============================================================================
+# =============================================================================
+# イベント抽選
+# =============================================================================
+# =============================================================================
+# イベント抽選
+# =============================================================================
 label trigger_node_event(data):
     python:
         group_name = data["group"]
@@ -130,34 +138,71 @@ label trigger_node_event(data):
         target_event = None
         event_args = None
 
-        if renpy.random.randint(1, 100) <= chance and group_name in event_pools:
+        # event_poolsをstoreから明示的に取得
+        pools = event_pools
+        
+        # 確率判定とプール存在確認
+        if renpy.random.randint(1, 100) <= chance and group_name in pools:
             available = []
-            for e in event_pools[group_name]:
-                # リストならタプルに変換、そうでないならそのまま
-                check_item = tuple(e) if isinstance(e, list) else e
-                if check_item not in used_events:
+            for e in pools[group_name]:
+                # イベントを文字列化して既出チェック
+                event_key = str(e)
+                if event_key not in used_events:
                     available.append(e)
 
             if available:
                 selected = renpy.random.choice(available)
-                
-                # used_eventsに追加するときもタプル形式にする
-                used_item = tuple(selected) if isinstance(selected, list) else selected
-                used_events.add(used_item)
+                used_events.add(str(selected))
 
-                # --- 判定ロジック ---
-                if isinstance(selected, list) and len(selected) == 2:
+                # --- 修正箇所: 型チェックを「名前判定」に変更して強制突破する ---
+                # type(selected) が <class 'list'> と出るなら、名前は 'list' になるはずです
+                obj_type_name = type(selected).__name__
+                
+                # リストまたはタプルの「名前」を持っている、あるいは従来の判定がTrueなら通す
+                if (obj_type_name in ('list', 'tuple', 'RevertableList', 'RevertableTuple') 
+                    or isinstance(selected, (list, tuple))) and len(selected) >= 2:
+                    
                     target_event = selected[0]
-                    event_args = selected[1]
-                else:
+                    raw_args = selected[1]
+
+                    # 引数部分も同様に名前判定でリスト化チェック
+                    args_type_name = type(raw_args).__name__
+                    if args_type_name not in ('list', 'tuple', 'RevertableList', 'RevertableTuple') and not isinstance(raw_args, (list, tuple)):
+                        event_args = [raw_args]
+                    else:
+                        event_args = raw_args
+
+                # 文字列の場合（単純なイベント名）
+                elif isinstance(selected, str) or obj_type_name == 'str':
                     target_event = selected
                     event_args = None
+                
+                # それ以外（単一要素のリストなど）
+                else:
+                    # リストっぽいが長さが足りない場合など
+                    if obj_type_name in ('list', 'tuple', 'RevertableList'):
+                        if len(selected) >= 1:
+                            target_event = selected[0]
+                            event_args = None
+                        else:
+                            target_event = None
+                    else:
+                        target_event = selected
+                        event_args = None
+        
+        # 文字列チェック（安全策）
+        if target_event and not isinstance(target_event, str):
+            target_event = None
 
-    if target_event:
-        if event_args is not None:
-            call expression target_event(*event_args)
-        else:
-            call expression target_event
+        # --- 修正箇所: ここでイベント呼び出しを行います ---
+        if target_event:
+            target_event = str(target_event)
+
+            if event_args:
+                renpy.call(target_event, *event_args)
+            else:
+                renpy.call(target_event)
+
     return
 
 # =============================================================================

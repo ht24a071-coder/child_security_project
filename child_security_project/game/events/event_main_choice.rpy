@@ -22,4 +22,7 @@ label event_main_choice(human_type):
             $ buzzer_eve = "Buzzer_" + human_type
             call expression buzzer_eve
             return
+
+    hide expression human_type with dissolve
+
     return
