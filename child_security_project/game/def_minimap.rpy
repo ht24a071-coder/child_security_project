@@ -214,7 +214,7 @@ screen minimap():
                     $ marker_x = int(node_pos[0] * zoom)
                     $ marker_y = int(node_pos[1] * zoom)
                     
-                    if node_id in ("home_up", "home_down"):
+                    if node_id in home_nodes:
                         # お家アイコン
                         add cfg["home_marker"]:
                             pos (marker_x, marker_y)
@@ -308,7 +308,7 @@ screen fullscreen_map():
                     $ marker_x = int(node_pos[0] * p_zoom)
                     $ marker_y = int(node_pos[1] * p_zoom)
 
-                    if node_id in ("home_up", "home_down"):
+                    if node_id in home_nodes:
                         add cfg["home_marker"]:
                             pos (marker_x, marker_y)
                             anchor (0.5, 0.5)

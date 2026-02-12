@@ -8,6 +8,9 @@ default _nav_color_map = {}
 default show_quick_menu = False  # クイックメニューの初期表示状態（非表示）
 default minimap_hover_node = None  # 選択肢ホバー時の仮の行き先ノードID
 
+# 全ホームノードのリスト
+define home_nodes = ["home_up", "home_down", "home_left_down", "home_right_up"]
+
 # =============================================================================
 # 共通初期化処理
 # =============================================================================
@@ -44,7 +47,19 @@ label initialize_game:
 label going_school_start:
     $ game_mode = "going_school"
     call initialize_game
-    
+
+    # どの家から出発するか選ぶ
+    "どこの いえから はじめますか？"
+    menu:
+        "{rb}左上{/rb}{rt}ひだりうえ{/rt}の{rb}家{/rb}{rt}いえ{/rt}から":
+            $ current_node = "home_up"
+        "{rb}右下{/rb}{rt}みぎした{/rt}の{rb}家{/rb}{rt}いえ{/rt}から":
+            $ current_node = "home_down"
+        "{rb}左下{/rb}{rt}ひだりした{/rt}の{rb}家{/rb}{rt}いえ{/rt}から":
+            $ current_node = "home_left_down"
+        "{rb}右上{/rb}{rt}みぎうえ{/rt}の{rb}家{/rb}{rt}いえ{/rt}から":
+            $ current_node = "home_right_up"
+
     scene back_town with fade
     pc "さあ、がっこうに いこう！"
     
@@ -72,7 +87,7 @@ label travel_loop:
     scene expression current_bg with fade
     
     # ゴール判定（モードによって変わる）
-    if game_mode == "going_home" and (current_node == "home_up" or current_node == "home_down"):
+    if game_mode == "going_home" and current_node in home_nodes:
         jump arrival_home
     elif game_mode == "going_school" and current_node == "start_point":
         jump arrival_school
