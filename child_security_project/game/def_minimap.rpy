@@ -14,8 +14,8 @@ init -5 python:
         "home_marker": "images/gui/icon_home.png",    # ★追加: お家のアイコン
         "nav_marker": "images/gui/nav_marker.png",    # 移動先マーカー画像（差し替え可能）
         "nav_marker_scale": 0.6, # 移動先マーカーのサイズ倍率（30px*0.6=18px。元のノード(10px)より大きくして目立たせる）
-        "zoom": 0.4,            # 通常表示用
-        "pin_scale": 1.0,       # ピンのサイズ倍率
+        "zoom": 0.45,           # 通常表示用
+        "pin_scale": 0.7,       # ピンのサイズ倍率
         "marker_scale": 0.5,    # ノードマーカーのサイズ倍率
         "margin_x": 20,         # 画面右端からの余白
         "margin_y": 20,         # 画面上端からの余白
@@ -251,7 +251,7 @@ screen minimap():
     textbutton "🗺 マップ {size=22}{color=#FFE66D}Ⓨ{/color}{/size}":
         xalign 1.0 yalign 0.0
         xoffset -cfg["margin_x"]
-        yoffset cfg["margin_y"] + 310
+        yoffset cfg["margin_y"] + 345
         text_size 28
         text_color "#ffffff"
         background Solid("#00000080")
