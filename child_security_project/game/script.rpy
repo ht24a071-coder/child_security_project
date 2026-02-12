@@ -109,15 +109,36 @@ label trigger_node_event(data):
         group_name = data["group"]
         chance = data["chance"]
         target_event = None
+        event_args = None
 
         if renpy.random.randint(1, 100) <= chance and group_name in event_pools:
-            available = [e for e in event_pools[group_name] if e not in used_events]
+            available = []
+            for e in event_pools[group_name]:
+                # リストならタプルに変換、そうでないならそのまま
+                check_item = tuple(e) if isinstance(e, list) else e
+                if check_item not in used_events:
+                    available.append(e)
+
             if available:
-                target_event = renpy.random.choice(available)
-                used_events.add(target_event)
+                selected = renpy.random.choice(available)
+                
+                # used_eventsに追加するときもタプル形式にする
+                used_item = tuple(selected) if isinstance(selected, list) else selected
+                used_events.add(used_item)
+
+                # --- 判定ロジック ---
+                if isinstance(selected, list) and len(selected) == 2:
+                    target_event = selected[0]
+                    event_args = selected[1]
+                else:
+                    target_event = selected
+                    event_args = None
 
     if target_event:
-        call expression target_event
+        if event_args is not None:
+            call expression target_event(*event_args)
+        else:
+            call expression target_event
     return
 
 # =============================================================================

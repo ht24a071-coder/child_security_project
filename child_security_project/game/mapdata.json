@@ -256,10 +256,7 @@
   },
   "event_pools": {
     "safe": [
-      "safe_e_test_1",
-      "safe_e_test_2",
-      "encounter_e_safe_person",
-      "daily_e_find_110house"
+      ["event_main_choice", ["officer"]]
     ],
     "suspicious": [
       "suspi_e_test_1",
