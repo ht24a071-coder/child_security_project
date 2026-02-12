@@ -187,7 +187,9 @@
     },
     "home_up": {
       "bg": "back_home",
-      "links": {},
+      "links": {
+        "出発（しゅっぱつ）する": "Kari003"
+      },
       "group": "none",
       "chance": 0,
       "minimap": [
@@ -198,7 +200,7 @@
     "home_down": {
       "bg": "back_home",
       "links": {
-        "{rb}踏切{/rb}{rt}ふみきり{/rt}へ": "railway_point"
+        "出発（しゅっぱつ）する": "Kari006"
       },
       "group": "none",
       "chance": 0,
@@ -263,7 +265,9 @@
     },
     "home_left_down": {
       "bg": "back_home",
-      "links": {},
+      "links": {
+        "出発（しゅっぱつ）する": "crossing_point"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -273,7 +277,9 @@
     },
     "home_right_up": {
       "bg": "back_home",
-      "links": {},
+      "links": {
+        "出発（しゅっぱつ）する": "Kari009"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
