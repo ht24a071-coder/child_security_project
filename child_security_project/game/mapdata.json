@@ -194,7 +194,9 @@
     },
     "home_down": {
       "bg": "back_home",
-      "links": {},
+      "links": {
+        "{rb}踏切{/rb}{rt}ふみきり{/rt}へ": "railway_point"
+      },
       "group": "none",
       "chance": 0,
       "minimap": [
@@ -251,6 +253,26 @@
       "minimap": [
         634,
         445
+      ]
+    },
+    "home_left_down": {
+      "bg": "back_home",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        178,
+        562
+      ]
+    },
+    "home_right_up": {
+      "bg": "back_home",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        865,
+        67
       ]
     }
   },
