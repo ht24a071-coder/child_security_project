@@ -81,11 +81,10 @@ label travel_loop:
         # 行き先ノードに色＋マーカー画像を割り当て（ミニマップと選択肢で共有）
         _nav_color_map = {}
         _nav_markers = [
-            ("#0072B2", "images/gui/nav_marker_blue.png"),
-            ("#E69F00", "images/gui/nav_marker_orange.png"),
-            ("#D55E00", "images/gui/nav_marker_red.png"),
-            ("#56B4E9", "images/gui/nav_marker_sky.png"),
-            ("#F0E442", "images/gui/nav_marker_yellow.png"),
+            ("#FF0000", "images/gui/nav_marker_red.png"),
+            ("#00CC00", "images/gui/nav_marker_green.png"),
+            ("#0066FF", "images/gui/nav_marker_blue.png"),
+            ("#FFDD00", "images/gui/nav_marker_yellow.png"),
         ]
         menu_items = []
         for idx, (label_text, target_id) in enumerate(node_data["links"].items()):
