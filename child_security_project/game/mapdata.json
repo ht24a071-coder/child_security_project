@@ -194,7 +194,9 @@
     },
     "home_down": {
       "bg": "back_home",
-      "links": {},
+      "links": {
+        "{rb}踏切{/rb}{rt}ふみきり{/rt}へ": "railway_point"
+      },
       "group": "none",
       "chance": 0,
       "minimap": [

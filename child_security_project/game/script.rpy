@@ -71,8 +71,11 @@ label travel_loop:
     
     scene expression current_bg with fade
     
-    if current_node == "home_up" or current_node == "home_down":
+    # ゴール判定（モードによって変わる）
+    if game_mode == "going_home" and (current_node == "home_up" or current_node == "home_down"):
         jump arrival_home
+    elif game_mode == "going_school" and current_node == "start_point":
+        jump arrival_school
 
     $ current_step += 1
     call trigger_node_event(node_data)
@@ -127,6 +130,24 @@ label trigger_node_event(data):
 label arrival_home:
     hide screen minimap
     "ようやく いえの まえに ついた……。"
+    
+    python:
+        lock_game = TimingMinigame(speed=4.0, perfect_range=25, good_range=60, key="K_SPACE")
+
+    "（タイミングよく スペースキーを おせ！）"
+    call screen timing_minigame(lock_game)
+
+    if (_return == "miss"):
+        jump game_over
+    else:
+        jump game_clear
+
+# =============================================================================
+# 登校時の到着処理
+# =============================================================================
+label arrival_school:
+    hide screen minimap
+    "がっこうに ついた！"
     
     python:
         lock_game = TimingMinigame(speed=4.0, perfect_range=25, good_range=60, key="K_SPACE")
