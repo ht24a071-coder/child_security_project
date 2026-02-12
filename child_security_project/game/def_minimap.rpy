@@ -1007,6 +1007,28 @@ init python:
         # {rb}漢字{/rb}{rt}ふりがな{/rt} → 漢字(ふりがな)
         pattern = r'\{rb\}([^{]+)\{/rb\}\{rt\}([^{]+)\{/rt\}'
         return re.sub(pattern, r'\1(\2)', text)
+
+    def parse_ruby_text(tagged_text):
+        """ルビ付きテキストを解析して、ベーステキストとルビ範囲を返す"""
+        import re
+        pattern = r'\{rb\}([^{]+)\{/rb\}\{rt\}([^{]+)\{/rt\}'
+        base_text = ""
+        ruby_ranges = []
+        last_end = 0
+        for m in re.finditer(pattern, tagged_text):
+            # マッチ前のプレーンテキスト
+            base_text += tagged_text[last_end:m.start()]
+            # ルビ対象のテキスト
+            target = m.group(1)
+            ruby = m.group(2)
+            start_idx = len(base_text)
+            base_text += target
+            end_idx = len(base_text)
+            ruby_ranges.append((start_idx, end_idx, ruby))
+            last_end = m.end()
+        # 残りのテキスト
+        base_text += tagged_text[last_end:]
+        return base_text, ruby_ranges
     
     # =========================================================================
     # インタラクティブルビエディタ
@@ -1524,7 +1546,7 @@ screen link_editor():
                                 text_color "#ff8888"
                                 action Function(link_editor_cancel_confirm)
                 
-                    elif state["mode"] == "select_node" or not state["selected_node"]:
+                    elif state["mode"] == "select_node" or (not state["selected_node"] and state["mode"] not in ("event_editor", "event_ruby_edit")):
                         # ノード未選択
                         text "【リンクエディタ】" color "#ffff00" size 24
                         text "マップ上のノードをクリックして選択" color "#aaaaaa" size 16
@@ -1557,10 +1579,199 @@ screen link_editor():
                             action Function(start_create_node_mode)
                         
                         null height 10
-                        textbutton "【閉じる】":
-                            text_size 18
-                            text_color "#ff8888"
-                            action Hide("link_editor")
+                        hbox:
+                            spacing 15
+                            textbutton "【閉じる】":
+                                text_size 18
+                                text_color "#ff8888"
+                                action Hide("link_editor")
+                            textbutton "【イベント編集】":
+                                text_size 18
+                                text_color "#ff88ff"
+                                action Function(event_editor_open)
+                    
+                    elif state["mode"] == "event_editor":
+                        # イベントセリフエディタ
+                        $ ev_state = _event_editor_state
+                        
+                        if ev_state["mode"] == "file_list":
+                            text "【イベント編集】" color "#ff88ff" size 24
+                            text "ファイルを選択" color "#aaaaaa" size 14
+                            
+                            null height 10
+                            viewport:
+                                scrollbars "vertical"
+                                mousewheel True
+                                ysize 500
+                                
+                                vbox:
+                                    spacing 5
+                                    for ev_fname, ev_fpath in ev_state["files"]:
+                                        textbutton "📄 [ev_fname]":
+                                            text_size 16
+                                            text_color "#00ffff"
+                                            action Function(event_editor_select_file, ev_fname, ev_fpath)
+                            
+                            null height 15
+                            textbutton "【戻る】":
+                                text_size 16
+                                text_color "#ff8888"
+                                action Function(event_editor_close)
+                        
+                        elif ev_state["mode"] == "line_list":
+                            text "【[ev_state['selected_filename']]】" color "#ff88ff" size 20
+                            $ _ev_line_count = len(ev_state["lines"])
+                            text "セリフ: [_ev_line_count]件" color "#aaaaaa" size 14
+                            
+                            null height 10
+                            viewport:
+                                scrollbars "vertical"
+                                mousewheel True
+                                ysize 450
+                                
+                                vbox:
+                                    spacing 8
+                                    for ev_line in ev_state["lines"]:
+                                        frame:
+                                            background "#222222"
+                                            padding (8, 5)
+                                            xfill True
+                                            
+                                            $ _ev_ln = ev_line["line_no"]
+                                            $ _ev_sp = ev_line["speaker"]
+                                            $ _ev_tx = strip_ruby_tags(ev_line["text"])
+                                            $ _ev_tp = ev_line["type"]
+                                            $ _ev_has_ruby = "{rb}" in ev_line["text"]
+                                            
+                                            hbox:
+                                                spacing 8
+                                                # 行番号
+                                                text "L[_ev_ln]" color "#666666" size 12 yalign 0.5 min_width 40
+                                                # タイプ表示
+                                                if _ev_tp == "menu":
+                                                    text "選択" color "#ffcc00" size 12 yalign 0.5
+                                                elif _ev_sp:
+                                                    text "[_ev_sp]" color "#88ccff" size 12 yalign 0.5
+                                                else:
+                                                    text "narr" color "#888888" size 12 yalign 0.5
+                                                # セリフテキスト（ルビ付きは緑で表示）
+                                                if _ev_has_ruby:
+                                                    text "[_ev_tx]" color "#00ff00" size 14 yalign 0.5
+                                                else:
+                                                    text "[_ev_tx]" color "#cccccc" size 14 yalign 0.5
+                                                # 編集ボタン
+                                                textbutton "✏":
+                                                    text_size 16
+                                                    text_color "#ff88ff"
+                                                    yalign 0.5
+                                                    action Function(event_editor_edit_line, ev_line)
+                            
+                            null height 10
+                            textbutton "【← ファイル一覧】":
+                                text_size 16
+                                text_color "#ffcc00"
+                                action Function(event_editor_back)
+                    
+                    elif state["mode"] == "event_ruby_edit":
+                        # イベントセリフのルビ編集
+                        $ ruby_state = _ruby_editor_state
+                        $ base_text = ruby_state["text"]
+                        $ ruby_ranges = ruby_state["ruby_ranges"]
+                        $ is_selecting = ruby_state["selecting"]
+                        $ select_start = ruby_state["select_start"]
+                        $ _ev_editing = _event_editor_state["editing_line"]
+                        
+                        text "【ルビ編集】" color "#ff88ff" size 24
+                        if _ev_editing:
+                            $ _ev_sp2 = _ev_editing.get("speaker", "")
+                            $ _ev_ln2 = _ev_editing["line_no"]
+                            if _ev_sp2:
+                                text "[_ev_sp2] (L[_ev_ln2])" color "#aaaaaa" size 14
+                            else:
+                                text "ナレーション (L[_ev_ln2])" color "#aaaaaa" size 14
+                        
+                        if is_selecting:
+                            text "★ 選択中... 終了位置をクリック" color "#ffff00" size 16
+                        else:
+                            text "文字をクリックして選択開始/終了" color "#aaaaaa" size 14
+                        
+                        null height 10
+                        
+                        # 文字を1つずつクリック可能に表示
+                        frame:
+                            background "#222222"
+                            padding (10, 10)
+                            xfill True
+                            
+                            hbox:
+                                spacing 2
+                                for i, char in enumerate(base_text):
+                                    python:
+                                        _has_ruby = False
+                                        _ruby_text = ""
+                                        for rs, re, rt in ruby_ranges:
+                                            if rs <= i < re:
+                                                _has_ruby = True
+                                                _ruby_text = rt
+                                                break
+                                        _is_select_start = (is_selecting and select_start == i)
+                                        if _has_ruby:
+                                            _char_color = "#00ff00"
+                                        elif _is_select_start:
+                                            _char_color = "#ffff00"
+                                        else:
+                                            _char_color = "#ffffff"
+                                    
+                                    textbutton "[char]":
+                                        text_size 24
+                                        text_color _char_color
+                                        action Function(ruby_editor_toggle_char, i)
+                        
+                        null height 10
+                        
+                        # ルビ一覧
+                        if ruby_ranges:
+                            text "追加済みルビ:" color "#88ff88" size 14
+                            viewport:
+                                scrollbars "vertical"
+                                mousewheel True
+                                ysize 60
+                                
+                                vbox:
+                                    spacing 3
+                                    for rs, re, rt in ruby_ranges:
+                                        $ _target = base_text[rs:re]
+                                        hbox:
+                                            spacing 10
+                                            text "[_target]([rt])" color "#aaaaaa" size 14
+                                            textbutton "x":
+                                                text_size 12
+                                                text_color "#ff6666"
+                                                action Function(ruby_editor_remove_ruby, rs, re)
+                        
+                        null height 10
+                        
+                        # プレビュー
+                        text "プレビュー:" color "#88ff88" size 14
+                        frame:
+                            background "#222222"
+                            padding (8, 5)
+                            xfill True
+                            $ _preview = ruby_editor_get_result()
+                            text "[_preview]" color "#00ffff" size 16
+                        
+                        null height 15
+                        
+                        hbox:
+                            spacing 15
+                            textbutton "【保存】":
+                                text_size 16
+                                text_color "#00ff00"
+                                action Function(event_editor_save_ruby)
+                            textbutton "【キャンセル】":
+                                text_size 16
+                                text_color "#ff8888"
+                                action Function(event_editor_cancel_ruby)
                     
                     elif state["mode"] == "new_node_coord":
                         # 座標クリック待ちモード
@@ -1860,10 +2071,16 @@ screen link_editor():
                                 action Function(link_editor_back)
                         
                         null height 10
-                        textbutton "【ノード削除】":
-                            text_size 18
-                            text_color "#ff4444"
-                            action Function(link_editor_start_delete_node)
+                        hbox:
+                            spacing 15
+                            textbutton "【ノード削除】":
+                                text_size 18
+                                text_color "#ff4444"
+                                action Function(link_editor_start_delete_node)
+                            textbutton "【イベント編集】":
+                                text_size 18
+                                text_color "#ff88ff"
+                                action Function(event_editor_open)
                         
                         null height 20
                         textbutton "【閉じる】":
