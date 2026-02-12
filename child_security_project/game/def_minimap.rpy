@@ -12,6 +12,7 @@ init -5 python:
         "pin_image": "images/gui/pin.png",
         "node_marker": "images/gui/node_marker.png",  # ノードマーカー画像
         "home_marker": "images/gui/icon_home.png",    # ★追加: お家のアイコン
+        "school_marker": "images/gui/icon_school.png", # 学校のアイコン
         "nav_marker": "images/gui/nav_marker.png",    # 移動先マーカー画像（差し替え可能）
         "nav_marker_scale": 0.6, # 移動先マーカーのサイズ倍率（30px*0.6=18px。元のノード(10px)より大きくして目立たせる）
         "zoom": 0.45,           # 通常表示用
@@ -219,6 +220,12 @@ screen minimap():
                             pos (marker_x, marker_y)
                             anchor (0.5, 0.5)
                             zoom 1.5
+                    elif node_id == "start_point":
+                        # 学校アイコン
+                        add cfg["school_marker"]:
+                            pos (marker_x, marker_y)
+                            anchor (0.5, 0.5)
+                            zoom 1.5
                     elif _nav_color_map and node_id in _nav_color_map:
                         # 行き先ノード → カラーマーカー画像に差し替え
                         $ nav_color, nav_img = _nav_color_map[node_id]
@@ -303,6 +310,11 @@ screen fullscreen_map():
 
                     if node_id in ("home_up", "home_down"):
                         add cfg["home_marker"]:
+                            pos (marker_x, marker_y)
+                            anchor (0.5, 0.5)
+                            zoom 1.6
+                    elif node_id == "start_point":
+                        add cfg["school_marker"]:
                             pos (marker_x, marker_y)
                             anchor (0.5, 0.5)
                             zoom 1.6
