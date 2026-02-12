@@ -67,8 +67,9 @@
     "crossing_point": {
       "bg": "back_oudan",
       "links": {
-        "{rb}渡{/rb}{rt}わた{/rt}って{rb}進{/rb}{rt}すす{/rt}む": "factory_road",
-        "まっすぐ{rb}進{/rb}{rt}すす{/rt}む": "home_down"
+        "駅（えき）のほうへ進（すす）む": "street_a",
+        "川（かわ）を渡（わた）る": "home_left_down",
+        "工場（こうじょう）のほうへ進（すす）む": "factory_road"
       },
       "group": "suspicious",
       "chance": 30,
@@ -94,7 +95,8 @@
       "bg": "back_town",
       "links": {
         "{rb}細道{/rb}{rt}ほそみち{/rt}に{rb}入{/rb}{rt}はい{/rt}る": "narrow_path_mid",
-        "{rb}工場{/rb}{rt}こうじょう{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "factory_road"
+        "{rb}工場{/rb}{rt}こうじょう{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "factory_road",
+        "深野橋（ふこのばし）へ": "Kari003"
       },
       "group": "suspicious",
       "chance": 50,
@@ -107,8 +109,8 @@
       "bg": "back_dark",
       "links": {
         "{rb}奥{/rb}{rt}おく{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "narrow_path_exit",
-        "{rb}脇道{/rb}{rt}わきみち{/rt}（上家）": "home_up",
-        "{rb}入{/rb}{rt}い{/rt}り{rb}口{/rb}{rt}ぐち{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "narrow_path_entry"
+        "{rb}入{/rb}{rt}い{/rt}り{rb}口{/rb}{rt}ぐち{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "narrow_path_entry",
+        "郵便局（ゆうびんきょく）へ": "Kari005"
       },
       "group": "suspicious",
       "chance": 60,
@@ -133,8 +135,8 @@
     "public_hall": {
       "bg": "back_danchi_0",
       "links": {
-        "{rb}並木道{/rb}{rt}なみきみち{/rt}へ": "tree_lined_road",
-        "{rb}細道{/rb}{rt}ほそみち{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "narrow_path_exit"
+        "{rb}細道{/rb}{rt}ほそみち{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "narrow_path_exit",
+        "並木道（なみきみち）のほうへ": "Kari002"
       },
       "group": "safe",
       "chance": 10,
@@ -147,7 +149,8 @@
       "bg": "back_danchi_0",
       "links": {
         "{rb}公園{/rb}{rt}こうえん{/rt}へ": "danchi_park",
-        "{rb}公民館{/rb}{rt}こうみんかん{/rt}へ": "public_hall"
+        "アクティブ・スクウェアのほうへ進（すす）む": "Kari001",
+        "公民館（こうみんかん）のほうへ": "Kari002"
       },
       "group": "safe",
       "chance": 10,
@@ -172,8 +175,8 @@
     "railway_point": {
       "bg": "back_railway",
       "links": {
-        "{rb}下{/rb}{rt}した{/rt}の{rb}家{/rb}{rt}いえ{/rt}へ": "home_down",
-        "{rb}元{/rb}{rt}もと{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_2"
+        "{rb}元{/rb}{rt}もと{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_2",
+        "川（かわ）を渡（わた）る": "Kari007"
       },
       "group": "crossing",
       "chance": 100,
@@ -209,7 +212,7 @@
       "links": {
         "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_1",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "school_park",
-        "{rb}中学校{/rb}{rt}ちゅうがっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_3"
+        "自治会館（じちかいかん）のほうへ進（すす）む": "street_3"
       },
       "group": "safe",
       "chance": 0,
@@ -220,7 +223,10 @@
     },
     "street_3": {
       "bg": "back_street_b",
-      "links": {},
+      "links": {
+        "学校（がっこう）のほうへ進（すす）む": "bunki_1",
+        "自治会館（じちかいかん）のほうへ進（すす）む": "Kari002"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -274,11 +280,137 @@
         865,
         67
       ]
+    },
+    "Kari001": {
+      "bg": "back_tunnel",
+      "links": {
+        "並木道（なみきみち）へ": "tree_lined_road",
+        "大通（おおどお）りにでる": "Kari008"
+      },
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        752,
+        168
+      ]
+    },
+    "Kari002": {
+      "bg": "back_tunnel",
+      "links": {
+        "並木道（なみきみち）へ": "tree_lined_road",
+        "公民館（こうみんかん）へ": "public_hall",
+        "大通（おおどお）りへ": "Kari004",
+        "学校（がっこう）のほうへ進（すす）む": "street_3"
+      },
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        540,
+        175
+      ]
+    },
+    "Kari003": {
+      "bg": "back_tunnel",
+      "links": {
+        "小道（こみち）にはいる": "home_up",
+        "郵便局（ゆうびんきょく）へ": "Kari005",
+        "工場（こうじょう）のほうへ": "narrow_path_entry"
+      },
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        306,
+        125
+      ]
+    },
+    "Kari004": {
+      "bg": "back_tunnel",
+      "links": {
+        "郵便局（ゆうびんきょく）へ": "Kari005",
+        "学校（がっこう）のほうへ": "Kari002"
+      },
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        563,
+        60
+      ]
+    },
+    "Kari005": {
+      "bg": "back_tunnel",
+      "links": {
+        "深野橋（ふこのばし）へ": "Kari003",
+        "中学校（ちゅうがっこう）へ": "Kari004",
+        "細道（ほそみち）にはいる": "narrow_path_mid"
+      },
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        385,
+        143
+      ]
+    },
+    "Kari007": {
+      "bg": "back_tunnel",
+      "links": {
+        "うえの動物病院（どうぶつびょういん）のほうへ進（すす）む": "railway_point",
+        "川（かわ）から離（はな）れるほうへ進（すす）む": "Kari006"
+      },
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        901,
+        446
+      ]
+    },
+    "Kari006": {
+      "bg": "back_tunnel",
+      "links": {
+        "小道（こみち）に進（すす）む": "home_down",
+        "駅（えき）のほうへ進（すす）む": "Kari007"
+      },
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        925,
+        525
+      ]
+    },
+    "Kari008": {
+      "bg": "back_tunnel",
+      "links": {
+        "信号（しんごう）を渡（わた）る": "Kari009",
+        "アクティブ・スクウェアのほうへ進（すす）む": "Kari001"
+      },
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        708,
+        51
+      ]
+    },
+    "Kari009": {
+      "bg": "back_tunnel",
+      "links": {
+        "線路（せんろ）のほうへ進（すす）む": "home_right_up",
+        "信号（しんごう）を渡（わた）る": "Kari008"
+      },
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        730,
+        70
+      ]
     }
   },
   "event_pools": {
     "safe": [
-      ["event_main_choice", ["officer"]]
+      [
+        "event_main_choice",
+        [
+          "officer"
+        ]
+      ]
     ],
     "suspicious": [
       "suspi_e_test_1",
