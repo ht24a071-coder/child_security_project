@@ -5,8 +5,12 @@
 label encounter_e_stranger:
     "だれかが ちかづいてきた。"
     
+    $ setup_stranger()
     show stranger with dissolve
     
+    $ _v = get_stranger_voice("003")
+    if _v:
+        voice _v
     stranger "こんにちは～"
     
     # まず挨拶への反応
