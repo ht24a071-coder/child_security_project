@@ -120,7 +120,7 @@
       ]
     },
     "narrow_path_exit": {
-      "bg": "back_town",
+      "bg": "L_area_3",
       "links": {
         "{rb}広{/rb}{rt}ひろ{/rt}い{rb}所{/rb}{rt}ところ{/rt}に出る": "public_hall",
         "{rb}細道{/rb}{rt}ほそみち{/rt}へ": "narrow_path_mid"
@@ -133,7 +133,7 @@
       ]
     },
     "public_hall": {
-      "bg": "back_danchi_0",
+      "bg": "L_area_1",
       "links": {
         "{rb}細道{/rb}{rt}ほそみち{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "narrow_path_exit",
         "並木道（なみきみち）のほうへ": "Kari002"
@@ -301,7 +301,7 @@
       ]
     },
     "Kari002": {
-      "bg": "back_tunnel",
+      "bg": "L_area_0",
       "links": {
         "並木道（なみきみち）へ": "tree_lined_road",
         "公民館（こうみんかん）へ": "public_hall",
