@@ -2,6 +2,7 @@
 # イベント登録は def_mapdat.rpy の event_pools で管理
 
 label suspi_e_test_2:
+    $ setup_stranger()
     show stranger with dissolve
     stranger "ねえ、{rb}道{/rb}{rt}みち{/rt}に{rb}迷{/rb}{rt}まよ{/rt}っちゃったんだ。{rb}車{/rb}{rt}くるま{/rt}で{rb}送{/rb}{rt}おく{/rt}ってあげようか？"
 

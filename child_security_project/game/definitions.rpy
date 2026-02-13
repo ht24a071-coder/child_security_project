@@ -21,6 +21,23 @@ define stranger = Character("???", color="#ff8888")  # 不審者用
 define pc = Character("[player_name]", image="player")
 define t = Character("伊東マンショ", color="#c8ffc8")
 
+# 不審者のランダム画像用
+default stranger_type = "stranger"
+
+# 不審者の見た目ごとのボイスマッピング
+define stranger_voice_map = {
+    "stranger": {
+        "001": "audio/stranger1_kaeri.wav",
+        "002": "audio/stranger1_okuru.wav",
+        "003": "audio/stranger1_hello.wav",
+    },
+    "stranger2": {
+        "001": "audio/stranger2_kaeri.wav",
+        "002": "audio/stranger2_okuru.wav",
+        "003": "audio/stranger2_hello.wav",
+    },
+}
+
 # 定数
 define PROB_SUSPICIOUS = 20 
 define MAX_STEPS = 10 
@@ -29,7 +46,14 @@ define MAX_STEPS = 10
 image side player = "images/icons/[player_icon].png"
 image side officer = "images/actor/officer.png"
 image side woman = "images/actor/woman.png"
-image side stranger = "images/actor/stranger.png"
+image side stranger = ConditionSwitch(
+    "stranger_type == 'stranger2'", "images/actor/stranger2.png",
+    "True", "images/actor/stranger.png"
+)
+image stranger = ConditionSwitch(
+    "stranger_type == 'stranger2'", "images/actor/stranger2.png",
+    "True", "images/actor/stranger.png"
+)
 
 # -----------------------------------------------------------
 # スコア表示システム
@@ -105,3 +129,12 @@ init python:
         #    renpy.play("audio/se_good.ogg", channel="sound")
         # elif amount < 0:
         #    renpy.play("audio/se_bad.ogg", channel="sound")
+
+    def setup_stranger():
+        """ランダムで不審者の見た目を選ぶ"""
+        global stranger_type
+        stranger_type = renpy.random.choice(["stranger", "stranger2"])
+
+    def get_stranger_voice(line_id):
+        """現在のstranger_typeに対応するボイスファイルパスを返す"""
+        return stranger_voice_map.get(stranger_type, {}).get(line_id, None)

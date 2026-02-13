@@ -2,6 +2,7 @@
 # イベント登録は def_mapdat.rpy の event_pools で管理
 
 label special_e_encounter_flow:
+    $ setup_stranger()
     show stranger with dissolve
     stranger "ちょっとちょっと、{rb}君{/rb}{rt}きみ{/rt}～"
     stranger "ちょっとこっちに{rb}来{/rb}{rt}き{/rt}てくれない？"

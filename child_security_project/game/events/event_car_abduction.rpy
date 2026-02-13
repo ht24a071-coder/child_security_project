@@ -4,12 +4,16 @@
 
 label suspi_e_car:
 
+    $ setup_stranger()
     "くるまが ゆっくり ちかづいてきた。"
     
     "まどが あいて、なかから ひとが こえを かけてきた。"
     
     show stranger with dissolve
     
+    $ _v = get_stranger_voice("001")
+    if _v:
+        voice _v
     stranger "ねえ、きみ、がっこうの かえり？"
     
     # まず挨拶への反応
@@ -25,6 +29,9 @@ label suspi_e_car:
         "（ぼうはんブザーを にぎる）":
             pc "（いつでも ならせるように...）"
 
+    $ _v = get_stranger_voice("002")
+    if _v:
+        voice _v
     stranger "おうちまで おくってあげようか？"
     stranger "くるまの ほうが はやいよ？"
 
