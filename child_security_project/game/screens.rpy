@@ -116,7 +116,8 @@ screen say(who, what):
     ## トの上に表示します。ただし variant（画面のタイプ）が phone の場合は、スペ
     ## ースが足りないので表示しません。
     if not renpy.variant("small"):
-        add SideImage() xalign 0.0 yalign 1.0
+        # アイコンを少し内側・上側に移動してUI内に収める
+        add SideImage() xalign 0.0 yalign 1.0 xoffset 120 yoffset -120
 
 
 ## namebox を Character オブジェクトから使えるスタイルの接頭辞として追加しま

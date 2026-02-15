@@ -25,31 +25,9 @@ init -5 python:
     # =========================================================================
     # 各ノードのマップ上の座標
     # - 座標はオリジナル画像のピクセル位置で指定
-    # - デバッグツールで取得した座標（更新済み）
+    # - mapdata.json の内容で更新されるため、初期値は空でOK
     # =========================================================================
-    map_coordinates = {
-        # --- ゲームで使用するノードID（world_map と一致）---
-        "start_point":       (609, 271),   # 学校
-        "school_park":       (580, 276),   # 学校左の公園近く
-        "street_1":          (499, 369),   # 学校左の下
-        "street_2":          (482, 446),   # そのさらに下
-        "street_a":          (382, 451),   # その左
-        "street_b":          (280, 453),   # そのさらに左
-        "crossing_point":    (212, 454),   # 横断歩道があるところ
-        "factory_road":      (240, 377),   # 高校近くの細道
-        "narrow_path_entry": (298, 184),   # おじいちゃんたちの細道入口
-        "narrow_path_mid":   (374, 177),   # 細道真ん中
-        "narrow_path_exit":  (446, 184),   # 細道出口
-        "public_hall":       (484, 182),   # 公民館みたい
-        # 修正: 公民館→並木→公園→遮断機→下家の順
-        "tree_lined_road":   (629, 173),   # 並木道（公民館の近く）
-        "danchi_park":       (623, 199),   # 団地中の公園（並木の隣）
-        "railway_point":     (835, 442),   # 遮断機（下家の近く）
-        
-        # ゴール（上下）
-        "home_up":           (336, 55),    # 上家
-        "home_down":         (930, 602),   # 下家
-    }
+    map_coordinates = {}
 
     # mapdata.json の内容で map_coordinates を更新（永続化対応）
     # init -10 で読み込まれている world_map を利用
@@ -224,8 +202,8 @@ screen minimap():
                         # 学校アイコン
                         add cfg["school_marker"]:
                             pos (marker_x, marker_y)
-                            anchor (0.5, 0.5)
-                            zoom 1.5
+                            anchor (0.5, 0.6)  # 少し上にずらす(中心より下を基準点にする＝画像が上がる)
+                            zoom 1.3           # 1.5 -> 1.3 に縮小
                     elif _nav_color_map and node_id in _nav_color_map:
                         # 行き先ノード → カラーマーカー画像に差し替え
                         $ nav_color, nav_img = _nav_color_map[node_id]
@@ -258,7 +236,7 @@ screen minimap():
     textbutton "🗺 マップ {size=22}{color=#FFE66D}Ⓨ{/color}{/size}":
         xalign 1.0 yalign 0.0
         xoffset -cfg["margin_x"]
-        yoffset cfg["margin_y"] + 345
+        yoffset cfg["margin_y"] + 450 # 345 -> 450 に変更して家のアイコンと重ならないように
         text_size 28
         text_color "#ffffff"
         background Solid("#00000080")
@@ -267,6 +245,96 @@ screen minimap():
         action Show("fullscreen_map")
 
     key "K_y" action Show("fullscreen_map")
+
+# =============================================================================
+# 家選択用マップ画面
+# 登校・下校の開始時に呼び出され、家の場所をクリックして選択する
+# =============================================================================
+screen home_select_map():
+    zorder 150
+    modal True
+
+    # 設定値を取得
+    $ cfg = minimap_config
+    $ p_zoom = 1.0 # フルスクリーンと同じ倍率
+    
+    # 選択中の家の名前を保持する変数（画面内ローカル）
+    default hovered_home_name = ""
+
+    # 背景を暗く
+    add Solid("#000000CC")
+
+    # タイトルと説明（位置調整: yalign 0.1 -> 0.05 に上げてマップとかぶらないように）
+    vbox:
+        xalign 0.5 yalign 0.05
+        spacing 10
+        text "{rb}家{/rb}{rt}いえ{/rt}を {rb}選{/rb}{rt}えら{/rt}ぼう！" xalign 0.5 size 42 color "#ffffff" bold True outlines [(2, "#000000", 0, 0)]
+        if game_mode == "going_school":
+            text "どこの {rb}家{/rb}{rt}いえ{/rt}から {rb}出発{/rb}{rt}しゅっぱつ{/rt}する？" xalign 0.5 size 28 color "#cccccc" outlines [(1, "#000000", 0, 0)]
+        else:
+            text "どこの {rb}家{/rb}{rt}いえ{/rt}に かえる？" xalign 0.5 size 28 color "#cccccc" outlines [(1, "#000000", 0, 0)]
+
+    # マップ表示（中央に大きく）
+    frame:
+        xalign 0.5 yalign 0.55 # 少し下にずらす
+        padding (8, 8)
+        background "#222222DD"
+        
+        fixed:
+            fit_first True
+            
+            # マップ画像
+            add cfg["image"]:
+                zoom p_zoom
+
+            # 家ノードのみボタンとして表示
+            for node_id, node_pos in map_coordinates.items():
+                if node_pos and (node_pos[0] != 0 or node_pos[1] != 0):
+                    $ marker_x = int(node_pos[0] * p_zoom)
+                    $ marker_y = int(node_pos[1] * p_zoom)
+
+                    if node_id in home_nodes:
+                        # 家の名前を決定（ユーザーフレンドリーな名前）
+                        if node_id == "home_nw":
+                            $ home_label = "{rb}左上{/rb}{rt}ひだりうえ{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                        elif node_id == "home_sw":
+                            $ home_label = "{rb}左下{/rb}{rt}ひだりした{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                        elif node_id == "home_se":
+                            $ home_label = "{rb}右下{/rb}{rt}みぎした{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                        elif node_id == "home_w":
+                            $ home_label = "{rb}左{/rb}{rt}ひだり{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                        else:
+                            $ home_label = node_id
+
+                        # 家アイコンをボタン化
+                        imagebutton:
+                            # 拡大率アップ（1.5 -> 2.0）で強調
+                            hover Transform(cfg["home_marker"], zoom=2.0) 
+                            idle Transform(cfg["home_marker"], zoom=1.5)
+                            
+                            pos (marker_x, marker_y)
+                            anchor (0.5, 0.5)
+                            action Return(node_id) # クリックしたらそのノードIDを返す
+                            
+                            # ホバー時に名前を表示
+                            hovered SetScreenVariable("hovered_home_name", home_label)
+                            unhovered SetScreenVariable("hovered_home_name", "")
+
+                    elif node_id == "start_point":
+                        # 学校アイコン（参照用、クリック不可）
+                        add cfg["school_marker"]:
+                            pos (marker_x, marker_y)
+                            anchor (0.5, 0.6)
+                            zoom 1.3
+                            alpha 0.5 # 少し薄くして「今は関係ない」感を出す
+
+    # ホバーしている家の名前を大きく表示
+    if hovered_home_name:
+        frame:
+            xalign 0.5 yalign 0.85
+            background "#000000AA"
+            padding (20, 10)
+            text hovered_home_name size 40 color "#FFD700" outlines [(2, "#000000", 0, 0)]
 
 # =============================================================================
 # フルスクリーンマップ表示
@@ -316,8 +384,8 @@ screen fullscreen_map():
                     elif node_id == "start_point":
                         add cfg["school_marker"]:
                             pos (marker_x, marker_y)
-                            anchor (0.5, 0.5)
-                            zoom 1.6
+                            anchor (0.5, 0.6)  # 少し上にずらす
+                            zoom 1.4           # 1.6 -> 1.4 に縮小
                     elif _nav_color_map and node_id in _nav_color_map:
                         # 行き先ノード → カラーマーカー画像に差し替え
                         $ nav_color, nav_img = _nav_color_map[node_id]

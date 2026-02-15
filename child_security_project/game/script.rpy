@@ -9,14 +9,22 @@ default show_quick_menu = False  # クイックメニューの初期表示状態
 default minimap_hover_node = None  # 選択肢ホバー時の仮の行き先ノードID
 
 # 全ホームノードのリスト
-define home_nodes = ["home_up", "home_down", "home_left_down", "home_right_up"]
+define home_nodes = ["home_nw", "home_se", "home_sw", "home_w"]
 
 # =============================================================================
 # 共通初期化処理
 # =============================================================================
 label initialize_game:
     # 変数初期化
-    $ current_node = "start_point" if game_mode == "going_home" else "home_down"
+    if game_mode == "going_home":
+        # 下校モードの初期現在地は学校
+        $ current_node = "start_point"
+    else:
+        # 登校モードは選択した家が初期現在地になる（後で設定）
+        $ current_node = "home_se" 
+        
+    $ target_home = None # 下校時の目標地点（登校時はNone）
+    
     $ visited_nodes = []
     $ total_score = 0  # スコア初期化
     
@@ -51,16 +59,14 @@ label going_school_start:
     call initialize_game
 
     # どの家から出発するか選ぶ
-    "どこの いえから はじめますか？"
-    menu:
-        "{rb}左上{/rb}{rt}ひだりうえ{/rt}の{rb}家{/rb}{rt}いえ{/rt}から":
-            $ current_node = "home_up"
-        "{rb}右下{/rb}{rt}みぎした{/rt}の{rb}家{/rb}{rt}いえ{/rt}から":
-            $ current_node = "home_down"
-        "{rb}左下{/rb}{rt}ひだりした{/rt}の{rb}家{/rb}{rt}いえ{/rt}から":
-            $ current_node = "home_left_down"
-        "{rb}右上{/rb}{rt}みぎうえ{/rt}の{rb}家{/rb}{rt}いえ{/rt}から":
-            $ current_node = "home_right_up"
+    # "どこの いえから はじめますか？"
+    call screen home_select_map()
+    $ current_node = _return
+
+    scene back_town with fade
+    pc "さあ、がっこうに いこう！"
+    
+    jump travel_loop
 
     scene back_town with fade
     pc "さあ、がっこうに いこう！"
@@ -75,6 +81,11 @@ label going_home_start:
     call initialize_game
     
     scene back_town with fade
+
+    # "どの いえに かえりますか？"
+    call screen home_select_map()
+    $ target_home = _return
+
     pc "さあ、いえに かえろう！"
     
     jump travel_loop
@@ -110,6 +121,14 @@ label travel_loop:
         ]
         menu_items = []
         for idx, (label_text, target_id) in enumerate(node_data["links"].items()):
+            # 【下校モード】ターゲット以外の家へのリンクは表示しない
+            if game_mode == "going_home" and target_home:
+                # リンク先がhome_nodesに含まれるかチェック
+                is_home = (target_id in home_nodes)
+                # target_home以外ならスキップ
+                if is_home and target_id != target_home:
+                    continue
+
             color, marker_img = _nav_markers[idx % len(_nav_markers)]
             _nav_color_map[target_id] = (color, marker_img)
             # 色丸＋テキスト全体を行き先の色に変更（マップの色と対応）

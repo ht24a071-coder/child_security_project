@@ -8,8 +8,8 @@
       "group": "safe",
       "chance": 0,
       "minimap": [
-        607,
-        293
+        698,
+        385
       ]
     },
     "school_park": {
@@ -21,8 +21,8 @@
       "group": "safe",
       "chance": 10,
       "minimap": [
-        572,
-        275
+        707,
+        342
       ]
     },
     "street_1": {
@@ -34,8 +34,8 @@
       "group": "safe",
       "chance": 20,
       "minimap": [
-        507,
-        321
+        625,
+        378
       ]
     },
     "street_2": {
@@ -47,89 +47,8 @@
       "group": "safe",
       "chance": 20,
       "minimap": [
-        495,
-        370
-      ]
-    },
-    "street_a": {
-      "bg": "back_river_0",
-      "links": {
-        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "crossing_point",
-        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_2"
-      },
-      "group": "suspicious",
-      "chance": 50,
-      "minimap": [
-        0,
-        0
-      ]
-    },
-    "crossing_point": {
-      "bg": "back_oudan",
-      "links": {
-        "駅（えき）のほうへ進（すす）む": "street_a",
-        "川（かわ）を渡（わた）る": "home_left_down",
-        "工場（こうじょう）のほうへ進（すす）む": "factory_road"
-      },
-      "group": "suspicious",
-      "chance": 30,
-      "minimap": [
-        0,
-        0
-      ]
-    },
-    "factory_road": {
-      "bg": "back_area0_0",
-      "links": {
-        "{rb}細道{/rb}{rt}ほそみち{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "narrow_path_entry",
-        "{rb}横断歩道{/rb}{rt}おうだんほどう{/rt}へ": "crossing_point"
-      },
-      "group": "suspicious",
-      "chance": 40,
-      "minimap": [
-        0,
-        0
-      ]
-    },
-    "narrow_path_entry": {
-      "bg": "back_town",
-      "links": {
-        "{rb}細道{/rb}{rt}ほそみち{/rt}に{rb}入{/rb}{rt}はい{/rt}る": "narrow_path_mid",
-        "{rb}工場{/rb}{rt}こうじょう{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "factory_road",
-        "深野橋（ふこのばし）へ": "Kari003"
-      },
-      "group": "suspicious",
-      "chance": 50,
-      "minimap": [
-        0,
-        0
-      ]
-    },
-    "narrow_path_mid": {
-      "bg": "back_dark",
-      "links": {
-        "{rb}奥{/rb}{rt}おく{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "narrow_path_exit",
-        "{rb}入{/rb}{rt}い{/rt}り{rb}口{/rb}{rt}ぐち{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ": "narrow_path_entry",
-        "郵便局（ゆうびんきょく）へ": "Kari005"
-      },
-      "group": "suspicious",
-      "chance": 60,
-      "minimap": [
-        0,
-        0
-      ]
-    },
-    "narrow_path_exit": {
-      "bg": "L_area_3",
-      "links": {
-        "{rb}広{/rb}{rt}ひろ{/rt}い{rb}所{/rb}{rt}ところ{/rt}に出る": "public_hall",
-        "{rb}細道{/rb}{rt}ほそみち{/rt}へ": "narrow_path_mid"
-      },
-      "group": "safe",
-      "chance": 20,
-      "minimap": [
-        0,
-        0
+        613,
+        424
       ]
     },
     "public_hall": {
@@ -141,51 +60,11 @@
       "group": "safe",
       "chance": 10,
       "minimap": [
-        0,
-        0
+        605,
+        265
       ]
     },
-    "tree_lined_road": {
-      "bg": "back_danchi_0",
-      "links": {
-        "{rb}公園{/rb}{rt}こうえん{/rt}へ": "danchi_park",
-        "アクティブ・スクウェアのほうへ進（すす）む": "Kari001",
-        "公民館（こうみんかん）のほうへ": "Kari002"
-      },
-      "group": "safe",
-      "chance": 10,
-      "minimap": [
-        0,
-        0
-      ]
-    },
-    "danchi_park": {
-      "bg": "back_danchi_0",
-      "links": {
-        "{rb}学校{/rb}{rt}がっこう{/rt}へ{rb}抜{/rb}{rt}ぬ{/rt}ける": "school_park",
-        "{rb}並木道{/rb}{rt}なみきみち{/rt}へ": "tree_lined_road"
-      },
-      "group": "safe",
-      "chance": 10,
-      "minimap": [
-        0,
-        0
-      ]
-    },
-    "railway_point": {
-      "bg": "back_railway",
-      "links": {
-        "{rb}元{/rb}{rt}もと{/rt}の{rb}道{/rb}{rt}みち{/rt}へ": "street_2",
-        "川（かわ）を渡（わた）る": "Kari007"
-      },
-      "group": "crossing",
-      "chance": 100,
-      "minimap": [
-        0,
-        0
-      ]
-    },
-    "home_up": {
+    "home_nw": {
       "bg": "back_home",
       "links": {
         "出発（しゅっぱつ）する": "Kari003"
@@ -193,11 +72,11 @@
       "group": "none",
       "chance": 0,
       "minimap": [
-        0,
-        0
+        390,
+        85
       ]
     },
-    "home_down": {
+    "home_se": {
       "bg": "back_home",
       "links": {
         "出発（しゅっぱつ）する": "Kari006"
@@ -205,8 +84,8 @@
       "group": "none",
       "chance": 0,
       "minimap": [
-        0,
-        0
+        827,
+        743
       ]
     },
     "bunki_1": {
@@ -219,8 +98,8 @@
       "group": "safe",
       "chance": 0,
       "minimap": [
-        524,
-        271
+        632,
+        344
       ]
     },
     "street_3": {
@@ -232,8 +111,8 @@
       "group": "safe",
       "chance": 0,
       "minimap": [
-        530,
-        225
+        642,
+        302
       ]
     },
     "bunki_2": {
@@ -246,24 +125,11 @@
       "group": "safe",
       "chance": 0,
       "minimap": [
-        478,
-        447
+        598,
+        490
       ]
     },
-    "train_area": {
-      "bg": "back_river_1",
-      "links": {
-        "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "railway_point",
-        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_2"
-      },
-      "group": "safe",
-      "chance": 0,
-      "minimap": [
-        634,
-        445
-      ]
-    },
-    "home_left_down": {
+    "home_sw": {
       "bg": "back_home",
       "links": {
         "出発（しゅっぱつ）する": "crossing_point"
@@ -271,11 +137,11 @@
       "group": "safe",
       "chance": 0,
       "minimap": [
-        178,
-        562
+        406,
+        658
       ]
     },
-    "home_right_up": {
+    "home_w": {
       "bg": "back_home",
       "links": {
         "出発（しゅっぱつ）する": "Kari009"
@@ -283,21 +149,8 @@
       "group": "safe",
       "chance": 0,
       "minimap": [
-        865,
-        67
-      ]
-    },
-    "Kari001": {
-      "bg": "back_tunnel",
-      "links": {
-        "並木道（なみきみち）へ": "tree_lined_road",
-        "大通（おおどお）りにでる": "Kari008"
-      },
-      "group": "safe",
-      "chance": 0,
-      "minimap": [
-        752,
-        168
+        205,
+        542
       ]
     },
     "Kari002": {
@@ -311,22 +164,22 @@
       "group": "safe",
       "chance": 0,
       "minimap": [
-        540,
-        175
+        650,
+        264
       ]
     },
     "Kari003": {
       "bg": "back_tunnel",
       "links": {
-        "小道（こみち）にはいる": "home_up",
+        "小道（こみち）にはいる": "home_nw",
         "郵便局（ゆうびんきょく）へ": "Kari005",
         "工場（こうじょう）のほうへ": "narrow_path_entry"
       },
       "group": "safe",
       "chance": 0,
       "minimap": [
-        306,
-        125
+        375,
+        200
       ]
     },
     "Kari004": {
@@ -338,8 +191,8 @@
       "group": "safe",
       "chance": 0,
       "minimap": [
-        563,
-        60
+        567,
+        264
       ]
     },
     "Kari005": {
@@ -352,60 +205,168 @@
       "group": "safe",
       "chance": 0,
       "minimap": [
-        385,
-        143
+        452,
+        227
       ]
     },
-    "Kari007": {
-      "bg": "back_tunnel",
-      "links": {
-        "うえの動物病院（どうぶつびょういん）のほうへ進（すす）む": "railway_point",
-        "川（かわ）から離（はな）れるほうへ進（すす）む": "Kari006"
-      },
+    "road": {
+      "bg": "back_dark",
+      "links": {},
       "group": "safe",
       "chance": 0,
       "minimap": [
-        901,
-        446
+        446,
+        265
       ]
     },
-    "Kari006": {
-      "bg": "back_tunnel",
-      "links": {
-        "小道（こみち）に進（すす）む": "home_down",
-        "駅（えき）のほうへ進（すす）む": "Kari007"
-      },
+    "road_center": {
+      "bg": "back_dark",
+      "links": {},
       "group": "safe",
       "chance": 0,
       "minimap": [
-        925,
-        525
+        511,
+        264
       ]
     },
-    "Kari008": {
-      "bg": "back_tunnel",
-      "links": {
-        "信号（しんごう）を渡（わた）る": "Kari009",
-        "アクティブ・スクウェアのほうへ進（すす）む": "Kari001"
-      },
+    "a": {
+      "bg": "L_area_0",
+      "links": {},
       "group": "safe",
       "chance": 0,
       "minimap": [
-        708,
-        51
+        292,
+        497
       ]
     },
-    "Kari009": {
-      "bg": "back_tunnel",
-      "links": {
-        "線路（せんろ）のほうへ進（すす）む": "home_right_up",
-        "信号（しんごう）を渡（わた）る": "Kari008"
-      },
+    "b": {
+      "bg": "back_oudan",
+      "links": {},
       "group": "safe",
       "chance": 0,
       "minimap": [
-        730,
-        70
+        375,
+        494
+      ]
+    },
+    "c": {
+      "bg": "back_river_1",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        481,
+        493
+      ]
+    },
+    "d": {
+      "bg": "L_area_0",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        761,
+        341
+      ]
+    },
+    "e": {
+      "bg": "L_area_0",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        752,
+        420
+      ]
+    },
+    "f": {
+      "bg": "L_area_0",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        722,
+        425
+      ]
+    },
+    "g": {
+      "bg": "L_area_0",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        712,
+        488
+      ]
+    },
+    "hasi1": {
+      "bg": "L_area_0",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        644,
+        500
+      ]
+    },
+    "hasi2": {
+      "bg": "L_area_0",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        773,
+        496
+      ]
+    },
+    "h": {
+      "bg": "L_area_0",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        760,
+        580
+      ]
+    },
+    "tunnel": {
+      "bg": "L_area_0",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        851,
+        575
+      ]
+    },
+    "i": {
+      "bg": "L_area_0",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        517,
+        512
+      ]
+    },
+    "j": {
+      "bg": "L_area_0",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        435,
+        513
+      ]
+    },
+    "k": {
+      "bg": "L_area_0",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        422,
+        585
       ]
     }
   },
