@@ -289,15 +289,26 @@ screen controller_guide():
             hbox:
                 spacing 25
 
-                hbox:
-                    spacing 5
-                    text "Ⓐ" size 26 color "#4FC3F7" yoffset 3 font gui.interface_text_font
-                    text "決定" size 22 color "#ddd"
+                if persistent.controller_layout == "nintendo":
+                    hbox:
+                        spacing 5
+                        text "Ⓐ" size 26 color "#4FC3F7" yoffset 3 font gui.interface_text_font
+                        text "決定" size 22 color "#ddd"
 
-                hbox:
-                    spacing 5
-                    text "Ⓑ" size 26 color "#FF8A65" yoffset 3 font gui.interface_text_font
-                    text "戻る" size 22 color "#ddd"
+                    hbox:
+                        spacing 5
+                        text "Ⓑ" size 26 color "#FF8A65" yoffset 3 font gui.interface_text_font
+                        text "戻る" size 22 color "#ddd"
+                else:
+                    hbox:
+                        spacing 5
+                        text "Ⓐ" size 26 color "#4FC3F7" yoffset 3 font gui.interface_text_font
+                        text "決定" size 22 color "#ddd"
+
+                    hbox:
+                        spacing 5
+                        text "Ⓑ" size 26 color "#FF8A65" yoffset 3 font gui.interface_text_font
+                        text "戻る" size 22 color "#ddd"
 
                 hbox:
                     spacing 5
@@ -895,6 +906,11 @@ screen preferences():
                 ## この場所に "radio_pref" または "check_pref" をスタイルに持つ
                 ## vbox を追加して、開発者が定義した環境設定を増やすことができ
                 ## ます。
+                vbox:
+                    style_prefix "radio"
+                    label _("コントローラー設定")
+                    textbutton _("Standard (Xbox/PS)") action [SetField(persistent, "controller_layout", "standard"), Function(update_controller_bindings)]
+                    textbutton _("Nintendo (Switch)") action [SetField(persistent, "controller_layout", "nintendo"), Function(update_controller_bindings)]
 
             null height (4 * gui.pref_spacing)
 

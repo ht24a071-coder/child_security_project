@@ -138,3 +138,45 @@ init python:
     def get_stranger_voice(line_id):
         """現在のstranger_typeに対応するボイスファイルパスを返す"""
         return stranger_voice_map.get(stranger_type, {}).get(line_id, None)
+
+    # -----------------------------------------------------------
+# コントローラー設定
+# -----------------------------------------------------------
+default persistent.controller_layout = "standard"
+
+init python:
+    # Switch Proコントローラーがデフォルトでブロックされている場合があるため解除
+    if "Nintendo Switch" in config.controller_blocklist:
+        config.controller_blocklist.remove("Nintendo Switch")
+    
+    # 一般的なSwitch ProコントローラーのSDL2マッピングを追加（認識精度向上）
+    # 030000007e0500000920000000000000,Nintendo Switch Pro Controller,a:b0,b:b1,back:b8,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b4,leftstick:b10,lefttrigger:b6,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b11,righttrigger:b7,rightx:a2,righty:a3,start:b9,x:b2,y:b3,
+    try:
+        import os
+        # 環境変数SDL_GAMECONTROLLERCONFIGに追記することで認識させる
+        sdl_mapping = "030000007e0500000920000000000000,Nintendo Switch Pro Controller,platform:Windows,a:b0,b:b1,back:b8,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b4,leftstick:b10,lefttrigger:b6,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b11,righttrigger:b7,rightx:a2,righty:a3,start:b9,x:b2,y:b3,"
+        current_mappings = os.environ.get("SDL_GAMECONTROLLERCONFIG", "")
+        if sdl_mapping not in current_mappings:
+            os.environ["SDL_GAMECONTROLLERCONFIG"] = current_mappings + sdl_mapping
+    except:
+        pass
+
+    def update_controller_bindings():
+        """コントローラーのボタン割り当てを更新"""
+        
+        # Nintendoレイアウト（A決定=右、B戻る=下）
+        if persistent.controller_layout == "nintendo":
+            # Aボタン（XboxのB位置）で決定
+            config.pad_bindings["pad_b_press"] = [ "dismiss", "button_select", "bar_activate", "bar_deactivate", "chosen" ]
+            # Bボタン（XboxのA位置）でキャンセル
+            config.pad_bindings["pad_a_press"] = [ "game_menu", "hide_windows" ]
+            
+        # Standardレイアウト（A決定=下、B戻る=右）
+        else:
+            # Aボタン（XboxのA位置）で決定
+            config.pad_bindings["pad_a_press"] = [ "dismiss", "button_select", "bar_activate", "bar_deactivate", "chosen" ]
+            # Bボタン（XboxのB位置）でキャンセル
+            config.pad_bindings["pad_b_press"] = [ "game_menu", "hide_windows" ]
+
+    # 初期化時に適用
+    update_controller_bindings()
