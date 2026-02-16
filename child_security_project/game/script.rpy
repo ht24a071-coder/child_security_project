@@ -62,12 +62,7 @@ label going_school_start:
     call screen home_select_map()
     $ current_node = _return
 
-    scene back_town with fade
-    pc "さあ、がっこうに いこう！"
-    
-    jump travel_loop
-
-    scene back_town with fade
+    scene start with fade
     pc "さあ、がっこうに いこう！"
     
     jump travel_loop
@@ -79,7 +74,7 @@ label going_home_start:
     $ game_mode = "going_home"
     call initialize_game
     
-    scene back_town with fade
+    scene start with fade
 
     # "どの いえに かえりますか？"
     call screen home_select_map()
