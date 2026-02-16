@@ -62,6 +62,8 @@ label going_school_start:
     call screen home_select_map()
     $ current_node = _return
 
+    show screen image_overlay("images/Tutorial.png", "チュートリアル")
+
     scene start with fade
     pc "さあ、がっこうに いこう！"
     
@@ -79,6 +81,8 @@ label going_home_start:
     # "どの いえに かえりますか？"
     call screen home_select_map()
     $ target_home = _return
+
+    show screen image_overlay("images/Tutorial.png", "チュートリアル")
 
     pc "さあ、いえに かえろう！"
     

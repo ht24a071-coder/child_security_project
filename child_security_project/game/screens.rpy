@@ -1934,3 +1934,44 @@ screen profile_setup():
     #zorder 1000
 
     #timer 600.0 action Quit(confirm=False)
+
+screen image_overlay(display_img, title_text="詳細情報"):
+    # 他のUIより前面に表示 (100以上を推奨)
+    zorder 150
+    # 表示中、背後のボタンなどをクリック不可にする
+    modal True
+
+    # 1. 背後を少し暗くする演出 (イベントや背景は透けて見える)
+    add Solid("#000000CC")
+
+    # 2. タイトル（任意）
+    text title_text:
+        xalign 0.5 yalign 0.05
+        size 30
+        color "#ffffff"
+        outlines [(2, "#000000", 0, 0)]
+
+    # 3. メイン画像表示エリア
+    frame:
+        xalign 0.5 yalign 0.5
+        padding (10, 10)
+        background "#333333AA" # 枠の色（不要なら None）
+
+        # 表示したい画像
+        add display_img:
+            # 画面からはみ出さないよう調整が必要な場合は zoom を入れる
+            # zoom 0.8 
+            align (0.5, 0.5)
+
+    # 4. 閉じるボタン
+    textbutton "× 閉じる":
+        xalign 0.5 yalign 0.95
+        text_size 26
+        text_color "#ffffff"        # 通常時の文字色
+        text_hover_color "#ffaaaa"  # マウスを乗せた時の文字色 (ここを修正)
+        
+        action Hide("image_overlay")
+
+    # キーボードの「ESC」や「右クリック」でも閉じられるように設定
+    key "game_menu" action Hide("image_overlay")
+
