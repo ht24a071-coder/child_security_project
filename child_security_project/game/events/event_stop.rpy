@@ -1,22 +1,20 @@
 
 label Event_Force_Stop:
 
-    call screen full_image_show("images/Night.png")
-
+    scene Night with pixellate
     window show dissolve
 
     "{i}{rb}暗{/rb}{rt}くら{/rt}くなってしまった。{rb}寄{/rb}{rt}よ{/rt}り{rb}道{/rb}{rt}みち{/rt}せず、{rb}明{/rb}{rt}あか{/rt}るいうちに{rb}帰{/rb}{rt}かえ{/rt}ろう。{/i}"
 
     window hide dissolve
 
-    jump game_over
+    call game_over(set_message="よるになってしまった。")
     return
 
 
 label Event_Warning_Stop:
 
-    call screen full_image_show("images/Sunset.png")
-    
+    scene Sunset with pixellate
     window show dissolve
 
     "{i}{rb}暗{/rb}{rt}くら{/rt}くなってきた。{rb}早{/rb}{rt}はや{/rt}く{rb}帰{/rb}{rt}かえ{/rt}ろう。{/i}"

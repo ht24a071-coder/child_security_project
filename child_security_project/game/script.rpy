@@ -8,7 +8,7 @@ default _nav_color_map = {}
 default show_quick_menu = False  # クイックメニューの初期表示状態（非表示）
 default minimap_hover_node = None  # 選択肢ホバー時の仮の行き先ノードID
 default StepCount = 0 # 内部歩数
-default MaxStep = 10 # 最大歩数
+default MaxStep = 25 # 最大歩数
 
 # 全ホームノードのリスト
 define home_nodes = ["home_nw", "home_se", "home_sw", "home_w"]
@@ -32,10 +32,7 @@ label initialize_game:
     
     # 立ち絵などリセット
     $ previous_node = None
-    
-    #show screen inactivity_guard
-    $ current_step = 0
-    
+        
     # 重要: used_eventsは文字列のセットとして管理
     $ used_events = set()
 
@@ -113,8 +110,6 @@ label travel_loop:
     elif StepCount >= MaxStep:
         call Event_Force_Stop
         
-
-    $ current_step += 1
     call trigger_node_event(node_data)
 
     window hide
@@ -306,11 +301,11 @@ label game_clear:
 # =============================================================================
 # ゲームオーバー
 # =============================================================================
-label game_over:
+label game_over(set_message="つれさられてしまった..."):
     $ feedback_is_clear = False
     $ feedback_title = "GAME OVER..."
     $ feedback_score = total_score
-    $ feedback_message = "つれさられてしまった..."
+    $ feedback_message = set_message
     $ feedback_tips = [
         "「いかのおすし」を おぼえよう！",
         "・いか（いかない）",
