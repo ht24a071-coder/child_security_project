@@ -56,7 +56,8 @@
       "bg": "L_area_1",
       "links": {
         "小道（こみち）を進（すす）む": "road_center",
-        "自治会館（じちかいかん）のほうへ進（すす）む": "Kari002"
+        "自治会館（じちかいかん）のほうへ進（すす）む": "Kari002",
+        "大通（おおどお）りのほうへ進（すす）む": "narrow_path_exit"
       },
       "group": "safe",
       "chance": 10,
@@ -175,7 +176,8 @@
     "Kari005": {
       "bg": "back_tunnel",
       "links": {
-        "深野橋（ふこのばし）のほうへ進（すす）む": "Kari003"
+        "深野橋（ふこのばし）のほうへ進（すす）む": "Kari003",
+        "小道（こみち）のほうへ進（すす）む": "road"
       },
       "group": "safe",
       "chance": 0,
@@ -186,7 +188,10 @@
     },
     "road": {
       "bg": "back_dark",
-      "links": {},
+      "links": {
+        "深野橋（ふこのばし）のほうへ進（すす）む": "Kari005",
+        "小道（こみち）を進（すす）む": "road_center"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -390,7 +395,10 @@
     },
     "narrow_path_exit": {
       "bg": "back_town",
-      "links": {},
+      "links": {
+        "深野橋（ふこのばし）のほうへ進（すす）む": "Kari005",
+        "自治会館（じちかいかん）のほうへ進（すす）む": "public_hall"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
