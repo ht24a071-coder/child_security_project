@@ -327,7 +327,9 @@ init -1 python:
                         excess = self.current_volume - damage_threshold
                         # 係数を調整 (0.2の差でそれなりのダメージになるように)
                         if excess > 0:
-                            damage = (excess * 3.0) ** 2
+                            # 二乗をやめてリニア（比例）にすることで、突発的な大ダメージを防ぐ
+                            # 係数6.0: 最大(0.8)で4.8ダメ/frame -> 96DPS -> HP500を約5秒で撃破可能
+                            damage = excess * 6.0
                             is_attacking = True
                 else:
                     # 連打モードは後述のon_mashで処理
@@ -463,7 +465,7 @@ screen shout_minigame(game):
                     bold True
                     outlines [(2, "#ffffff", 0, 0)]
 
-            null height 50
+            null height 180
 
             # 不審者エリア（HPバー + 画像）
             frame:
@@ -566,7 +568,7 @@ screen shout_minigame(game):
                     bold True
                     outlines [(4, "#ff0000", 0, 0)]
             else:
-                text "にげられた……":
+                text "げきたい しっぱい……":
                     size 60
                     color "#aaaaaa"
                     bold True
