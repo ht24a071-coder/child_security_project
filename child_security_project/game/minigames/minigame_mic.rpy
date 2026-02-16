@@ -327,7 +327,7 @@ init -1 python:
                         excess = self.current_volume - damage_threshold
                         # 係数を調整 (0.2の差でそれなりのダメージになるように)
                         if excess > 0:
-                            damage = (excess * 8.0) ** 2
+                            damage = (excess * 3.0) ** 2
                             is_attacking = True
                 else:
                     # 連打モードは後述のon_mashで処理

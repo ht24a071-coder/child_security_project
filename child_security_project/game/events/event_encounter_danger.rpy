@@ -21,9 +21,6 @@ label encounter_e_stranger:
         
         "...（むしする）":
             pc "..."
-        
-        "（ぼうはんブザーを にぎる）":
-            pc "（なにかあったら すぐ ならそう...）"
     
     pause 0.3
     stranger "ねえねえ、おいしい おかしが あるんだけど、たべない？"
@@ -33,20 +30,11 @@ label encounter_e_stranger:
         "ついていく":
             jump .follow_stranger
 
-        "ことわって はなれる":
-            jump .refuse_stranger
-
         "おおごえを だす":
             jump .shout_stranger
 
-        "ぼうはんブザーを ならす":
-            jump .buzzer_stranger
-
         "にげる":
             jump .flee_stranger
-        
-        "ぼうはんブザーを ならす":
-            jump .buzzer_stranger
 
 # -----------------------------------------------------------------------------
 # 防犯ブザールート（追加）
