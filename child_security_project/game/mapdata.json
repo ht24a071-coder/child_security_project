@@ -16,7 +16,8 @@
       "bg": "back_school_park",
       "links": {
         "{rb}学校{/rb}{rt}がっこう{/rt}へ{rb}戻{/rb}{rt}もど{/rt}る": "start_point",
-        "{rb}学校{/rb}{rt}がっこう{/rt}から{rb}左{/rb}{rt}ひだり{/rt}に{rb}進{/rb}{rt}すす{/rt}む": "bunki_1"
+        "{rb}学校{/rb}{rt}がっこう{/rt}から{rb}左{/rb}{rt}ひだり{/rt}に{rb}進{/rb}{rt}すす{/rt}む": "bunki_1",
+        "学校（がっこう）から右（みぎ）へ進（すす）む": "d"
       },
       "group": "safe",
       "chance": 10,
@@ -53,7 +54,10 @@
     },
     "public_hall": {
       "bg": "L_area_1",
-      "links": {},
+      "links": {
+        "小道（こみち）を進（すす）む": "road_center",
+        "自治会館（じちかいかん）のほうへ進（すす）む": "Kari002"
+      },
       "group": "safe",
       "chance": 10,
       "minimap": [
@@ -101,7 +105,10 @@
     },
     "street_3": {
       "bg": "back_street_b",
-      "links": {},
+      "links": {
+        "自治会館（じちかいかん）のほうへ進（すす）む": "Kari002",
+        "学校（がっこう）のほうへ進（すす）む": "bunki_1"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -165,19 +172,11 @@
         200
       ]
     },
-    "Kari004": {
-      "bg": "back_tunnel",
-      "links": {},
-      "group": "safe",
-      "chance": 0,
-      "minimap": [
-        567,
-        264
-      ]
-    },
     "Kari005": {
       "bg": "back_tunnel",
-      "links": {},
+      "links": {
+        "深野橋（ふこのばし）のほうへ進（すす）む": "Kari003"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -237,7 +236,10 @@
     },
     "d": {
       "bg": "L_area_0",
-      "links": {},
+      "links": {
+        "保育園（ほいくえん）のほうへ進（すす）む": "e",
+        "学校（がっこう）のほうへ進（すす）む": "school_park"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -287,7 +289,9 @@
     },
     "hasi2": {
       "bg": "L_area_0",
-      "links": {},
+      "links": {
+        "線路（せんろ）のほうへ進（すす）む": "h"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
