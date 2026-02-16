@@ -291,18 +291,18 @@ screen controller_guide():
 
                 hbox:
                     spacing 5
-                    text "Ⓐ" size 28 color "#4FC3F7" bold True
-                    text "決定" size 20 color "#ddd" yalign 0.5
+                    text "Ⓐ" size 26 color "#4FC3F7" yoffset 3 font gui.interface_text_font
+                    text "決定" size 22 color "#ddd"
 
                 hbox:
                     spacing 5
-                    text "Ⓑ" size 28 color "#FF8A65" bold True
-                    text "戻る" size 20 color "#ddd" yalign 0.5
+                    text "Ⓑ" size 26 color "#FF8A65" yoffset 3 font gui.interface_text_font
+                    text "戻る" size 22 color "#ddd"
 
                 hbox:
                     spacing 5
-                    text "◁▷△▽" size 28 color "#aaa" bold True yalign 0.5
-                    text "移動" size 20 color "#ddd" yalign 0.5
+                    text "◁▷△▽" size 26 color "#aaa" yoffset 3 font gui.interface_text_font
+                    text "移動" size 22 color "#ddd"
 
 
 style controller_guide_frame:

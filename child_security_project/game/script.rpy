@@ -7,6 +7,8 @@ default game_mode = "going_home"
 default _nav_color_map = {}
 default show_quick_menu = False  # クイックメニューの初期表示状態（非表示）
 default minimap_hover_node = None  # 選択肢ホバー時の仮の行き先ノードID
+default StepCount = 0 # 内部歩数
+default MaxStep = 10 # 最大歩数
 
 # 全ホームノードのリスト
 define home_nodes = ["home_nw", "home_se", "home_sw", "home_w"]
@@ -97,13 +99,20 @@ label travel_loop:
     $ node_data = world_map.get(current_node)
     $ current_bg = node_data["bg"]
     
-    scene expression current_bg with fade
+    scene expression current_bg with pixellate
     
     # ゴール判定（モードによって変わる）
     if game_mode == "going_home" and current_node in home_nodes:
         jump arrival_home
     elif game_mode == "going_school" and current_node == "start_point":
         jump arrival_school
+
+    # 歩数での強制終了
+    if StepCount == (MaxStep/2):
+        call Event_Warning_Stop
+    elif StepCount >= MaxStep:
+        call Event_Force_Stop
+        
 
     $ current_step += 1
     call trigger_node_event(node_data)
@@ -139,6 +148,9 @@ label travel_loop:
 
     $ previous_node = current_node
     $ current_node = next_location
+
+    $ StepCount += 1
+
     jump travel_loop
 
 # =============================================================================

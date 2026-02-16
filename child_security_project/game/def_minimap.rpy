@@ -276,7 +276,7 @@ screen home_select_map():
 
     # マップ表示（中央に大きく）
     frame:
-        xalign 0.5 yalign 0.55 # 少し下にずらす
+        xalign 0.5 yalign 0.8 # 少し下にずらす
         padding (8, 8)
         background "#222222DD"
         
