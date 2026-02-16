@@ -39,6 +39,9 @@ label encounter_e_stranger:
         "おおごえを だす":
             jump .shout_stranger
 
+        "ぼうはんブザーを ならす":
+            jump .buzzer_stranger
+
         "にげる":
             jump .flee_stranger
         
@@ -219,9 +222,12 @@ label .escape_shout:
     "（おおきな こえを だそう！）"
     
     python:
-        shout_game = ShoutMinigame(threshold=0.25, duration=3.0, hold_time=0.4)
+        shout_game = ShoutMinigame(threshold=0.25, duration=8.0, hp=200) # にげるモードはHP低め
     
+    # ミニマップが重ならないように一時非表示
+    hide screen minimap
     call screen shout_minigame(shout_game)
+    show screen minimap
     
     if _return != "miss":
         $ update_score(15)
@@ -237,9 +243,16 @@ label .escape_shout:
         "{i}よくがんばった！でも さいしょから ついていかないのが いちばんだよ。{/i}"
     else:
         hide stranger
-        scene black with fade
         "{i}こえが でなかった……{/i}"
-        jump game_over
+        
+        "（どうしよう…！？）"
+        menu:
+            "ぼうはんブザーを ならす！":
+                jump .buzzer_stranger
+            
+            "……":
+                scene black with fade
+                jump game_over
     return
 
 # -----------------------------------------------------------------------------
@@ -268,9 +281,12 @@ label .shout_stranger:
     "（ほんとうに おおきな こえを だしてみよう！）"
     
     python:
-        shout_game = ShoutMinigame(threshold=0.3, duration=3.5, hold_time=0.5)
+        shout_game = ShoutMinigame(threshold=0.3, duration=8.0, hp=500)
     
+    # ミニマップが重ならないように一時非表示
+    hide screen minimap
     call screen shout_minigame(shout_game)
+    show screen minimap
     
     if _return == "perfect":
         $ update_score(25)
@@ -283,8 +299,41 @@ label .shout_stranger:
         "GOOD! おおきな こえが でた！"
     else:
         $ update_score(10)
-        "こえは ちいさかったけど、がんばった！"
+        "こえは ちいさかったけど、まだ チャンスは ある！"
+        
+        menu:
+            "ぼうはんブザーを ならす！":
+                jump .buzzer_stranger
+            
+            "もういちど さけぶ":
+                jump .shout_stranger_retry
     
+    label .shout_stranger_retry:
+        # 再挑戦ロジック
+        "（もっと おおきな こえで！！）"
+        python:
+            shout_game = ShoutMinigame(threshold=0.3, duration=8.0, hp=400) # 少しHP減らしておく
+        
+        hide screen minimap
+        call screen shout_minigame(shout_game)
+        show screen minimap
+        
+        if _return == "perfect":
+             $ update_score(15)
+             play audio "audio/buzzer.mp3"
+             "「たすけてーーー！！！」"
+             "こんどは うまく げきたいできた！"
+        else:
+             "やっぱり こえが でない……"
+             "（どうしよう…！？）"
+             menu:
+                "ぼうはんブザーを ならす！":
+                    jump .buzzer_stranger
+                
+                "……":
+                    scene black with fade
+                    jump game_over
+
     stranger "うわっ！ ちょ、ちょっと……！"
     hide stranger with dissolve
     
