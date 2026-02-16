@@ -172,10 +172,11 @@ init -1 python:
                                     # RMS計算
                                     sum_sq = sum(s*s for s in samples)
                                     rms = (sum_sq / num_samples) ** 0.5
-                                    # 0-1に正規化（感度を上げる）
+                                    # 0-1に正規化（感度を下げる）
+                                    # 元は2000だったが、小声で100%にならないように10000へ変更
                                     with self._lock:
-                                        self.current_volume = min(1.0, rms / 2000)
-                                        self.debug_info = f"vol:{int(rms)} buf:{self._buffer_count}"
+                                        self.current_volume = min(1.0, rms / 10000)
+                                        self.debug_info = f"vol:{int(rms)}/{10000} buf:{self._buffer_count}"
                             
                             # バッファを再度キューに追加（PREPAREDフラグは維持）
                             self.headers[i].dwFlags = WHDR_PREPARED
@@ -218,42 +219,50 @@ init -1 python:
 
     class ShoutMinigame:
         """
-        おおごえミニゲーム
+        おおごえミニゲーム（不審者撃退・HP制）
         Windows: マイク使用
         その他: ボタン連打フォールバック
         """
         def __init__(self, 
-                     threshold=0.3,
-                     duration=3.0,
-                     hold_time=0.5):
+                     threshold=0.6, # 90dB相当
+                     duration=8.0,  # 制限時間を長めに（削り切る必要があるため）
+                     hp=100):       # 不審者のHP
             self.threshold = threshold
             self.duration = duration
-            self.hold_time = hold_time
+            self.max_hp = hp
+            self.current_hp = hp
             
             self.result = None
             self.show_result = False
-            self.finished = False  # スクリーン終了フラグ
+            self.finished = False
             self.start_time = None
             self.elapsed = 0.0
             
             # 音量関連
             self.current_volume = 0.0
             self.max_volume = 0.0
-            self.loud_start_time = None
-            self.loud_duration = 0.0
             
             # マイク機能チェック
             self.mic_available = _win_mic_available
             self.recorder = None
             
-            # フォールバック用（連打カウント）
+            # フォールバック用
             self.mash_count = 0
-            self.mash_target = 12
             
-            # デバッグ情報
+            # 演出用
+            self.shout_texts = [] 
+            self.next_text_time = 0.0
+            self.shake_offset = (0, 0)
+            self.stranger_shake = (0, 0) # 不審者の揺れ
+            self.damage_flash = 0.0      # ダメージ時の赤フラッシュ
+            
             self.debug_info = ""
             self.mic_started = False
-            self._real_start_time = None  # リアルタイム用
+            self._real_start_time = None
+            
+            self.shout_phrases = [
+                "たすけて！", "やめて！", "こないで！", "だれかー！", "うわあああん！", "あっちいけ！"
+            ]
 
         def get_remaining(self):
             """残り時間をリアルタイムで取得"""
@@ -263,33 +272,21 @@ init -1 python:
             return max(0, self.duration - elapsed)
 
         def start_mic(self):
-            """マイク入力を開始"""
             if not self.mic_available:
-                self.debug_info = "mic not available"
                 return False
-            
             try:
                 self.recorder = WinMicRecorder()
-                result = self.recorder.start()
-                if result:
-                    self.debug_info = "recording started"
-                    self.mic_started = True
-                else:
-                    self.debug_info = f"start failed: {self.recorder.debug_info}"
-                return result
-            except Exception as e:
-                self.debug_info = f"exception: {e}"
+                return self.recorder.start()
+            except:
                 self.mic_available = False
                 return False
 
         def stop_mic(self):
-            """マイク入力を停止"""
             if self.recorder:
                 self.recorder.stop()
                 self.recorder = None
 
         def update(self, st, at):
-            """画面更新"""
             if self.start_time is None:
                 self.start_time = st
                 self._real_start_time = renpy.get_game_runtime()
@@ -297,64 +294,112 @@ init -1 python:
                     self.start_mic()
             
             self.elapsed = st - self.start_time
+            dt = 0.02 # 近似deltaTime
             
-            # マイクから音量取得
+            # マイク音量取得
             if self.mic_available and self.recorder:
                 self.current_volume = self.recorder.get_volume()
                 self.max_volume = max(self.max_volume, self.current_volume)
             
-            # 時間切れチェック
+            # 時間切れ判定
             if not self.show_result and self.elapsed >= self.duration:
                 self.stop_mic()
-                self.result = "miss"
+                if self.current_hp <= 0:
+                    self.result = "perfect" # ギリギリ倒せた
+                else:
+                    self.result = "miss"    # 倒せなかった
                 self.show_result = True
                 self.finished = True
             
-            # 大声継続チェック（マイクモード）
-            if self.mic_available and not self.show_result:
-                if self.current_volume >= self.threshold:
-                    if self.loud_start_time is None:
-                        self.loud_start_time = st
-                    self.loud_duration = st - self.loud_start_time
+            # ゲームプレイ中（HP判定とダメージ処理）
+            if not self.show_result:
+                # 攻撃力計算（閾値を超えた分だけダメージ）
+                damage = 0
+                is_attacking = False
+                
+                if self.mic_available:
+                    # 判定基準を厳しくする (閾値の80%以上から有効)
+                    damage_threshold = self.threshold * 0.8
                     
-                    if self.loud_duration >= self.hold_time:
-                        self.stop_mic()
-                        if self.max_volume >= self.threshold * 1.5:
-                            self.result = "perfect"
-                        else:
-                            self.result = "good"
-                        self.show_result = True
-                        self.finished = True
+                    if self.current_volume >= damage_threshold:
+                        # 指数関数的にダメージを増加させる
+                        # (現在音量 - 最低ライン) の2乗 * 係数
+                        excess = self.current_volume - damage_threshold
+                        # 係数を調整 (0.2の差でそれなりのダメージになるように)
+                        if excess > 0:
+                            damage = (excess * 8.0) ** 2
+                            is_attacking = True
                 else:
-                    self.loud_start_time = None
-                    self.loud_duration = 0.0
+                    # 連打モードは後述のon_mashで処理
+                    pass
+
+                # ダメージ適用
+                if damage > 0:
+                    self.current_hp = max(0, self.current_hp - damage)
+                    self.damage_flash = min(1.0, self.damage_flash + 0.2) # 赤く光らせる
+                    
+                    # 不審者揺らし
+                    import random
+                    shake_amp = int(5 * damage) 
+                    self.stranger_shake = (random.randint(-shake_amp, shake_amp), random.randint(-shake_amp, shake_amp))
+                    
+                    # 画面揺らし (閾値超えなら激しく)
+                    if self.current_volume >= self.threshold:
+                         self.shake_offset = (random.randint(-5, 5), random.randint(-5, 5))
+                    
+                    # テキスト演出 (閾値超えのみ)
+                    if st > self.next_text_time and self.current_volume >= self.threshold:
+                        txt = random.choice(self.shout_phrases)
+                        x = 0.5 + random.uniform(-0.4, 0.4)
+                        y = 0.5 + random.uniform(-0.4, 0.4)
+                        size = 40 + int(80 * self.current_volume)
+                        self.shout_texts.append([txt, x, y, st, size])
+                        self.next_text_time = st + 0.15
+                else:
+                    self.shake_offset = (0, 0)
+                    self.stranger_shake = (0, 0)
+                    self.damage_flash = max(0.0, self.damage_flash - 0.1)
+
+                # 撃退完了チェック
+                if self.current_hp <= 0:
+                    self.stop_mic()
+                    self.result = "perfect"
+                    self.show_result = True
+                    self.finished = True
+
+            # HPバー表示用（割合）
+            hp_ratio = self.current_hp / self.max_hp
             
-            # 音量バー表示
-            bar_width = int(300 * self.current_volume)
-            if self.current_volume >= self.threshold:
+            # バーの色（HPに応じて変化）
+            if hp_ratio > 0.5:
                 bar_color = "#00ff00"
+            elif hp_ratio > 0.2:
+                bar_color = "#ffff00"
             else:
-                bar_color = "#ff6600"
+                bar_color = "#ff0000"
             
-            bar = Solid(bar_color, xsize=max(1, bar_width), ysize=50)
-            return bar, 0.02
+            return Solid(bar_color, xsize=int(400 * hp_ratio), ysize=30), dt
 
         def on_mash(self):
-            """フォールバック用：連打入力"""
+            """連打攻撃"""
             if self.show_result or self.finished:
                 return
-            self.mash_count += 1
-            if self.mash_count >= self.mash_target:
-                if self.elapsed < self.duration * 0.5:
-                    self.result = "perfect"
-                else:
-                    self.result = "good"
+            
+            # 連打ダメージ
+            damage = 4.0
+            self.current_hp = max(0, self.current_hp - damage)
+            self.damage_flash = 1.0
+            
+            import random
+            self.stranger_shake = (random.randint(-5, 5), random.randint(-5, 5))
+            
+            if self.current_hp <= 0:
+                self.result = "perfect"
                 self.show_result = True
                 self.finished = True
 
 
     def mic_get_status():
-        """マイクの状態を取得"""
         return {
             "available": _win_mic_available,
             "error": _win_mic_error,
@@ -363,132 +408,170 @@ init -1 python:
 
 
 # =============================================================================
-# おおごえミニゲーム画面
+# おおごえミニゲーム画面（不審者バトル版）
 # =============================================================================
 screen shout_minigame(game):
     modal True
+    zorder 200 # ミニマップ(98)より手前に表示
     
-    # 画面を定期的に再描画（残り時間を更新するため）
-    # 結果表示後は停止
     if not game.finished:
         timer 0.05 repeat True action Function(renpy.restart_interaction)
     
     add Solid("#000000DD")
     
+    # 叫び文字演出（背景側）
+    for txt_data in game.shout_texts:
+        $ txt = txt_data[0]
+        $ tx = txt_data[1]
+        $ ty = txt_data[2]
+        $ t_size = txt_data[4]
+        if renpy.get_game_runtime() - txt_data[3] < 0.6:
+             text "[txt]":
+                size t_size
+                xalign tx
+                yalign ty
+                color "#ff3333"
+                bold True
+                outlines [(3, "#ffffff", 0, 0)]
+    
+    # メインフレーム
     frame:
         xalign 0.5
         yalign 0.5
-        padding (60, 60)
-        background "#222244"
+        padding (40, 40)
+        background None # 背景なしでオーバーレイ風に
+        xoffset game.shake_offset[0]
+        yoffset game.shake_offset[1]
         
         vbox:
-            spacing 25
+            spacing 20
             xalign 0.5
             
             # タイトル
             if game.mic_available:
-                text "おおごえを だそう！":
-                    size 42
+                text "こえで げきたいしろ！":
+                    size 50
                     xalign 0.5
-                    color "#ffffff"
+                    color "#ff0000"
                     bold True
-                
-                text "「たすけて！」と さけぼう！":
-                    size 28
-                    xalign 0.5
-                    color "#ffff00"
+                    outlines [(2, "#ffffff", 0, 0)]
             else:
-                text "れんだ！おおごえを だそう！":
-                    size 36
+                text "れんだで げきたいしろ！":
+                    size 50
                     xalign 0.5
-                    color "#ffffff"
+                    color "#ff0000"
                     bold True
+                    outlines [(2, "#ffffff", 0, 0)]
+
+            null height 50
+
+            # 不審者エリア（HPバー + 画像）
+            frame:
+                background None
+                xalign 0.5
+                ysize 400
+                xsize 400
                 
-                text "（スペースキーを れんだ！）":
-                    size 20
+                # 不審者の画像（簡易表示、実際は立ち絵があればそれを使う）
+                # ここではShake演出用に位置をずらす
+                add "images/actor/stranger.png":
                     xalign 0.5
-                    color "#888888"
+                    yalign 1.0
+                    zoom 0.6
+                    xoffset game.stranger_shake[0]
+                    yoffset game.stranger_shake[1]
+                    # ダメージ時の赤フラッシュ（MatrixColor等が使えないので簡易的にTint）
+                    # tint (1.0, 1.0 - game.damage_flash, 1.0 - game.damage_flash) 
+                
+                # HPバー（頭上）
+                vbox:
+                    xalign 0.5
+                    yalign 0.0
+                    spacing 5
+                    
+                    text "ふしんしゃの HP":
+                        size 24
+                        color "#ffffff"
+                        xalign 0.5
+                        outlines [(1, "#000000", 0, 0)]
+                        
+                    frame:
+                        background "#333333"
+                        xsize 400
+                        ysize 30
+                        xalign 0.5
+                        
+                        add DynamicDisplayable(game.update):
+                            xalign 0.0
+                            ycenter 0.5
             
-            null height 10
+            null height 20
             
             # 残り時間
             $ remaining = game.get_remaining()
             text "のこり: [remaining:.1f] びょう":
-                size 28
+                size 40
                 xalign 0.5
                 color "#ffff00"
+                bold True
+                outlines [(2, "#000000", 0, 0)]
             
-            # 音量メーター
-            frame:
-                xsize 320
-                ysize 60
-                xalign 0.5
-                background "#333333"
-                
-                # 閾値ライン
-                frame:
-                    xpos int(300 * game.threshold)
-                    yalign 0.5
-                    xsize 3
-                    ysize 50
-                    background "#ffffff"
-                
-                # 音量バー
-                add DynamicDisplayable(game.update):
-                    xalign 0.0
-                    yalign 0.5
-            
-            # 音量表示（マイクモード）
+            # 自分の音量メーター（下部）
             if game.mic_available:
-                $ vol_percent = int(game.current_volume * 100)
-                text "おんりょう: [vol_percent]%":
-                    size 24
+                 vbox:
                     xalign 0.5
-                    color "#aaaaaa"
-                
-                # デバッグ情報
-                $ dbg = game.debug_info
-                text "[dbg]":
-                    size 14
-                    xalign 0.5
-                    color "#666666"
-            else:
-                # フォールバック：連打カウント
-                text "[game.mash_count] / [game.mash_target]":
-                    size 40
-                    xalign 0.5
-                    color "#ff6600"
-                    bold True
-            
-            null height 10
-            
-            # 結果表示
-            if game.show_result:
-                if game.result == "perfect":
-                    text "PERFECT!!":
-                        size 50
-                        color "#ffff00"
-                        bold True
+                    spacing 5
+                    text "あなたの こえの おおきさ":
+                        size 20
+                        color "#aaaaaa"
                         xalign 0.5
-                elif game.result == "good":
-                    text "GOOD!":
-                        size 40
-                        color "#00ff00"
-                        bold True
+                    
+                    frame:
+                        xsize 300
+                        ysize 20
+                        background "#333333"
                         xalign 0.5
-                else:
-                    text "こえが ちいさい...":
-                        size 36
-                        color "#ff0000"
-                        bold True
-                        xalign 0.5
+                        
+                        # 現在の音量バー
+                        $ v_width = int(300 * min(1.0, game.current_volume / game.threshold))
+                        frame:
+                            background "#00ffff"
+                            xsize v_width
+                            ysize 20
+                            xalign 0.0
 
-    # 入力処理（フォールバックモード用）
+            # フォールバック案内
+            elif not game.mic_available:
+                text "スペースキーを れんだ！！":
+                    size 30
+                    color "#ff8800"
+                    bold True
+
+    # 入力処理
     if not game.show_result and not game.mic_available:
         key "K_SPACE" action Function(game.on_mash)
     
+    # 結果表示
     if game.show_result:
-        timer 1.5 action Return(game.result)
+        frame:
+            xalign 0.5
+            yalign 0.5
+            background Solid("#000000aa")
+            padding (50, 30)
+            
+            if game.result == "perfect":
+                text "げきたい せいこう！！":
+                    size 80
+                    color "#ffff00"
+                    bold True
+                    outlines [(4, "#ff0000", 0, 0)]
+            else:
+                text "にげられた……":
+                    size 60
+                    color "#aaaaaa"
+                    bold True
+        
+        timer 2.5 action Return(game.result)
 
 
 # =============================================================================

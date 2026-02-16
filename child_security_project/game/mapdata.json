@@ -368,6 +368,99 @@
         422,
         585
       ]
+    },
+    "Kari006": {
+      "bg": "back_town",
+      "links": {
+        "家（いえ）に戻（もど）る": "home_se",
+        "トンネルのほうへ": "tunnel"
+      },
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        830,
+        650
+      ]
+    },
+    "crossing_point": {
+      "bg": "back_town",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        406,
+        700
+      ]
+    },
+    "Kari009": {
+      "bg": "back_town",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        150,
+        542
+      ]
+    },
+    "narrow_path_exit": {
+      "bg": "back_town",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        605,
+        200
+      ]
+    },
+    "narrow_path_entry": {
+      "bg": "back_town",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        375,
+        150
+      ]
+    },
+    "tree_lined_road": {
+      "bg": "back_town",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        700,
+        264
+      ]
+    },
+    "train_area": {
+      "bg": "back_town",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        600,
+        550
+      ]
+    },
+    "street_a": {
+      "bg": "back_town",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        550,
+        500
+      ]
+    },
+    "narrow_path_mid": {
+      "bg": "back_town",
+      "links": {},
+      "group": "safe",
+      "chance": 0,
+      "minimap": [
+        452,
+        180
+      ]
     }
   },
   "event_pools": {
