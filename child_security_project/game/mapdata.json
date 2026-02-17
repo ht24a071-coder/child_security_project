@@ -340,7 +340,7 @@
       ]
     },
     "h": {
-      "bg": "L_area_0",
+      "bg": "back_h",
       "links": {
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "tunnel",
         "{rb}橋{/rb}{rt}はし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "hasi2"
@@ -353,7 +353,7 @@
       ]
     },
     "tunnel": {
-      "bg": "L_area_0",
+      "bg": "back_tunnel",
       "links": {
         "{rb}小道{/rb}{rt}こみち{/rt}を{rb}進{/rb}{rt}すす{/rt}む": "Kari006",
         "{rb}橋{/rb}{rt}はし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "h"
