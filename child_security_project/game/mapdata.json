@@ -329,7 +329,11 @@
     "hasi2": {
       "bg": "back_hasi2",
       "links": {
+<<<<<<< HEAD
+        "{rb}橋{/rb}{rt}はし{/rt}を{rb}渡{/rb}{rt}わた{/rt}る": "h",
+=======
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "h",
+>>>>>>> 646365c3ee14d5aa512d06529fc0429ed2eaf70c
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "g"
       },
       "group": "safe",
@@ -342,14 +346,19 @@
     "h": {
       "bg": "L_area_0",
       "links": {
+<<<<<<< HEAD
+        "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "tunnel",
+        "{rb}橋{/rb}{rt}はし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "hasi2"
+=======
         "{rb}小道{/rb}{rt}こみち{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "tunnel",
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "hasi2"
+>>>>>>> 646365c3ee14d5aa512d06529fc0429ed2eaf70c
       },
       "group": "safe",
       "chance": 0,
       "minimap": [
-        901,
-        491
+        760,
+        575
       ]
     },
     "tunnel": {
@@ -361,8 +370,8 @@
       "group": "safe",
       "chance": 0,
       "minimap": [
-        874,
-        557
+        842,
+        578
       ]
     },
     "i": {
