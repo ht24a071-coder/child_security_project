@@ -29,7 +29,7 @@ label .choice_dash:
     "（れんだ！スペースキーを れんだして わたれ！）"
     
     python:
-        dash_game = MashingMinigame(target_count=15, time_limit=2.5, key="K_SPACE")
+        dash_game = MashingMinigame(target_count=15, time_limit=2.5, key="dismiss")
     
     call screen mashing_minigame(dash_game)
     
@@ -89,12 +89,16 @@ label .choice_hand:
     "しゃだんきが あがった。"
     
     # タイミングゲーム
-    "（さゆうを かくにん！タイミングよく スペースキーを おそう！）"
-    
-    python:
-        check_game = TimingMinigame(speed=3.0, perfect_range=40, good_range=70, key="K_SPACE")
-    
-    call screen timing_minigame(check_game)
+    # タイトルや説明を指定して呼び出す例
+    $ game = MashingMinigame(
+        target_count=20, 
+        time_limit=5.0, 
+        title="全力疾走！", 
+        text="スペースキーを連打して\n駅までダッシュしろ！"
+    )
+    call screen mashing_minigame(game)
+    $ res = _return
+    "連打の結果は [res] でした。"
     
     if _return == "perfect":
         $ update_score(10)

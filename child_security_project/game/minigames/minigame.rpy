@@ -1,433 +1,317 @@
-# =============================================================================
-# ミニゲーム集
-# =============================================================================
-
 init -1 python:
     import math
 
     # =========================================================================
-    # 1. タイミングミニゲーム（既存）
+    # 共通基盤クラス
     # =========================================================================
-    class TimingMinigame(object):
-        def __init__(self, speed=2.0, perfect_range=30, good_range=60, key="K_SPACE",
-                     width=600, height=100, bar_width=20,
-                     bg_color="#2d2d5f", bar_color="#ff00ff",
-                     perfect_color="#ffff00", good_color="#00ff00"):
-            self.speed = speed
-            self.perfect_range = perfect_range
-            self.good_range = good_range
+    class BaseMinigame(object):
+        def __init__(self, key="dismiss", title="ミニゲーム", text="スペースキーを押して開始！"):
             self.key = key
+            self.title = title
+            self.text = text
+            self.started = False  # まだ始まっていない状態
             self.result = None
-            self.position = 2.5
-            self.direction = 1
             self.show_result = False
+            self.finished = False
             self.last_st = -1
-            self.width = width
-            self.height = height
-            self.bar_width = bar_width
-            self.bar_displayable = Solid(bar_color, xsize=bar_width, ysize=height)
-            self.bg_displayable = Solid(bg_color, xsize=width, ysize=height)
-            self.border_displayable = Solid("#1a1a3d", xsize=width+20, ysize=height+20)
-            self.perfect_displayable = Solid(perfect_color, xsize=perfect_range*2, ysize=height)
-            self.good_displayable = Solid(good_color, xsize=good_range*2, ysize=height)
+            self.start_timestamp = None # 開始時刻
 
-        def update(self, st, at):
-            if self.last_st == -1:
-                self.last_st = st
+    # バーが左右に動くタイプ（タイミング・脱出）の共通ロジック
+    class MovingBarMinigame(BaseMinigame):
+        def __init__(self, speed=2.0, target_range=30, width=600, height=100, bar_width=20, **kwargs):
+            super(MovingBarMinigame, self).__init__(**kwargs)
+            self.speed = speed
+            self.target_range = target_range
+            self.width, self.height = width, height
+            self.bar_width = bar_width
+            self.position = 0.0
+            self.direction = 1
+            
+        def update_position(self, st, multiplier=200):
+            # まだ始まってなければ動かさない
+            if not self.started: return 0.0
+
+            if self.last_st == -1: self.last_st = st
             dt = st - self.last_st
             self.last_st = st
+            
             if not self.show_result:
                 max_pos = (self.width / 2) - (self.bar_width / 2)
-                self.position += self.direction * self.speed * dt * 200
-                if self.position >= max_pos:
-                    self.position = max_pos
-                    self.direction = -1
-                elif self.position <= -max_pos:
-                    self.position = -max_pos
-                    self.direction = 1
-            display = Transform(child=self.bar_displayable, xalign=0.5, yalign=0.5, xoffset=int(self.position))
-            return display, 0.0
+                self.position += self.direction * self.speed * dt * multiplier
+                if abs(self.position) >= max_pos:
+                    self.position = max_pos if self.position > 0 else -max_pos
+                    self.direction *= -1
+            return self.position
+
+    # 1. タイミングミニゲーム
+    class TimingMinigame(MovingBarMinigame):
+        def __init__(self, perfect_range=30, good_range=60, **kwargs):
+            super(TimingMinigame, self).__init__(target_range=perfect_range, **kwargs)
+            self.perfect_range = perfect_range
+            self.good_range = good_range
+            self.bg_displayable = Solid("#2d2d5f", xsize=self.width, ysize=self.height)
+
+        def update(self, st, at):
+            pos = self.update_position(st)
+            bar = Solid("#ff00ff", xsize=self.bar_width, ysize=self.height)
+            return Transform(child=bar, xalign=0.5, yalign=0.5, xoffset=int(pos)), 0.0
 
         def check_timing(self):
-            if self.show_result:
-                return
-            distance = abs(self.position)
-            if distance <= self.perfect_range:
-                self.result = "perfect"
-            elif distance <= self.good_range:
-                self.result = "good"
-            else:
-                self.result = "miss"
+            if not self.started or self.show_result: return
+            dist = abs(self.position)
+            if dist <= self.perfect_range: self.result = "perfect"
+            elif dist <= self.good_range: self.result = "good"
+            else: self.result = "miss"
             self.show_result = True
 
-    # =========================================================================
-    # 2. 連打ミニゲーム（新規）
-    # =========================================================================
-    class MashingMinigame(object):
-        def __init__(self, target_count=10, time_limit=3.0, key="K_SPACE",
-                     bar_color="#ff6600", bg_color="#333333"):
+    # 2. 連打ミニゲーム
+    class MashingMinigame(BaseMinigame):
+        def __init__(self, target_count=10, time_limit=3.0, **kwargs):
+            super(MashingMinigame, self).__init__(**kwargs)
             self.target_count = target_count
             self.time_limit = time_limit
-            self.key = key
             self.current_count = 0
-            self.result = None
-            self.show_result = False
-            self.finished = False  # スクリーン終了フラグ
-            self.start_time = None
-            self.elapsed = 0.0
-            self.bar_color = bar_color
-            self.bg_color = bg_color
             self._real_start_time = None
+            self.title = "れんだミニゲーム"
+            self.text = "けっていボタン　か　スペースをれんだしろ！"
 
         def get_remaining(self):
-            """残り時間をリアルタイムで取得"""
-            if self._real_start_time is None:
+            # まだ始まってない、あるいは開始時刻が決まってないなら制限時間をそのまま返す
+            if not self.started or self._real_start_time is None: 
                 return self.time_limit
+            
             elapsed = renpy.get_game_runtime() - self._real_start_time
             return max(0, self.time_limit - elapsed)
 
         def update(self, st, at):
-            if self.start_time is None:
-                self.start_time = st
+            if not self.started:
+                # 始まってない時は空の更新を返す
+                return Solid("#ff6600", xsize=1, ysize=40), 0.1
+
+            # 開始直後に現在時刻を記録
+            if self._real_start_time is None: 
                 self._real_start_time = renpy.get_game_runtime()
-            self.elapsed = st - self.start_time
+
+            if not self.show_result and self.get_remaining() <= 0:
+                self.result, self.show_result, self.finished = "miss", True, True
             
-            # 時間切れチェック
-            if not self.show_result and self.elapsed >= self.time_limit:
-                self.result = "miss"
-                self.show_result = True
-                self.finished = True
-            
-            # 進捗バー
-            progress = min(1.0, self.current_count / self.target_count)
-            bar_width = int(400 * progress)
-            bar = Solid(self.bar_color, xsize=max(1, bar_width), ysize=40)
-            return bar, 0.01
+            progress = min(1.0, float(self.current_count) / self.target_count)
+            return Solid("#ff6600", xsize=max(1, int(400 * progress)), ysize=40), 0.01
 
         def on_mash(self):
-            if self.show_result or self.finished:
-                return
+            if not self.started or self.show_result or self.finished: return
             self.current_count += 1
             if self.current_count >= self.target_count:
-                if self.elapsed < self.time_limit * 0.5:
-                    self.result = "perfect"
-                elif self.elapsed < self.time_limit * 0.8:
-                    self.result = "good"
-                else:
-                    self.result = "good"
-                self.show_result = True
-                self.finished = True
+                rem = self.get_remaining()
+                self.result = "perfect" if rem > self.time_limit * 0.5 else "good"
+                self.show_result = self.finished = True
 
-    # =========================================================================
-    # 3. 難しい脱出ミニゲーム（新規）
-    # =========================================================================
-    class EscapeMinigame(object):
-        def __init__(self, difficulty="hard", key="K_SPACE"):
+    # 3. 脱出ミニゲーム
+    class EscapeMinigame(MovingBarMinigame):
+        def __init__(self, difficulty="hard", **kwargs):
+            settings = {"easy": (2.0, 50), "normal": (3.5, 35), "hard": (5.0, 20)}
+            speed, trange = settings.get(difficulty, settings["hard"])
+            super(EscapeMinigame, self).__init__(speed=speed, target_range=trange, width=500, height=80, **kwargs)
             self.difficulty = difficulty
-            self.key = key
-            self.result = None
-            self.show_result = False
-            self.position = 0.0
-            self.direction = 1
-            self.last_st = -1
-            
-            # 難易度設定
-            if difficulty == "easy":
-                self.speed = 2.0
-                self.target_range = 50
-            elif difficulty == "normal":
-                self.speed = 3.5
-                self.target_range = 35
-            else:  # hard
-                self.speed = 5.0
-                self.target_range = 20
-            
-            self.width = 500
-            self.height = 80
-            self.bar_width = 15
 
         def update(self, st, at):
-            if self.last_st == -1:
-                self.last_st = st
-            dt = st - self.last_st
-            self.last_st = st
-            
-            if not self.show_result:
-                max_pos = (self.width / 2) - (self.bar_width / 2)
-                self.position += self.direction * self.speed * dt * 250
-                if self.position >= max_pos:
-                    self.position = max_pos
-                    self.direction = -1
-                elif self.position <= -max_pos:
-                    self.position = -max_pos
-                    self.direction = 1
-            
+            pos = self.update_position(st, multiplier=250)
             bar = Solid("#ff3333", xsize=self.bar_width, ysize=self.height)
-            display = Transform(child=bar, xalign=0.5, yalign=0.5, xoffset=int(self.position))
-            return display, 0.0
+            return Transform(child=bar, xalign=0.5, yalign=0.5, xoffset=int(pos)), 0.0
 
         def check_timing(self):
-            if self.show_result:
-                return
-            distance = abs(self.position)
-            if distance <= self.target_range:
-                self.result = "success"
-            else:
-                self.result = "fail"
+            if not self.started or self.show_result: return
+            self.result = "success" if abs(self.position) <= self.target_range else "fail"
             self.show_result = True
 
+# =============================================================================
+# 共通：説明オーバーレイ（これを各ゲーム画面の中で使う）
+# =============================================================================
+
+# --- アニメーション定義 (ATL) ---
+
+# 左からスライドイン
+transform intro_slide_left:
+    xoffset -500 alpha 0.0
+    easein_back 0.6 xoffset 0 alpha 1.0
+
+# 右からスライドイン（少し遅れて開始）
+transform intro_slide_right:
+    xoffset 500 alpha 0.0
+    pause 0.2
+    easein_back 0.6 xoffset 0 alpha 1.0
+
+# 下からふわっと浮き上がる（さらに遅れて開始）
+transform intro_fade_up:
+    yoffset 50 alpha 0.0
+    pause 0.5
+    easeout 0.5 yoffset 0 alpha 1.0
+
+# 背景の装飾図形が走るアニメーション
+transform intro_bg_shape(delay, start_x, start_y):
+    xoffset start_x yoffset start_y alpha 0.0 rotate -30
+    pause delay
+    parallel:
+        easeout_quart 1.0 xoffset 0 yoffset 0
+    parallel:
+        linear 0.5 alpha 0.3
+
+# ----------------------------------------
+
+screen minigame_intro_overlay(game):
+    modal True
+    
+    # 1. 背景（黒い幕）
+    add Solid("#000000E6") 
+
+    # 2. 背景の装飾（幾何学的な図形がインしてくる）
+    # 画面の後ろに少し動きをつけることでリッチに見せます
+    fixed:
+        # 左の帯
+        add Solid("#ffcc00", xsize=1500, ysize=1500):
+            align (5.7, 0.2)
+            at intro_bg_shape(0.2, -1000, 0)
+        
+        # 右の帯（色を変えて逆方向から）
+        add Solid("#00ccff", xsize=1500, ysize=1500):
+            align (-5.3, 0.8)
+            at intro_bg_shape(0.6, 1000, 0)
+
+        # 上の帯
+        add Solid("#ff0000", xsize=1800, ysize=800):
+            align (10.5, 1.2)
+            at intro_bg_shape(0.0, 0, -1000)
+
+        # 下の帯（色を変えて逆方向から）
+        add Solid("#04ff00", xsize=1800, ysize=800):
+            align (-12.3, 0.0)
+            at intro_bg_shape(0.4, 0, 1000)
+
+    # 3. メインコンテンツ
+    vbox:
+        align (0.5, 0.5)
+        spacing 40
+        
+        # タイトル（左からイン）
+        text game.title:
+            size 70 xalign 0.5 color "#fff" outlines [(4, "#000", 0, 0)] bold True
+            at intro_slide_left
+        
+        # 説明文（右からイン）
+        text game.text:
+            size 32 xalign 0.5 color "#ddd" text_align 0.5
+            at intro_slide_right
+        
+        null height 40
+        
+        # スタートボタン（下からイン）
+        textbutton "START":
+            style "confirm_button"
+            xalign 0.5
+            action SetField(game, "started", True)
+            at intro_fade_up
 
 # =============================================================================
-# タイミングミニゲーム画面
+# 各種ゲーム画面（説明画面を内包）
 # =============================================================================
+
+# 1. タイミング
 screen timing_minigame(game):
     modal True
-    add Solid("#000000AA")
     
-    frame:
-        xalign 0.5
-        yalign 0.5
-        padding (50, 50)
-        background "#00000000"
-        
+    # まだ始まっていないなら説明を表示
+    if not game.started:
+        use minigame_intro_overlay(game)
+    else:
+        # ゲーム本編
+        add Solid("#000000AA")
         vbox:
+            align (0.5, 0.5)
             spacing 20
-            xalign 0.5
-            
-            text "スペースキー を おせ!":
-                size 40
-                xalign 0.5
-                color "#ffffff"
-                bold True
-                outlines [(3, "#000000", 0, 0)]
-            
+            text "タイミングよく押せ！":
+                size 40 xalign 0.5 bold True color "#fff" outlines [(2, "#000", 0, 0)]
             fixed:
-                xsize game.width + 40
-                ysize game.height + 40
-                xalign 0.5
-                
-                add game.border_displayable:
-                    xalign 0.5
-                    yalign 0.8
-                
-                add game.bg_displayable:
-                    xalign 0.5
-                    yalign 0.5
-                
-                add game.good_displayable:
-                    xalign 0.5
-                    yalign 0.5
-                    at transform:
-                        alpha 0.3
-                
-                add game.perfect_displayable:
-                    xalign 0.5
-                    yalign 0.5
-                    at transform:
-                        alpha 0.6
-                
-                frame:
-                    xalign 0.5
-                    yalign 0.5
-                    xsize 2
-                    ysize game.height + 10
-                    background "#ffffff"
-                
+                xsize game.width + 40 ysize game.height + 40 xalign 0.5
+                add Solid("#1a1a3d", xsize=game.width+20, ysize=game.height+20) align (0.5, 0.5)
+                add game.bg_displayable align (0.5, 0.5)
+                add Solid("#00ff00", xsize=game.good_range*2, ysize=game.height) align (0.5, 0.5) alpha 0.3
+                add Solid("#ffff00", xsize=game.perfect_range*2, ysize=game.height) align (0.5, 0.5) alpha 0.6
                 add DynamicDisplayable(game.update)
             
-            frame:
-                background None
-                ysize 60
-                xalign 0.5
-                
-                if game.show_result:
-                    if game.result == "perfect":
-                        text "PERFECT!!":
-                            size 50
-                            color "#ffff00"
-                            bold True
-                            outlines [(3, "#000000", 0, 0)]
-                            xalign 0.5
-                    elif game.result == "good":
-                        text "GOOD!":
-                            size 40
-                            color "#00ff00"
-                            bold True
-                            outlines [(3, "#000000", 0, 0)]
-                            xalign 0.5
-                    else:
-                        text "MISS...":
-                            size 40
-                            color "#ff0000"
-                            bold True
-                            outlines [(3, "#000000", 0, 0)]
-                            xalign 0.5
+            if game.show_result:
+                $ res_txt = {"perfect": "PERFECT!!", "good": "GOOD!", "miss": "MISS..."}.get(game.result)
+                $ res_clr = {"perfect": "#ff0", "good": "#0f0", "miss": "#f00"}.get(game.result)
+                text res_txt size 50 xalign 0.5 color res_clr bold True outlines [(3, "#000", 0, 0)]
 
-    if not game.show_result:
-        key game.key action Function(game.check_timing)
-    else:
-        timer 1.5 action Return(game.result)
+        if not game.show_result:
+            key game.key action Function(game.check_timing)
+        else:
+            timer 1.5 action Return(game.result)
 
-
-# =============================================================================
-# 連打ミニゲーム画面
-# =============================================================================
+# 2. 連打
 screen mashing_minigame(game):
     modal True
     
-    # 画面を定期的に再描画（残り時間を更新するため）
-    # 結果表示後は停止
-    if not game.finished:
-        timer 0.05 repeat True action Function(renpy.restart_interaction)
-    
-    add Solid("#000000CC")
-    
-    frame:
-        xalign 0.5
-        yalign 0.5
-        padding (60, 60)
-        background "#222222"
-        
-        vbox:
-            spacing 30
-            xalign 0.5
-            
-            text "れんだ！スペースキーを れんだしろ！":
-                size 36
-                xalign 0.5
-                color "#ffffff"
-                bold True
-            
-            # 残り時間
-            $ remaining = game.get_remaining()
-            text "のこり: [remaining:.1f] びょう":
-                size 28
-                xalign 0.5
-                color "#ffff00"
-            
-            # カウント表示
-            text "[game.current_count] / [game.target_count]":
-                size 60
-                xalign 0.5
-                color "#ff6600"
-                bold True
-            
-            # 進捗バー
-            frame:
-                xsize 420
-                ysize 50
-                xalign 0.5
-                background "#444444"
-                
-                add DynamicDisplayable(game.update):
-                    xalign 0.0
-                    yalign 0.5
-            
-            # 結果
-            if game.show_result:
-                if game.result == "perfect":
-                    text "PERFECT!!":
-                        size 50
-                        color "#ffff00"
-                        bold True
-                        xalign 0.5
-                elif game.result == "good":
-                    text "GOOD!":
-                        size 40
-                        color "#00ff00"
-                        bold True
-                        xalign 0.5
-                else:
-                    text "じかんぎれ...":
-                        size 40
-                        color "#ff0000"
-                        bold True
-                        xalign 0.5
-
-    if not game.show_result:
-        key game.key action Function(game.on_mash)
+    if not game.started:
+        use minigame_intro_overlay(game)
     else:
-        timer 1.5 action Return(game.result)
+        # ゲーム本編
+        if not game.finished:
+            timer 0.05 repeat True action Function(renpy.restart_interaction)
+        add Solid("#000000CC")
+        vbox:
+            align (0.5, 0.5)
+            spacing 30
+            text "連打しろ！" size 36 xalign 0.5 color "#fff"
+            text "のこり: [game.get_remaining():.1f] びょう" size 28 xalign 0.5 color "#ffff00"
+            text "[game.current_count] / [game.target_count]" size 60 xalign 0.5 color "#ff6600" bold True
+            frame:
+                xsize 420 ysize 50 xalign 0.5 background "#444444"
+                add DynamicDisplayable(game.update) align (0.0, 0.5)
+            
+            if game.show_result:
+                $ res_txt = {"perfect": "PERFECT!!", "good": "GOOD!", "miss": "じかんぎれ..."}.get(game.result)
+                text res_txt size 50 xalign 0.5 color "#fff" bold True
 
+        if not game.show_result:
+            key game.key action Function(game.on_mash)
+        else:
+            timer 1.5 action Return(game.result)
 
-# =============================================================================
-# 難しい脱出ミニゲーム画面
-# =============================================================================
+# 3. 脱出
 screen escape_minigame(game):
     modal True
-    add Solid("#220000CC")
-    
-    frame:
-        xalign 0.5
-        yalign 0.5
-        padding (50, 50)
-        background "#330000"
-        
+
+    if not game.started:
+        use minigame_intro_overlay(game)
+    else:
+        # ゲーム本編
+        add Solid("#220000CC")
         vbox:
+            align (0.5, 0.5)
             spacing 25
-            xalign 0.5
-            
-            text "にげろ！タイミングよく スペースキー！":
-                size 36
-                xalign 0.5
-                color "#ff6666"
-                bold True
-            
-            if game.difficulty == "hard":
-                text "むずかしい！":
-                    size 24
-                    xalign 0.5
-                    color "#ff0000"
-            
+            text "にげろ！" size 36 xalign 0.5 color "#ff6666" bold True
             fixed:
-                xsize game.width + 40
-                ysize game.height + 40
-                xalign 0.5
-                
-                add Solid("#1a0000", xsize=game.width+20, ysize=game.height+20):
-                    xalign 0.5
-                    yalign 0.5
-                
-                add Solid("#330000", xsize=game.width, ysize=game.height):
-                    xalign 0.5
-                    yalign 0.5
-                
-                # ターゲットゾーン
-                add Solid("#00ff00", xsize=game.target_range*2, ysize=game.height):
-                    xalign 0.5
-                    yalign 0.5
-                    at transform:
-                        alpha 0.4
-                
-                frame:
-                    xalign 0.5
-                    yalign 0.5
-                    xsize 2
-                    ysize game.height + 10
-                    background "#ffffff"
-                
+                xsize game.width + 40 ysize game.height + 40 xalign 0.5
+                add Solid("#1a0000", xsize=game.width+20, ysize=game.height+20) align (0.5, 0.5)
+                add Solid("#00ff00", xsize=game.target_range*2, ysize=game.height) align (0.5, 0.5) alpha 0.4
                 add DynamicDisplayable(game.update)
             
-            frame:
-                background None
-                ysize 60
-                xalign 0.5
-                
-                if game.show_result:
-                    if game.result == "success":
-                        text "にげきった！":
-                            size 50
-                            color "#00ff00"
-                            bold True
-                            xalign 0.5
-                    else:
-                        text "つかまった...":
-                            size 50
-                            color "#ff0000"
-                            bold True
-                            xalign 0.5
+            if game.show_result:
+                $ res_txt = "にげきった！" if game.result == "success" else "つかまった..."
+                text res_txt size 50 xalign 0.5 color "#fff" bold True
 
-    if not game.show_result:
-        key game.key action Function(game.check_timing)
-    else:
-        timer 1.5 action Return(game.result)
+        if not game.show_result:
+            key game.key action Function(game.check_timing)
+        else:
+            timer 1.5 action Return(game.result)
+
+# ボタンのスタイル
+style confirm_button:
+    background Solid("#444")
+    padding (40, 20)
+    hover_background Solid("#666")
+
+style confirm_button_text:
+    color "#fff"
+    size 40

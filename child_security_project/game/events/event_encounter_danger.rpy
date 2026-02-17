@@ -149,10 +149,14 @@ label .escape_fail_no_110:
     pc "（110ばんの いえって どこ…？）"
     pc "にげなきゃ！"
     
-    python:
-        escape_game = EscapeMinigame(difficulty="hard", key="K_SPACE")
-    
-    call screen escape_minigame(escape_game)
+
+    # ゲーム
+    $ game = EscapeMinigame(
+        difficulty="hard",
+        title="全力疾走！", 
+        text="スペースキーを連打して\n駅までダッシュしろ！"
+    )
+    call screen escape_minigame(game)
     
     hide stranger
     
