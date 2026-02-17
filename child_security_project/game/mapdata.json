@@ -121,8 +121,8 @@
       "bg": "back_bunki",
       "links": {
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
-        "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "train_area",
-        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_a"
+        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_a",
+        "線路（せんろ）のほうへ進（すす）む": "hasi1"
       },
       "group": "safe",
       "chance": 0,
@@ -133,7 +133,9 @@
     },
     "home_sw": {
       "bg": "back_home",
-      "links": {},
+      "links": {
+        "出発（しゅっぱつ）する": "k"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -165,7 +167,9 @@
     },
     "Kari003": {
       "bg": "back_tunnel",
-      "links": {},
+      "links": {
+        "深北緑地（ふかきたりょくち）のほうへ進（すす）む": "narrow_path_entry"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -201,7 +205,10 @@
     },
     "road_center": {
       "bg": "back_dark",
-      "links": {},
+      "links": {
+        "深野橋（ふこのばし）のほうへ進（すす）む": "road",
+        "自治会館（じちかいかん）のほうへ進（すす）む": "public_hall"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -211,7 +218,10 @@
     },
     "a": {
       "bg": "L_area_0",
-      "links": {},
+      "links": {
+        "寝屋川（ねやがわ）のほうへ進（すす）む": "Kari009",
+        "線路（せんろ）のほうへ進（すす）む": "b"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -221,7 +231,11 @@
     },
     "b": {
       "bg": "back_oudan",
-      "links": {},
+      "links": {
+        "橋（はし）を渡（わた）る": "i",
+        "寝屋川（ねやがわ）のほうへ進（すす）む": "a",
+        "線路（せんろ）のほうへ進（すす）む": "c"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -231,7 +245,10 @@
     },
     "c": {
       "bg": "back_river_1",
-      "links": {},
+      "links": {
+        "寝屋川（ねやがわ）のほうへ進（すす）む": "b",
+        "線路（せんろ）のほうへ進（すす）む": "street_a"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -254,7 +271,10 @@
     },
     "e": {
       "bg": "L_area_0",
-      "links": {},
+      "links": {
+        "小道（こみち）に入（はい）る": "f",
+        "学校（がっこう）のほうへ進（すす）む": "d"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -264,7 +284,10 @@
     },
     "f": {
       "bg": "L_area_0",
-      "links": {},
+      "links": {
+        "川（かわ）のほうへ進（すす）む": "g",
+        "保育園（ほいくえん）のほうへ進（すす）む": "e"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -274,7 +297,11 @@
     },
     "g": {
       "bg": "L_area_0",
-      "links": {},
+      "links": {
+        "線路（せんろ）のほうへ進（すす）む": "hasi2",
+        "寝屋川（ねやがわ）のほうへ進（すす）む": "hasi1",
+        "学校（がっこう）のほうへ進（すす）む": "f"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -284,7 +311,10 @@
     },
     "hasi1": {
       "bg": "L_area_0",
-      "links": {},
+      "links": {
+        "線路（せんろ）のほうへ進（すす）む": "g",
+        "寝屋川（ねやがわ）のほうへ進（すす）む": "bunki_2"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -295,7 +325,8 @@
     "hasi2": {
       "bg": "L_area_0",
       "links": {
-        "線路（せんろ）のほうへ進（すす）む": "h"
+        "線路（せんろ）のほうへ進（すす）む": "h",
+        "寝屋川（ねやがわ）のほうへ進（すす）む": "g"
       },
       "group": "safe",
       "chance": 0,
@@ -307,8 +338,8 @@
     "h": {
       "bg": "L_area_0",
       "links": {
-        "線路（せんろ）のほうへ進（すす）む": "hasi2",
-        "小道（こみち）のほうへ進（すす）む": "tunnel"
+        "小道（こみち）のほうへ進（すす）む": "tunnel",
+        "線路（せんろ）のほうへ進（すす）む": "hasi2"
       },
       "group": "safe",
       "chance": 0,
@@ -332,17 +363,23 @@
     },
     "i": {
       "bg": "L_area_0",
-      "links": {},
+      "links": {
+        "線路（せんろ）のほうへ進（すす）む": "j",
+        "橋（はし）を渡（わた）る": "b"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
-        517,
-        512
+        368,
+        513
       ]
     },
     "j": {
       "bg": "L_area_0",
-      "links": {},
+      "links": {
+        "寝屋川（ねやがわ）のほうへ進（すす）む": "i",
+        "緑が丘（みどりがおか）第2地域広場（だい2ちいきひろば）のほうへ進（すす）む": "k"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -352,7 +389,10 @@
     },
     "k": {
       "bg": "L_area_0",
-      "links": {},
+      "links": {
+        "家（いえ）のほうへ進（すす）む": "home_sw",
+        "川（かわ）のほうへ進（すす）む": "j"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -385,7 +425,10 @@
     },
     "Kari009": {
       "bg": "back_town",
-      "links": {},
+      "links": {
+        "家（いえ）のほうへ進（すす）む": "home_w",
+        "線路（せんろ）のほうへ進（すす）む": "a"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
@@ -441,7 +484,10 @@
     },
     "street_a": {
       "bg": "back_town",
-      "links": {},
+      "links": {
+        "寝屋川（ねやがわ）のほうへ進（すす）む": "c",
+        "線路（せんろ）のほうへ進（すす）む": "bunki_2"
+      },
       "group": "safe",
       "chance": 0,
       "minimap": [
