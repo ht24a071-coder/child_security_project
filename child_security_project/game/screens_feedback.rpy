@@ -12,7 +12,10 @@ default feedback_is_clear = True
 # フィードバック表示スクリーン（フルスクリーン・中央配置）
 # =============================================================================
 screen game_feedback():
+    zorder 200
     modal True
+
+    on "show" action [Hide("score_hud"), Hide("minimap")]
     
     # 背景
     if feedback_is_clear:

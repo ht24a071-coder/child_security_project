@@ -282,7 +282,7 @@ init python:
 screen controller_guide():
     zorder 101
 
-    if GamepadExists():
+    if GamepadExists() and not main_menu and not renpy.get_screen("game_feedback"):
         frame:
             style "controller_guide_frame"
 

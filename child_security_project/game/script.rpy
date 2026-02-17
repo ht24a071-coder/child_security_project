@@ -38,6 +38,7 @@ label initialize_game:
 
     $ flag_know_110 = False
     $ has_encountered_suspicious = False
+    $ encountered_events = [] # 遭遇イベント履歴リセット
     $ total_score = 0
     hide screen score_hud
 
@@ -238,7 +239,7 @@ label arrival_home:
     "ようやく いえの まえに ついた……。"
     
     # ミニゲームを入れる場所
-
+    call recall_minigame
 
     jump game_clear
 
@@ -250,8 +251,7 @@ label arrival_school:
     "がっこうに ついた！"
     
     # ミニゲームを入れる場所
-
-
+    call recall_minigame
     
     jump game_clear
 
@@ -282,6 +282,9 @@ label game_clear:
             "「いかのおすし」を おもいだそう！"
         ]
     
+    hide screen score_hud
+    hide screen minimap
+    
     call screen game_feedback
     call game_end_processing
     return
@@ -302,6 +305,9 @@ label game_over(set_message="つれさられてしまった..."):
         "・す（すぐ にげる）",
         "・し（しらせる）"
     ]
+    
+    hide screen score_hud
+    hide screen minimap
     
     call screen game_feedback
     $ renpy.full_restart()

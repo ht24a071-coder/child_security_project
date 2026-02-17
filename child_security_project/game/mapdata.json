@@ -32,7 +32,7 @@
         "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_1"
       },
-      "group": "safe",
+      "group": "suspicious",
       "chance": 20,
       "minimap": [
         625,
@@ -45,7 +45,7 @@
         "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_2",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_1"
       },
-      "group": "safe",
+      "group": "suspicious",
       "chance": 20,
       "minimap": [
         613,
@@ -502,15 +502,20 @@
       [
         "event_main_choice",
         [
-          "officer"
+          "officer",
+          "woman"
         ]
-      ]
+      ],
+      "safe_e_lesson_teacher",
+      "safe_e_lesson_officer"
     ],
     "suspicious": [
       "suspi_e_test_1",
       "suspi_e_test_2",
       "encounter_e_stranger",
-      "suspi_e_car"
+      "suspi_e_car",
+      "suspi_e_mom_injury",
+      "suspi_e_acquaintance"
     ],
     "special": [
       "special_e_find_110",

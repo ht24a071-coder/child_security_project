@@ -24,6 +24,9 @@ define t = Character("伊東マンショ", color="#c8ffc8")
 # 不審者のランダム画像用
 default stranger_type = "stranger"
 
+# 遭遇したイベントの記録（振り返りミニゲーム用）
+default encountered_events = [] 
+
 # 不審者の見た目ごとのボイスマッピング
 define stranger_voice_map = {
     "stranger": {
@@ -130,10 +133,21 @@ init python:
         # elif amount < 0:
         #    renpy.play("audio/se_bad.ogg", channel="sound")
 
-    def setup_stranger():
-        """ランダムで不審者の見た目を選ぶ"""
+    def setup_stranger(event_name="unknown"):
+        """ランダムで不審者の見た目を選ぶ & 遭遇イベントを記録"""
         global stranger_type
         stranger_type = renpy.random.choice(["stranger", "stranger2"])
+        
+        # 遭遇リストに追加（重複しないように）
+        # (type, event_name) のタプルで保存
+        found = False
+        for s_type, e_name in encountered_events:
+            if e_name == event_name:
+                found = True
+                break
+        
+        if not found:
+            encountered_events.append((stranger_type, event_name))
 
     def get_stranger_voice(line_id):
         """現在のstranger_typeに対応するボイスファイルパスを返す"""
