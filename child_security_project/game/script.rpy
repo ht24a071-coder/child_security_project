@@ -237,16 +237,10 @@ label arrival_home:
     hide screen minimap
     "ようやく いえの まえに ついた……。"
     
-    python:
-        lock_game = TimingMinigame(speed=4.0, perfect_range=25, good_range=60, key="K_SPACE")
+    # ミニゲームを入れる場所
 
-    "（タイミングよく スペースキーを おせ！）"
-    call screen timing_minigame(lock_game)
 
-    if (_return == "miss"):
-        jump game_over
-    else:
-        jump game_clear
+    jump game_clear
 
 # =============================================================================
 # 登校時の到着処理
@@ -255,16 +249,11 @@ label arrival_school:
     hide screen minimap
     "がっこうに ついた！"
     
-    python:
-        lock_game = TimingMinigame(speed=4.0, perfect_range=25, good_range=60, key="K_SPACE")
+    # ミニゲームを入れる場所
 
-    "（タイミングよく スペースキーを おせ！）"
-    call screen timing_minigame(lock_game)
 
-    if (_return == "miss"):
-        jump game_over
-    else:
-        jump game_clear
+    
+    jump game_clear
 
 # =============================================================================
 # ゲームクリア
