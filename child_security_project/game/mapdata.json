@@ -17,7 +17,6 @@
       "links": {
         "{rb}学校{/rb}{rt}がっこう{/rt}へ{rb}戻{/rb}{rt}もど{/rt}る": "start_point",
         "{rb}学校{/rb}{rt}がっこう{/rt}から{rb}左{/rb}{rt}ひだり{/rt}に{rb}進{/rb}{rt}すす{/rt}む": "bunki_1",
-        "学校（がっこう）から右（みぎ）へ進（すす）む": "d"
         "{rb}学校{/rb}{rt}がっこう{/rt}から{rb}右{/rb}{rt}みぎ{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "d"
       },
       "group": "safe",
@@ -56,9 +55,6 @@
     "public_hall": {
       "bg": "L_area_1",
       "links": {
-        "小道（こみち）を進（すす）む": "road_center",
-        "自治会館（じちかいかん）のほうへ進（すす）む": "Kari002",
-        "大通（おおどお）りのほうへ進（すす）む": "narrow_path_exit"
         "{rb}小道{/rb}{rt}こみち{/rt}を{rb}進{/rb}{rt}すす{/rt}む": "road_center",
         "{rb}自治会館{/rb}{rt}じちかいかん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari002",
         "{rb}大通{/rb}{rt}おおどお{/rt}りのほうへ{rb}進{/rb}{rt}すす{/rt}む": "narrow_path_exit"
@@ -73,7 +69,6 @@
     "home_nw": {
       "bg": "back_home",
       "links": {
-        "出発（しゅっぱつ）する": "narrow_path_entry"
         "{rb}出発{/rb}{rt}しゅっぱつ{/rt}する": "narrow_path_entry"
       },
       "group": "none",
@@ -86,7 +81,6 @@
     "home_se": {
       "bg": "back_home",
       "links": {
-        "出発（しゅっぱつ）する": "Kari006"
         "{rb}出発{/rb}{rt}しゅっぱつ{/rt}する": "Kari006"
       },
       "group": "none",
@@ -101,7 +95,6 @@
       "links": {
         "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_1",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "school_park",
-        "自治会館（じちかいかん）のほうへ進（すす）む": "street_3"
         "{rb}自治会館{/rb}{rt}じちかいかん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_3"
       },
       "group": "safe",
@@ -114,8 +107,6 @@
     "street_3": {
       "bg": "back_street_b",
       "links": {
-        "自治会館（じちかいかん）のほうへ進（すす）む": "Kari002",
-        "学校（がっこう）のほうへ進（すす）む": "bunki_1"
         "{rb}自治会館{/rb}{rt}じちかいかん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari002",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_1"
       },
@@ -131,7 +122,6 @@
       "links": {
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_a",
-        "線路（せんろ）のほうへ進（すす）む": "hasi1"
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "hasi1"
       },
       "group": "safe",
@@ -156,6 +146,7 @@
     "home_w": {
       "bg": "back_home",
       "links": {
+        "{rb}出発{/rb}{rt}しゅっぱつ{/rt}する": "a"
       },
       "group": "safe",
       "chance": 0,
@@ -167,8 +158,6 @@
     "Kari002": {
       "bg": "L_area_0",
       "links": {
-        "小道（こみち）のほうへ進（すす）む": "public_hall",
-        "学校（がっこう）のほうへ進（すす）む": "street_3"
         "{rb}小道{/rb}{rt}こみち{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "public_hall",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_3"
       },
@@ -182,8 +171,6 @@
     "Kari003": {
       "bg": "Fkonobasi",
       "links": {
-        "深北緑地（ふかきたりょくち）のほうへ進（すす）む": "narrow_path_entry",
-        "中学校（ちゅうがっこう）のほうへ進（すす）む": "Kari005"
         "{rb}深北緑地{/rb}{rt}ふかきたりょくち{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "narrow_path_entry",
         "{rb}中学校{/rb}{rt}ちゅうがっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari005"
       },
@@ -197,8 +184,6 @@
     "Kari005": {
       "bg": "back_tunnel",
       "links": {
-        "深野橋（ふこのばし）のほうへ進（すす）む": "Kari003",
-        "小道（こみち）のほうへ進（すす）む": "road"
         "{rb}深野橋{/rb}{rt}ふこのばし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari003",
         "{rb}小道{/rb}{rt}こみち{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "road"
       },
@@ -212,8 +197,6 @@
     "road": {
       "bg": "back_dark",
       "links": {
-        "深野橋（ふこのばし）のほうへ進（すす）む": "Kari005",
-        "小道（こみち）を進（すす）む": "road_center"
         "{rb}深野橋{/rb}{rt}ふこのばし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari005",
         "{rb}小道{/rb}{rt}こみち{/rt}を{rb}進{/rb}{rt}すす{/rt}む": "road_center"
       },
@@ -253,9 +236,6 @@
     "b": {
       "bg": "back_b",
       "links": {
-        "橋（はし）を渡（わた）る": "i",
-        "寝屋川（ねやがわ）のほうへ進（すす）む": "a",
-        "線路（せんろ）のほうへ進（すす）む": "c"
         "{rb}橋{/rb}{rt}はし{/rt}を{rb}渡{/rb}{rt}わた{/rt}る": "i",
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "a",
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "c"
@@ -270,8 +250,6 @@
     "c": {
       "bg": "back_river_1",
       "links": {
-        "寝屋川（ねやがわ）のほうへ進（すす）む": "b",
-        "線路（せんろ）のほうへ進（すす）む": "street_a"
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "b",
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_a"
       },
@@ -285,8 +263,6 @@
     "d": {
       "bg": "L_area_0",
       "links": {
-        "保育園（ほいくえん）のほうへ進（すす）む": "e",
-        "学校（がっこう）のほうへ進（すす）む": "school_park"
         "{rb}保育園{/rb}{rt}ほいくえん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "e",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "school_park"
       },
@@ -300,8 +276,6 @@
     "e": {
       "bg": "L_area_0",
       "links": {
-        "小道（こみち）に入（はい）る": "f",
-        "学校（がっこう）のほうへ進（すす）む": "d"
         "{rb}小道{/rb}{rt}こみち{/rt}に{rb}入{/rb}{rt}はい{/rt}る": "f",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "d"
       },
@@ -315,8 +289,6 @@
     "f": {
       "bg": "L_area_0",
       "links": {
-        "川（かわ）のほうへ進（すす）む": "g",
-        "保育園（ほいくえん）のほうへ進（すす）む": "e"
         "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "g",
         "{rb}保育園{/rb}{rt}ほいくえん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "e"
       },
@@ -330,9 +302,6 @@
     "g": {
       "bg": "back_g",
       "links": {
-        "線路（せんろ）のほうへ進（すす）む": "hasi2",
-        "寝屋川（ねやがわ）のほうへ進（すす）む": "hasi1",
-        "学校（がっこう）のほうへ進（すす）む": "f"
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "hasi2",
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "hasi1",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "f"
@@ -347,8 +316,6 @@
     "hasi1": {
       "bg": "back_hasi1",
       "links": {
-        "線路（せんろ）のほうへ進（すす）む": "g",
-        "寝屋川（ねやがわ）のほうへ進（すす）む": "bunki_2"
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "g",
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_2"
       },
