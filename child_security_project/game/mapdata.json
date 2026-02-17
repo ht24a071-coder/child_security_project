@@ -169,9 +169,10 @@
       ]
     },
     "Kari003": {
-      "bg": "back_tunnel",
+      "bg": "Fkonobasi",
       "links": {
-        "深北緑地（ふかきたりょくち）のほうへ進（すす）む": "narrow_path_entry"
+        "深北緑地（ふかきたりょくち）のほうへ進（すす）む": "narrow_path_entry",
+        "中学校（ちゅうがっこう）のほうへ進（すす）む": "Kari005"
       },
       "group": "safe",
       "chance": 0,
@@ -313,7 +314,7 @@
       ]
     },
     "hasi1": {
-      "bg": "L_area_0",
+      "bg": "back_hasi1",
       "links": {
         "線路（せんろ）のほうへ進（すす）む": "g",
         "寝屋川（ねやがわ）のほうへ進（すす）む": "bunki_2"
