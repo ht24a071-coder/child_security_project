@@ -17,6 +17,7 @@ default deck_safe = []
 # キャラクター定義
 define officer = Character("おまわりさん", color="#c8ffc8")
 define woman = Character("おねえさん", color="#c8ffc8")
+define teacher = Character("先生", color="#c8ffc8")
 define stranger = Character("???", color="#ff8888")  # 不審者用
 define pc = Character("[player_name]", image="player")
 define t = Character("伊東マンショ", color="#c8ffc8")
@@ -49,6 +50,7 @@ define MAX_STEPS = 10
 image side player = "images/icons/[player_icon].png"
 image side officer = "images/actor/officer.png"
 image side woman = "images/actor/woman.png"
+image side teacher = "images/actor/teacher.png"
 image side stranger = ConditionSwitch(
     "stranger_type == 'stranger2'", "images/actor/stranger2.png",
     "True", "images/actor/stranger.png"
@@ -57,6 +59,7 @@ image stranger = ConditionSwitch(
     "stranger_type == 'stranger2'", "images/actor/stranger2.png",
     "True", "images/actor/stranger.png"
 )
+image teacher = "images/actor/teacher.png"
 
 # -----------------------------------------------------------
 # スコア表示システム

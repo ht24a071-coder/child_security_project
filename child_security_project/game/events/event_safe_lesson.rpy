@@ -19,36 +19,36 @@ label safe_e_lesson_dispatch:
     return
 
 label safe_e_lesson_teacher:
-    show woman with dissolve
-    # 先生役として woman を使用（あるいは専用画像があればそちら）
+    show teacher with dissolve
+    # 先生役として teacher を使用
     
-    $ record_encounter("woman", "safe_person")
+    $ record_encounter("teacher", "safe_person")
     
-    woman "あ、[player_name]さん。こんにちは。"
+    teacher "あ、[player_name]さん。こんにちは。"
     
     pc "{rb}先生{/rb}{rt}せんせい{/rt}、こんにちは！"
     
-    woman "{rb}元気{/rb}{rt}げんき{/rt}に{rb}挨拶{/rb}{rt}あいさつ{/rt}できてえらいわね。"
-    woman "そういえば、{rb}最近{/rb}{rt}さいきん{/rt}{rb}不審者{/rb}{rt}ふしんしゃ{/rt}が{rb}増{/rb}{rt}ふ{/rt}えているのを{rb}知{/rb}{rt}し{/rt}ってる？"
+    teacher "{rb}元気{/rb}{rt}げんき{/rt}に{rb}挨拶{/rb}{rt}あいさつ{/rt}できてえらいわね。"
+    teacher "そういえば、{rb}最近{/rb}{rt}さいきん{/rt}{rb}不審者{/rb}{rt}ふしんしゃ{/rt}が{rb}増{/rb}{rt}ふ{/rt}えているのを{rb}知{/rb}{rt}し{/rt}ってる？"
     
     pc "えっ、そうなの？"
     
-    woman "ええ。「お{rb}母{/rb}{rt}かあ{/rt}さんが{rb}怪我{/rb}{rt}けが{/rt}した」とか「{rb}子犬{/rb}{rt}こいぬ{/rt}を{rb}見{/rb}{rt}み{/rt}に{rb}行{/rb}{rt}い{/rt}こう」とか{rb}言{/rb}{rt}い{/rt}って、"
-    woman "{rb}子供{/rb}{rt}こども{/rt}を{rb}連{/rb}{rt}つ{/rt}れ{rb}去{/rb}{rt}さ{/rt}ろうとする{rb}悪{/rb}{rt}わる{/rt}い{rb}人{/rb}{rt}ひと{/rt}がいるみたいなの。"
+    teacher "ええ。「お{rb}母{/rb}{rt}かあ{/rt}さんが{rb}怪我{/rb}{rt}けが{/rt}した」とか「{rb}子犬{/rb}{rt}こいぬ{/rt}を{rb}見{/rb}{rt}み{/rt}に{rb}行{/rb}{rt}い{/rt}こう」とか{rb}言{/rb}{rt}い{/rt}って、"
+    teacher "{rb}子供{/rb}{rt}こども{/rt}を{rb}連{/rb}{rt}つ{/rt}れ{rb}去{/rb}{rt}さ{/rt}ろうとする{rb}悪{/rb}{rt}わる{/rt}い{rb}人{/rb}{rt}ひと{/rt}がいるみたいなの。"
     
-    woman "もしそんなことを{rb}言{/rb}{rt}い{/rt}われても、{rb}絶対{/rb}{rt}ぜったい{/rt}についていっちゃだめよ。"
-    woman "{rb}知{/rb}{rt}し{/rt}っている{rb}人{/rb}{rt}ひと{/rt}でも、お{rb}家{/rb}{rt}うち{/rt}の{rb}人{/rb}{rt}ひと{/rt}に{rb}確認{/rb}{rt}かくにん{/rt}してからにしてね。"
+    teacher "もしそんなことを{rb}言{/rb}{rt}い{/rt}われても、{rb}絶対{/rb}{rt}ぜったい{/rt}についていっちゃだめよ。"
+    teacher "{rb}知{/rb}{rt}し{/rt}っている{rb}人{/rb}{rt}ひと{/rt}でも、お{rb}家{/rb}{rt}うち{/rt}の{rb}人{/rb}{rt}ひと{/rt}に{rb}確認{/rb}{rt}かくにん{/rt}してからにしてね。"
     
     pc "うん、わかった！"
     
-    woman "よし、{rb}気{/rb}{rt}き{/rt}をつけて{rb}帰{/rb}{rt}かえ{/rt}ってね。"
+    teacher "よし、{rb}気{/rb}{rt}き{/rt}をつけて{rb}帰{/rb}{rt}かえ{/rt}ってね。"
     
     $ update_score(15)
     
     "{i}{rb}先生{/rb}{rt}せんせい{/rt}の{rb}話{/rb}{rt}はなし{/rt}をよく{rb}聞{/rb}{rt}き{/rt}けました！{/i}"
     "{i}「いかのおすし」を{rb}思{/rb}{rt}おも{/rt}い{rb}出{/rb}{rt}だ{/rt}して、{rb}自分{/rb}{rt}じぶん{/rt}の{rb}身{/rb}{rt}み{/rt}を{rb}守{/rb}{rt}まも{/rt}ろう！{/i}"
     
-    hide woman with dissolve
+    hide teacher with dissolve
     return
 
 label safe_e_lesson_officer:
