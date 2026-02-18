@@ -40,13 +40,11 @@ label .buzzer_success:
     "おおきな おとが なった！"
     "ふしんしゃは ひるんで にげていった！"
     
-    $ _return = "success"
-    return
+    return "success"
 
 label .buzzer_fail:
     "ブザーを ならせなかった..."
-    $ _return = "fail"
-    return
+    return "fail"
 
 
 # -----------------------------------------------------------------------------
