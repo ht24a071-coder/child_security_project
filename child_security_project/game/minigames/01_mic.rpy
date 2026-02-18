@@ -226,11 +226,35 @@ init -1 python:
         def __init__(self, 
                      threshold=0.6, # 90dB相当
                      duration=8.0,  # 制限時間を長めに（削り切る必要があるため）
-                     hp=100):       # 不審者のHP
+                     hp=100,        # 不審者のHP
+                     title=None,    # イントロ画面タイトル
+                     text=None):    # イントロ画面説明文
             self.threshold = threshold
             self.duration = duration
             self.max_hp = hp
             self.current_hp = hp
+            
+            # イントロオーバーレイ用（BaseMinigame互換）
+            self.started = False
+            self.key = "dismiss"  # イントロ用（実際のゲーム入力とは別）
+            
+            # マイク機能チェック（タイトル・テキスト決定前に必要）
+            self.mic_available = _win_mic_available
+            
+            # タイトル・テキスト（マイク有無で自動切り替え）
+            if title is not None:
+                self.title = title
+            elif self.mic_available:
+                self.title = "おおごえミニゲーム"
+            else:
+                self.title = "れんだミニゲーム"
+            
+            if text is not None:
+                self.text = text
+            elif self.mic_available:
+                self.text = "おおきなこえで\nふしんしゃを げきたいしろ！"
+            else:
+                self.text = "ボタンを れんだして\nふしんしゃを げきたいしろ！"
             
             self.result = None
             self.show_result = False
@@ -242,8 +266,6 @@ init -1 python:
             self.current_volume = 0.0
             self.max_volume = 0.0
             
-            # マイク機能チェック
-            self.mic_available = _win_mic_available
             self.recorder = None
             
             # フォールバック用
@@ -424,164 +446,167 @@ screen shout_minigame(game):
     modal True
     zorder 200 # ミニマップ(98)より手前に表示
     
-    if not game.finished:
-        timer 0.05 repeat True action Function(renpy.restart_interaction)
-    
-    add Solid("#000000DD")
-    
-    # 叫び文字演出（背景側）
-    for txt_data in game.shout_texts:
-        $ txt = txt_data[0]
-        $ tx = txt_data[1]
-        $ ty = txt_data[2]
-        $ t_size = txt_data[4]
-        if renpy.get_game_runtime() - txt_data[3] < 0.6:
-             text "[txt]":
-                size t_size
-                xalign tx
-                yalign ty
-                color "#ff3333"
-                bold True
-                outlines [(3, "#ffffff", 0, 0)]
-    
-    # メインフレーム
-    frame:
-        xalign 0.5
-        yalign 0.5
-        padding (40, 40)
-        background None # 背景なしでオーバーレイ風に
-        xoffset game.shake_offset[0]
-        yoffset game.shake_offset[1]
+    # イントロオーバーレイ（STARTボタン押下前）
+    if not game.started:
+        use minigame_intro_overlay(game)
+    else:
+        # ゲーム本編
+        if not game.finished:
+            timer 0.05 repeat True action Function(renpy.restart_interaction)
         
-        vbox:
-            spacing 20
-            xalign 0.5
-            
-            # タイトル
-            if game.mic_available:
-                text "こえで げきたいしろ！":
-                    size 50
-                    xalign 0.5
-                    color "#ff0000"
+        add Solid("#000000DD")
+        
+        # 叫び文字演出（背景側）
+        for txt_data in game.shout_texts:
+            $ txt = txt_data[0]
+            $ tx = txt_data[1]
+            $ ty = txt_data[2]
+            $ t_size = txt_data[4]
+            if renpy.get_game_runtime() - txt_data[3] < 0.6:
+                 text "[txt]":
+                    size t_size
+                    xalign tx
+                    yalign ty
+                    color "#ff3333"
                     bold True
-                    outlines [(2, "#ffffff", 0, 0)]
-            else:
-                text "れんだで げきたいしろ！":
-                    size 50
-                    xalign 0.5
-                    color "#ff0000"
-                    bold True
-                    outlines [(2, "#ffffff", 0, 0)]
-
-            null height 180
-
-            # 不審者エリア（HPバー + 画像）
-            frame:
-                background None
-                xalign 0.5
-                ysize 400
-                xsize 400
-                
-                # 不審者の画像（簡易表示、実際は立ち絵があればそれを使う）
-                # ここではShake演出用に位置をずらす
-                add "images/actor/stranger.png":
-                    xalign 0.5
-                    yalign 1.0
-                    zoom 0.6
-                    xoffset game.stranger_shake[0]
-                    yoffset game.stranger_shake[1]
-                    # ダメージ時の赤フラッシュ（MatrixColor等が使えないので簡易的にTint）
-                    # tint (1.0, 1.0 - game.damage_flash, 1.0 - game.damage_flash) 
-                
-                # HPバー（頭上）
-                vbox:
-                    xalign 0.5
-                    yalign 0.0
-                    spacing 5
-                    
-                    text "ふしんしゃの HP":
-                        size 24
-                        color "#ffffff"
-                        xalign 0.5
-                        outlines [(1, "#000000", 0, 0)]
-                        
-                    frame:
-                        background "#333333"
-                        xsize 400
-                        ysize 30
-                        xalign 0.5
-                        
-                        add DynamicDisplayable(game.update):
-                            xalign 0.0
-                            ycenter 0.5
-            
-            null height 20
-            
-            # 残り時間
-            $ remaining = game.get_remaining()
-            text "のこり: [remaining:.1f] びょう":
-                size 40
-                xalign 0.5
-                color "#ffff00"
-                bold True
-                outlines [(2, "#000000", 0, 0)]
-            
-            # 自分の音量メーター（下部）
-            if game.mic_available:
-                 vbox:
-                    xalign 0.5
-                    spacing 5
-                    text "あなたの こえの おおきさ":
-                        size 20
-                        color "#aaaaaa"
-                        xalign 0.5
-                    
-                    frame:
-                        xsize 300
-                        ysize 20
-                        background "#333333"
-                        xalign 0.5
-                        
-                        # 現在の音量バー
-                        $ v_width = int(300 * min(1.0, game.current_volume / game.threshold))
-                        frame:
-                            background "#00ffff"
-                            xsize v_width
-                            ysize 20
-                            xalign 0.0
-
-            # フォールバック案内
-            elif not game.mic_available:
-                text "ボタンを れんだ！！":
-                    size 30
-                    color "#ff8800"
-                    bold True
-
-    # 入力処理
-    if not game.show_result and not game.mic_available:
-        key "K_SPACE" action Function(game.on_mash)
-    
-    # 結果表示
-    if game.show_result:
+                    outlines [(3, "#ffffff", 0, 0)]
+        
+        # メインフレーム
         frame:
             xalign 0.5
             yalign 0.5
-            background Solid("#000000aa")
-            padding (50, 30)
+            padding (40, 40)
+            background None # 背景なしでオーバーレイ風に
+            xoffset game.shake_offset[0]
+            yoffset game.shake_offset[1]
             
-            if game.result == "perfect":
-                text "げきたい せいこう！！":
-                    size 80
+            vbox:
+                spacing 20
+                xalign 0.5
+                
+                # タイトル
+                if game.mic_available:
+                    text "こえで げきたいしろ！":
+                        size 50
+                        xalign 0.5
+                        color "#ff0000"
+                        bold True
+                        outlines [(2, "#ffffff", 0, 0)]
+                else:
+                    text "れんだで げきたいしろ！":
+                        size 50
+                        xalign 0.5
+                        color "#ff0000"
+                        bold True
+                        outlines [(2, "#ffffff", 0, 0)]
+
+                null height 180
+
+                # 不審者エリア（HPバー + 画像）
+                frame:
+                    background None
+                    xalign 0.5
+                    ysize 400
+                    xsize 400
+                    
+                    # 不審者の画像（簡易表示、実際は立ち絵があればそれを使う）
+                    # ここではShake演出用に位置をずらす
+                    add "images/actor/stranger.png":
+                        xalign 0.5
+                        yalign 1.0
+                        zoom 0.6
+                        xoffset game.stranger_shake[0]
+                        yoffset game.stranger_shake[1]
+                    
+                    # HPバー（頭上）
+                    vbox:
+                        xalign 0.5
+                        yalign 0.0
+                        spacing 5
+                        
+                        text "ふしんしゃの HP":
+                            size 24
+                            color "#ffffff"
+                            xalign 0.5
+                            outlines [(1, "#000000", 0, 0)]
+                            
+                        frame:
+                            background "#333333"
+                            xsize 400
+                            ysize 30
+                            xalign 0.5
+                            
+                            add DynamicDisplayable(game.update):
+                                xalign 0.0
+                                ycenter 0.5
+                
+                null height 20
+                
+                # 残り時間
+                $ remaining = game.get_remaining()
+                text "のこり: [remaining:.1f] びょう":
+                    size 40
+                    xalign 0.5
                     color "#ffff00"
                     bold True
-                    outlines [(4, "#ff0000", 0, 0)]
-            else:
-                text "げきたい しっぱい……":
-                    size 60
-                    color "#aaaaaa"
-                    bold True
+                    outlines [(2, "#000000", 0, 0)]
+                
+                # 自分の音量メーター（下部）
+                if game.mic_available:
+                     vbox:
+                        xalign 0.5
+                        spacing 5
+                        text "あなたの こえの おおきさ":
+                            size 20
+                            color "#aaaaaa"
+                            xalign 0.5
+                        
+                        frame:
+                            xsize 300
+                            ysize 20
+                            background "#333333"
+                            xalign 0.5
+                            
+                            # 現在の音量バー
+                            $ v_width = int(300 * min(1.0, game.current_volume / game.threshold))
+                            frame:
+                                background "#00ffff"
+                                xsize v_width
+                                ysize 20
+                                xalign 0.0
+
+                # フォールバック案内
+                elif not game.mic_available:
+                    text "ボタンを れんだ！！":
+                        size 30
+                        color "#ff8800"
+                        bold True
+
+        # 入力処理
+        if not game.show_result and not game.mic_available:
+            key "K_SPACE" action Function(game.on_mash)
         
-        timer 2.5 action Return(game.result)
+        # 結果表示
+        if game.show_result:
+            frame:
+                xalign 0.5
+                yalign 0.5
+                background Solid("#000000aa")
+                padding (50, 30)
+                
+                if game.result == "perfect":
+                    text "げきたい せいこう！！":
+                        size 80
+                        color "#ffff00"
+                        bold True
+                        outlines [(4, "#ff0000", 0, 0)]
+                else:
+                    text "げきたい しっぱい……":
+                        size 60
+                        color "#aaaaaa"
+                        bold True
+            
+            timer 2.5 action Return(game.result)
 
 
 # =============================================================================

@@ -155,7 +155,7 @@ label .forceful_run:
     python:
         escape_game = EscapeMinigame(difficulty="hard", key="dismiss")
     
-    call screen escape_minigame(escape_game)
+    call screen mashing_minigame(escape_game)
     
     # UI復帰
     show screen minimap
@@ -233,7 +233,7 @@ label .run_away_car:
     python:
         escape_game = EscapeMinigame(difficulty="normal", key="dismiss")
     
-    call screen escape_minigame(escape_game)
+    call screen mashing_minigame(escape_game)
     
     # UI復帰
     show screen minimap
