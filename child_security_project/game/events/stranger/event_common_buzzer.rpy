@@ -40,11 +40,13 @@ label .buzzer_success:
     "おおきな おとが なった！"
     "ふしんしゃは ひるんで にげていった！"
     
-    return # 呼び出し元に戻る（成功扱い）
+    $ _return = "success"
+    return
 
 label .buzzer_fail:
     "ブザーを ならせなかった..."
-    return # 呼び出し元に戻る（失敗扱い -> Game Overへ）
+    $ _return = "fail"
+    return
 
 
 # -----------------------------------------------------------------------------
