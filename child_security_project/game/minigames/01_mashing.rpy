@@ -136,7 +136,7 @@ screen mashing_minigame(game):
 
         # 連打ヒット時のフラッシュ（shake_offset が非ゼロのとき光る）
         if game.shake_offset != (0, 0):
-            add Solid("#ff4400", xsize=1920, ysize=1080) alpha 0.5:
+            add Solid("#ff4400", xsize=1920, ysize=1080) alpha 0.1:
                 at mg_flash_in
 
         # ---------------------------------------------------------------
