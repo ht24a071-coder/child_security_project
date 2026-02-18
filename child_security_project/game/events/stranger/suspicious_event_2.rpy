@@ -95,7 +95,7 @@ label .car_2_success_buzzer:
 label .car_2_rescued:
     # 助けに来る人を場所で決定
     python:
-        h_tag, _ = get_helper_data()
+        h_tag, _unused = get_helper_data()
     
     if h_tag == "officer":
          show officer with dissolve

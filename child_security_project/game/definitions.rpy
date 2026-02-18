@@ -113,20 +113,21 @@ screen score_hud():
                 yalign 0.5       # 上下の真ん中寄せ
 
             # 目的地表示（下校モードのみ）
-            if game_mode == "going_home" and target_home:
+            $ _target_home = globals().get("target_home", None)
+            if game_mode == "going_home" and _target_home:
                 hbox:
                     spacing 5
                     yalign 0.5
                     add "images/gui/icon_home.png" yalign 0.5 zoom 0.8
                     
                     $ home_name = ""
-                    if target_home == "home_nw":
+                    if _target_home == "home_nw":
                         $ home_name = "{rb}左上{/rb}{rt}ひだりうえ{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
-                    elif target_home == "home_sw":
+                    elif _target_home == "home_sw":
                         $ home_name = "{rb}左下{/rb}{rt}ひだりした{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
-                    elif target_home == "home_se":
+                    elif _target_home == "home_se":
                         $ home_name = "{rb}右下{/rb}{rt}みぎした{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
-                    elif target_home == "home_w":
+                    elif _target_home == "home_w":
                         $ home_name = "{rb}左{/rb}{rt}ひだり{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
                     
                     text "目的地: [home_name]":

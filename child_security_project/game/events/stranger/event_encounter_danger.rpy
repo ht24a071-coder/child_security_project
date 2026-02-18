@@ -58,7 +58,7 @@ label .buzzer_stranger:
     $ update_score(20)
     
     python:
-        h_tag, _ = get_helper_data()
+        h_tag, _unused = get_helper_data()
     
     if h_tag == "teacher":
         show teacher with dissolve
@@ -122,7 +122,7 @@ label .escape_buzzer:
     $ update_score(15)
     
     python:
-        h_tag, _ = get_helper_data()
+        h_tag, _unused = get_helper_data()
 
     if h_tag == "teacher":
         show teacher with dissolve
@@ -157,7 +157,7 @@ label .escape_110:
         "「こども110ばんの いえ」に かけこんだ！"
         
         python:
-            h_tag, _ = get_helper_data()
+            h_tag, _unused = get_helper_data()
         
         if h_tag == "teacher":
             show teacher with dissolve
@@ -289,7 +289,7 @@ label .escape_shout:
         hide stranger with dissolve
         
         python:
-            h_tag, _ = get_helper_data()
+            h_tag, _unused = get_helper_data()
 
         if h_tag == "teacher":
             show teacher with dissolve
@@ -509,7 +509,7 @@ label .game_over_capture:
 
 label .after_encounter_success:
     python:
-        h_tag, _ = get_helper_data()
+        h_tag, _unused = get_helper_data()
     
     if h_tag == "teacher":
         show teacher with dissolve
@@ -559,7 +559,7 @@ label .flee_success:
         "なんとか にげられた！"
     
     python:
-        h_tag, _ = get_helper_data()
+        h_tag, _unused = get_helper_data()
     
     if h_tag == "teacher":
         show teacher with dissolve
