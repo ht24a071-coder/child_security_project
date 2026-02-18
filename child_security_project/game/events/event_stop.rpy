@@ -8,7 +8,7 @@ label Event_Force_Stop:
 
     window hide dissolve
 
-    call game_over(set_message="よるになってしまった。")
+    call game_over(set_message="よるになってしまった。") from _call_game_over
     return
 
 

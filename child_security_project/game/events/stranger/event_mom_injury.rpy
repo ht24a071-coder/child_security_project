@@ -4,10 +4,7 @@
 
 label suspi_e_mom_injury:
 
-    $ setup_stranger("mom_injury")
-    "とつぜん、しらない おとなが はなしかけてきた。"
-    
-    show stranger with dissolve
+    call show_stranger_wrapper from _call_show_stranger_wrapper_mom
     
     $ _v = get_stranger_voice("003") # Hello的なボイスがあれば
     if _v:
@@ -40,7 +37,7 @@ label .get_in_car_mom:
     
     stranger "よしよし、いいこだね..."
     
-    hide stranger
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_18
     scene black with fade
     
     "{i}それは わるいおとなの うそでした。{/i}"
@@ -108,7 +105,7 @@ label .escape_success_mom:
     
     stranger "チッ...！"
     "ふしんしゃは にげていった。"
-    hide stranger with dissolve
+    call hide_stranger_wrapper(dissolve) from _call_hide_stranger_wrapper_19
     
     "{i}よくできた！しらない ひとが [player_name]ちゃんの うでを ひっぱったりしたら、おおごえを だして にげよう！{/i}"
     "{i}かならず ほかの おとなに かくにんしようね。{/i}"
@@ -135,9 +132,9 @@ label .buzzer_car_mom:
     stranger "うわっ！？"
     
     "ふしんしゃは あわてて にげていった！"
-    hide stranger with dissolve
+    call hide_stranger_wrapper(dissolve) from _call_hide_stranger_wrapper_20
     
-    show woman with dissolve
+    call show_woman_wrapper from _call_show_woman_wrapper_7
     woman "だいじょうぶ！？"
     pc "おかあさんが けがをしたって..."
     woman "それは うそかもしれないよ。おうちのひとに でんわしてみようか？"
@@ -145,7 +142,7 @@ label .buzzer_car_mom:
     "（かくにんしたら、ママは 元気でした）"
     
     woman "よかったね！あやしいと おもったら すぐ ブザーだね！"
-    hide woman with dissolve
+    call hide_woman_wrapper from _call_hide_woman_wrapper_9
     
     "{i}すばらしい！うそかもしれないと おもって ブザーを ならせたね！{/i}"
     return

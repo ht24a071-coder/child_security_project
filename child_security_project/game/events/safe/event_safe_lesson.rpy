@@ -3,7 +3,7 @@
 # =============================================================================
 
 label safe_e_lesson_teacher:
-    show woman with dissolve
+    call show_woman_wrapper from _call_show_woman_wrapper_1
     # 先生役として woman を使用（あるいは専用画像があればそちら）
     
     woman "あ、[player_name]さん。こんにちは。"
@@ -30,11 +30,11 @@ label safe_e_lesson_teacher:
     "{i}先生の話をよく聞けました！{/i}"
     "{i}「いかのおすし」を思い出して、自分の身を守ろう！{/i}"
     
-    hide woman with dissolve
+    call hide_woman_wrapper from _call_hide_woman_wrapper_3
     return
 
 label safe_e_lesson_officer:
-    show officer with dissolve
+    call show_officer_wrapper from _call_show_officer_wrapper_1
     
     officer "やあ、気をつけて帰っているかな？"
     
@@ -56,5 +56,5 @@ label safe_e_lesson_officer:
     "{i}お巡りさんのアドバイスを聞けました！{/i}"
     "{i}大人に話しかけられても、距離を保つことが大事だよ。{/i}"
     
-    hide officer with dissolve
+    call hide_officer_wrapper from _call_hide_officer_wrapper_1
     return

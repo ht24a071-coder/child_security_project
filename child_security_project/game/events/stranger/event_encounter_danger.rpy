@@ -5,8 +5,7 @@
 label encounter_e_stranger:
     "だれかが ちかづいてきた。"
     
-    $ setup_stranger()
-    show stranger with dissolve
+    call show_stranger_wrapper from _call_show_stranger_wrapper_danger
     
     $ _v = get_stranger_voice("003")
     if _v:
@@ -48,17 +47,17 @@ label .buzzer_stranger:
     "{size=40}ビーーーーーーー！！！{/size}"
     
     stranger "うわっ！ なんだ！？"
-    hide stranger with dissolve
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_3
     
     "ふしんしゃは おとにおどろいて にげていった！"
     
     $ update_score(20)
     
-    show woman with dissolve
+    call show_woman_wrapper from _call_show_woman_wrapper_2
     woman "どうしたの！？ すごい おとが したけど！"
     pc "しらない ひとに こえを かけられて……"
     woman "ブザーを ならしたのね。えらいわ！"
-    hide woman with dissolve
+    call hide_woman_wrapper from _call_hide_woman_wrapper_4
     
     "{i}よくできた！防犯ブザーは こわいとおもったら すぐにならそう！{/i}"
     return
@@ -70,12 +69,12 @@ label .follow_stranger:
     pc "おかし……？ いく！"
     stranger "いいこだね～ こっちこっち……"
     
-    hide stranger
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_4
     scene black with fade
     
     "…しばらく あるいたあと…"
     
-    show stranger with dissolve
+    call show_stranger_wrapper from _call_show_stranger_wrapper
     
     stranger "さあ、もうすこしだよ…"
     
@@ -104,15 +103,15 @@ label .escape_buzzer:
     "ピピピピピ！！"
     stranger "うわっ！？"
     
-    hide stranger with dissolve
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_5
     
     $ update_score(15)
     
-    show woman with dissolve
+    call show_woman_wrapper from _call_show_woman_wrapper_3
     woman "どうしたの！？"
     pc "しらない ひとに つれていかれそうに..."
     woman "よくできたね！でも さいしょから ついていかないように しようね。"
-    hide woman with dissolve
+    call hide_woman_wrapper from _call_hide_woman_wrapper_5
     
     "{i}ぼうはんブザーで にげられた！でも さいしょから ついていかないのが いちばんだよ。{/i}"
     return
@@ -127,16 +126,16 @@ label .escape_110:
     
     call screen escape_minigame(escape_game)
     
-    hide stranger
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_6
     
     if _return == "success":
         $ update_score(30)
         "「こども110ばんの いえ」に かけこんだ！"
-        show officer with dissolve
+        call show_officer_wrapper from _call_show_officer_wrapper_2
         officer "どうしたの！？"
         pc "しらない ひとに つれていかれそうに……！"
         officer "だいじょうぶ、ここは あんぜんだよ。よく にげてきたね！"
-        hide officer with dissolve
+        call hide_officer_wrapper from _call_hide_officer_wrapper_2
         "{i}すばらしい！110ばんの いえを おぼえていたから にげられたね！{/i}"
     else:
         $ update_score(10)
@@ -158,7 +157,7 @@ label .escape_fail_no_110:
     )
     call screen escape_minigame(game)
     
-    hide stranger
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_7
     
     if _return == "success":
         $ update_score(5)
@@ -180,7 +179,7 @@ label .escape_home:
     
     call screen escape_minigame(escape_game)
     
-    hide stranger
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_8
     
     if _return == "success":
         "なんとか にげきった……"
@@ -229,16 +228,16 @@ label .escape_shout:
         $ update_score(15)
         play audio "audio/buzzer.mp3"
         stranger "うわっ…！"
-        hide stranger with dissolve
+        call hide_stranger_wrapper from _call_hide_stranger_wrapper_9
         
-        show woman with dissolve
+        call show_woman_wrapper from _call_show_woman_wrapper_4
         woman "どうしたの！？ だいじょうぶ！？"
         pc "しらない ひとに……"
         woman "こわかったね。よく おおごえを だせたね！"
-        hide woman with dissolve
+        call hide_woman_wrapper from _call_hide_woman_wrapper_6
         "{i}よくがんばった！でも さいしょから ついていかないのが いちばんだよ。{/i}"
     else:
-        hide stranger
+        call hide_stranger_wrapper from _call_hide_stranger_wrapper_10
         "{i}こえが でなかった……{/i}"
         
         "（どうしよう…！？）"
@@ -263,7 +262,7 @@ label .refuse_stranger:
     
     "しっかり ことわって、そのばを はなれた。"
     
-    hide stranger with dissolve
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_11
     
     "{i}よくできた！しらない ひとの さそいは きっぱり ことわろう！{/i}"
     return
@@ -331,16 +330,16 @@ label .shout_stranger:
                     jump game_over
 
     stranger "うわっ！ ちょ、ちょっと……！"
-    hide stranger with dissolve
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_12
     
     "ふしんしゃは にげていった！"
     
     
-    show woman with dissolve
+    call show_woman_wrapper from _call_show_woman_wrapper_5
     woman "どうしたの！？ だいじょうぶ！？"
     pc "しらない ひとに こえを かけられて……"
     woman "こわかったね。よく おおごえを だせたね！"
-    hide woman with dissolve
+    call hide_woman_wrapper from _call_hide_woman_wrapper_7
     
     "{i}すばらしい！おおごえを だすと まわりの ひとが たすけに きてくれるよ！{/i}"
     return
@@ -364,7 +363,7 @@ label .flee_success:
     
     call screen escape_minigame(flee_game)
     
-    hide stranger
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_13
     
     if _return == "success":
         $ update_score(35)
@@ -372,12 +371,15 @@ label .flee_success:
     else:
         $ update_score(20)
         "なんとか にげられた！"
+        call show_woman_wrapper from _call_show_woman_wrapper_6
+        call hide_woman_wrapper from _call_hide_woman_wrapper_8
     
-    show officer with dissolve
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_14
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_15
     officer "どうしたの！？"
     pc "しらない ひとに おいかけられて……！"
     officer "だいじょうぶ、ここは あんぜんだよ。よく にげてきたね！"
-    hide officer with dissolve
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_16
     
     "{i}すばらしい！110ばんの いえを おぼえていたから にげられたね！{/i}"
     return
@@ -390,7 +392,7 @@ label .flee_fail:
     
     stranger "まてまて～"
     
-    hide stranger
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper_17
     scene black with fade
     
     "{i}にげばしょが わからなかった……{/i}"

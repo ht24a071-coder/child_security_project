@@ -6,7 +6,7 @@ label encounter_e_safe_person:
 
     "だれかが ちかづいてきた。"
     
-    show woman with dissolve
+    call show_woman_wrapper from _call_show_woman_wrapper
     
     woman "こんにちは！"
     
@@ -66,7 +66,7 @@ label .greet_back:
         pc "…さようなら"
         woman "バイバイ！"
     
-    hide woman with dissolve
+    call hide_woman_wrapper from _call_hide_woman_wrapper
     
     "{i}よくできました！あいさつは コミュニケーションの きほんだね。{/i}"
     return
@@ -80,15 +80,15 @@ label .buzzer_safe:
     "ピピピピピ！！"
     woman "えっ！？ ちょ、ちょっと！？"
     
-    hide woman
+    call hide_woman_wrapper from _call_hide_woman_wrapper_1
     
-    show officer with dissolve
+    call show_officer_wrapper from _call_show_officer_wrapper
     officer "どうしたの？"
     pc "あ、あの……"
     officer "ぼうはんブザーは ほんとうに あぶないときに つかうものだよ。"
     officer "ふつうの ひとには ならしちゃダメだよ。"
     
-    hide officer with dissolve
+    call hide_officer_wrapper from _call_hide_officer_wrapper
     
     $ update_score(-5)
     
@@ -103,7 +103,7 @@ label .ignore_safe:
     pc "……"
     woman "あら、シャイな こね。きを つけてね。"
     
-    hide woman with dissolve
+    call hide_woman_wrapper from _call_hide_woman_wrapper_2
     
     "{i}あいさつを かえすと、ちいきの ひとが あなたのことを おぼえてくれるよ。{/i}"
     return
