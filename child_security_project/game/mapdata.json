@@ -20,7 +20,7 @@
         "{rb}学校{/rb}{rt}がっこう{/rt}から{rb}右{/rb}{rt}みぎ{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "d"
       },
       "group": "safe",
-      "chance": 10,
+      "chance": 40,
       "minimap": [
         707,
         342
@@ -33,7 +33,7 @@
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_1"
       },
       "group": "suspicious",
-      "chance": 20,
+      "chance": 30,
       "minimap": [
         625,
         378
@@ -46,7 +46,7 @@
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_1"
       },
       "group": "suspicious",
-      "chance": 20,
+      "chance": 50,
       "minimap": [
         613,
         424
@@ -60,7 +60,7 @@
         "{rb}大通{/rb}{rt}おおどお{/rt}りのほうへ{rb}進{/rb}{rt}すす{/rt}む": "narrow_path_exit"
       },
       "group": "safe",
-      "chance": 10,
+      "chance": 50,
       "minimap": [
         605,
         265
@@ -97,8 +97,8 @@
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "school_park",
         "{rb}自治会館{/rb}{rt}じちかいかん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_3"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 50,
       "minimap": [
         632,
         344
@@ -110,8 +110,8 @@
         "{rb}自治会館{/rb}{rt}じちかいかん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari002",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_1"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 50,
       "minimap": [
         642,
         302
@@ -124,8 +124,8 @@
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "hasi1",
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "c"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 60,
       "minimap": [
         598,
         490
@@ -161,8 +161,8 @@
         "{rb}小道{/rb}{rt}こみち{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "public_hall",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_3"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 70,
       "minimap": [
         650,
         264
@@ -174,8 +174,8 @@
         "{rb}深北緑地{/rb}{rt}ふかきたりょくち{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "narrow_path_entry",
         "{rb}中学校{/rb}{rt}ちゅうがっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari005"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 80,
       "minimap": [
         375,
         200
@@ -187,8 +187,8 @@
         "{rb}深野橋{/rb}{rt}ふこのばし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari003",
         "{rb}小道{/rb}{rt}こみち{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "road"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 60,
       "minimap": [
         452,
         227
@@ -200,8 +200,8 @@
         "{rb}深野橋{/rb}{rt}ふこのばし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari005",
         "{rb}小道{/rb}{rt}こみち{/rt}を{rb}進{/rb}{rt}すす{/rt}む": "road_center"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 80,
       "minimap": [
         446,
         265
@@ -213,8 +213,8 @@
         "{rb}深野橋{/rb}{rt}ふこのばし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "road",
         "{rb}自治会館{/rb}{rt}じちかいかん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "public_hall"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 80,
       "minimap": [
         511,
         264
@@ -226,8 +226,8 @@
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "b",
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "home_w"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 50,
       "minimap": [
         292,
         497
@@ -240,8 +240,8 @@
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "a",
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "c"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 90,
       "minimap": [
         375,
         494
@@ -253,8 +253,8 @@
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "b",
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_2"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 90,
       "minimap": [
         481,
         493
@@ -266,8 +266,8 @@
         "{rb}保育園{/rb}{rt}ほいくえん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "e",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "school_park"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 60,
       "minimap": [
         761,
         341
@@ -279,8 +279,8 @@
         "{rb}小道{/rb}{rt}こみち{/rt}に{rb}入{/rb}{rt}はい{/rt}る": "f",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "d"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 70,
       "minimap": [
         752,
         420
@@ -292,8 +292,8 @@
         "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "g",
         "{rb}保育園{/rb}{rt}ほいくえん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "e"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 70,
       "minimap": [
         722,
         425
@@ -306,8 +306,8 @@
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "hasi1",
         "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "f"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 60,
       "minimap": [
         712,
         488
@@ -319,8 +319,8 @@
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "g",
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_2"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 80,
       "minimap": [
         644,
         500
@@ -332,8 +332,8 @@
         "{rb}橋{/rb}{rt}はし{/rt}を{rb}渡{/rb}{rt}わた{/rt}る": "h",
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "g"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 70,
       "minimap": [
         773,
         496
@@ -345,8 +345,8 @@
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "tunnel",
         "{rb}橋{/rb}{rt}はし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "hasi2"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 70,
       "minimap": [
         760,
         575
@@ -358,8 +358,8 @@
         "{rb}小道{/rb}{rt}こみち{/rt}を{rb}進{/rb}{rt}すす{/rt}む": "Kari006",
         "{rb}橋{/rb}{rt}はし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "h"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 70,
       "minimap": [
         842,
         578
@@ -371,8 +371,8 @@
         "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "j",
         "{rb}橋{/rb}{rt}はし{/rt}を{rb}渡{/rb}{rt}わた{/rt}る": "b"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 80,
       "minimap": [
         368,
         513
@@ -384,8 +384,8 @@
         "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "i",
         "{rb}緑{/rb}{rt}みどり{/rt}が{rb}丘第{/rb}{rt}おかだい{/rt}2{rb}地域広場{/rb}{rt}ちいきひろば{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "k"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 70,
       "minimap": [
         435,
         513
@@ -397,8 +397,8 @@
         "{rb}家{/rb}{rt}いえ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "home_sw",
         "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "j"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 70,
       "minimap": [
         422,
         585
@@ -410,8 +410,8 @@
         "{rb}家{/rb}{rt}いえ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "home_se",
         "{rb}小道{/rb}{rt}こみち{/rt}を{rb}進{/rb}{rt}すす{/rt}む": "tunnel"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 70,
       "minimap": [
         850,
         640
@@ -423,8 +423,8 @@
         "{rb}深野橋{/rb}{rt}ふこのばし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari005",
         "{rb}自治会館{/rb}{rt}じちかいかん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "public_hall"
       },
-      "group": "safe",
-      "chance": 0,
+      "group": "suspicious",
+      "chance": 70,
       "minimap": [
         605,
         200
@@ -437,7 +437,7 @@
         "{rb}深野橋{/rb}{rt}ふこのばし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari003"
       },
       "group": "safe",
-      "chance": 0,
+      "chance": 70,
       "minimap": [
         375,
         150
@@ -449,8 +449,7 @@
       [
         "event_main_choice",
         [
-          "officer",
-          "woman"
+          "officer"
         ]
       ],
       "safe_e_lesson_teacher",

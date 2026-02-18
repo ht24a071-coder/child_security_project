@@ -86,9 +86,13 @@ label .refuse_car_mom:
             # 連打ミニゲーム
             window hide
             # 難易度調整: 15回/5秒
-            $ mash_game = MashMinigame(target_count=15, time_limit=5.0)
-            call screen mash_minigame_screen(mash_game)
-            hide screen mash_minigame_screen
+            $ game = MashingMinigame(
+                target_count=15, 
+                time_limit=5.0, 
+                title="にげろ", 
+                text="スペースキーを連打して\nダッシュしろ！"
+            )
+            call screen mashing_minigame(game)
             window show
             
             if _return == "perfect" or _return == "good":

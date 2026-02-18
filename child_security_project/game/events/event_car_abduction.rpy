@@ -147,7 +147,7 @@ label .forceful_run:
     pc "（にげなきゃ！）"
     
     python:
-        escape_game = EscapeMinigame(difficulty="hard", key="K_SPACE")
+        escape_game = EscapeMinigame(difficulty="hard", key="dismiss")
     
     call screen escape_minigame(escape_game)
     
@@ -221,7 +221,7 @@ label .run_away_car:
     $ update_score(15)
     
     python:
-        escape_game = EscapeMinigame(difficulty="normal", key="K_SPACE")
+        escape_game = EscapeMinigame(difficulty="normal", key="dismiss")
     
     call screen escape_minigame(escape_game)
     

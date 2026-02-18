@@ -93,8 +93,8 @@ label .choice_hand:
     $ game = MashingMinigame(
         target_count=20, 
         time_limit=5.0, 
-        title="全力疾走！", 
-        text="スペースキーを連打して\n駅までダッシュしろ！"
+        title="にげろ！", 
+        text="スペースキーをれんだして\nダッシュしろ！"
     )
     call screen mashing_minigame(game)
     $ res = _return
