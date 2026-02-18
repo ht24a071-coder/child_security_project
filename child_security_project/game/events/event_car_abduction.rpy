@@ -25,9 +25,6 @@ label suspi_e_car:
         "...（むしする）":
             pc "..."
             stranger "ねえ、きいてる？"
-        
-        "（ぼうはんブザーを にぎる）":
-            pc "（いつでも ならせるように...）"
 
     $ _v = get_stranger_voice("002")
     if _v:
@@ -71,18 +68,8 @@ label .refuse_car:
     
     pc "だいじょうぶです。じぶんで かえれますから。"
     
-    # ランダムで強引パターンか諦めパターンか
-    $ forceful = renpy.random.randint(1, 100) <= 40  # 40%の確率で強引
-    
-    if forceful:
-        jump .forceful_attempt
-    else:
-        stranger "そう...じゃあね..."
-        "くるまは さっていった。"
-        hide stranger with dissolve
-        
-        "{i}よくできた！しらない ひとの くるまには のらないでね。{/i}"
-        return
+    # かならず強引な手段に出る
+    jump .forceful_attempt
 
 # -----------------------------------------------------------------------------
 # 強引に乗せようとしてくるパターン
@@ -101,12 +88,6 @@ label .forceful_attempt:
         
         "にげる":
             jump .forceful_run
-        
-        "ぼうはんブザーを ならす":
-            jump .forceful_buzzer
-        
-        "たたかう":
-            jump .forceful_fight
 
 # 大声を出す
 label .forceful_shout:
@@ -115,7 +96,7 @@ label .forceful_shout:
     "（ほんとうに おおきな こえを だそう！）"
     
     python:
-        shout_game = ShoutMinigame(threshold=0.35, duration=3.0, hold_time=0.3)
+        shout_game = ShoutMinigame(threshold=0.35, duration=3.0)
     
     call screen shout_minigame(shout_game)
     
@@ -126,21 +107,34 @@ label .forceful_shout:
         "ふしんしゃは くるまに のって にげていった！"
         hide stranger with dissolve
         
-        show woman with dissolve
-        woman "どうしたの！？ だいじょうぶ！？"
-        pc "くるまに のせられそうに...！"
-        woman "こわかったね！よく おおごえを だせたね！"
-        woman "おまわりさんに れんらくするね。"
-        hide woman with dissolve
+        # 助けに来る人をランダム決定
+        $ is_officer = renpy.random.choice([True, False])
+        
+        if is_officer:
+             show officer with dissolve
+             officer "どうしたの！？ だいじょうぶ！？"
+             pc "くるまに のせられそうに...！"
+             officer "こわかったね！よく おおごえを だせたね！"
+             officer "すぐ パトロールに いってくるよ。"
+             hide officer with dissolve
+        else:
+             show teacher with dissolve
+             teacher "どうしたの！？ だいじょうぶ！？"
+             pc "くるまに のせられそうに...！"
+             teacher "こわかったわね！よく おおごえを だせたわね！"
+             teacher "先生から おまわりさんに れんらくしておくわね。"
+             hide teacher with dissolve
         
         "{i}すばらしい！おおごえを だして たすけを よべたね！{/i}"
         return
     else:
-        stranger "しずかにしろ！"
-        hide stranger
-        scene black with fade
-        "{i}こえが でなかった...{/i}"
-        jump game_over
+        # 失敗 -> ブザーチャンス
+        call fallback_buzzer_sequence
+        if _return == "success":
+            $ update_score(15)
+            jump .car_repelled_buzzer
+        else:
+            jump .car_gameover
 
 # 逃げる
 label .forceful_run:
@@ -169,48 +163,44 @@ label .forceful_run:
         "{i}よく にげられたね！あやしい くるまには ちかづかないようにしよう。{/i}"
         return
     else:
-        stranger "つかまえた！"
-        hide stranger
-        scene black with fade
-        "{i}にげられなかった...{/i}"
-        jump game_over
+        # 失敗 -> ブザーチャンス
+        call fallback_buzzer_sequence
+        if _return == "success":
+            $ update_score(15)
+            jump .car_repelled_buzzer
+        else:
+            jump .car_gameover
 
-# 防犯ブザー
-label .forceful_buzzer:
-    play audio "audio/buzzer.mp3"
-    
-    $ update_score(25)
-    
-    "ピピピピピ！！"
-    stranger "うわっ！？"
-    
-    "ふしんしゃは あわてて くるまに のって にげていった！"
+label .car_repelled_buzzer:
+    "ふしんしゃは ブザーの おとに おどろいて にげていった！"
     hide stranger with dissolve
     
-    show woman with dissolve
-    woman "どうしたの！？ おおきな おとが！"
-    pc "くるまに のせられそうに...！"
-    woman "よくできたね！ぼうはんブザーを ならしたのは せいかいだよ！"
-    woman "おまわりさんに れんらくするね。"
-    hide woman with dissolve
+    # 助けに来る人をランダム決定
+    $ is_officer = renpy.random.choice([True, False])
     
-    "{i}すばらしい！ぼうはんブザーで たすかったね！{/i}"
+    if is_officer:
+         show officer with dissolve
+         officer "どうしたの！？ だいじょうぶ！？"
+         pc "くるまに のせられそうに...！"
+         officer "こわかったね！よく ブザーを ならせたね！"
+         hide officer with dissolve
+    else:
+         show teacher with dissolve
+         teacher "どうしたの！？ だいじょうぶ！？"
+         pc "くるまに のせられそうに...！"
+         teacher "こわかったわね！よく ブザーを ならせたわね！"
+         hide teacher with dissolve
+
     return
 
-# たたかう（おすすめしない）
-label .forceful_fight:
-    pc "やめてください！"
-    
-    "たたかおうとしたけど..."
-    
-    stranger "おとなしくしろ！"
+label .car_gameover:
+    stranger "つかまえた！"
     hide stranger
     scene black with fade
-    
-    "{i}おとなに たたかっても かてないよ...{/i}"
-    "{i}にげるか おおごえを だすか ぼうはんブザーを ならそう！{/i}"
-    
+    "{i}ふしんしゃに つれさられてしまった...{/i}"
     jump game_over
+
+
 
 # -----------------------------------------------------------------------------
 # 逃げるルート

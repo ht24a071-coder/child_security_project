@@ -7,6 +7,12 @@ label event_main_choice(human_type):
     window show dissolve
     
     $ greeting = "Greet_" + human_type
+    
+    # 遭遇記録（到着時に参照するため）
+    # human_type が "officer" なら "officer", それ以外なら "safe_person" として記録
+    $ rec_event = "officer" if human_type == "officer" else "safe_person"
+    $ record_encounter(human_type, rec_event)
+
     call expression greeting
 
     menu:

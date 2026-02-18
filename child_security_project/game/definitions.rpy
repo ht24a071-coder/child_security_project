@@ -17,6 +17,7 @@ default deck_safe = []
 # キャラクター定義
 define officer = Character("おまわりさん", color="#c8ffc8")
 define woman = Character("おねえさん", color="#c8ffc8")
+define teacher = Character("先生", color="#c8ffc8")
 define stranger = Character("???", color="#ff8888")  # 不審者用
 define pc = Character("[player_name]", image="player")
 define t = Character("伊東マンショ", color="#c8ffc8")
@@ -49,6 +50,7 @@ define MAX_STEPS = 10
 image side player = "images/icons/[player_icon].png"
 image side officer = "images/actor/officer.png"
 image side woman = "images/actor/woman.png"
+image side teacher = "images/actor/teacher.png"
 image side stranger = ConditionSwitch(
     "stranger_type == 'stranger2'", "images/actor/stranger2.png",
     "True", "images/actor/stranger.png"
@@ -57,6 +59,7 @@ image stranger = ConditionSwitch(
     "stranger_type == 'stranger2'", "images/actor/stranger2.png",
     "True", "images/actor/stranger.png"
 )
+image teacher = "images/actor/teacher.png"
 
 # -----------------------------------------------------------
 # スコア表示システム
@@ -148,6 +151,18 @@ init python:
         
         if not found:
             encountered_events.append((stranger_type, event_name))
+
+    def record_encounter(char_type, event_name):
+        """遭遇イベントを記録（不審者以外用）"""
+        # 重複チェック
+        found = False
+        for c_type, e_name in encountered_events:
+            if e_name == event_name:
+                found = True
+                break
+        
+        if not found:
+            encountered_events.append((char_type, event_name))
 
     def get_stranger_voice(line_id):
         """現在のstranger_typeに対応するボイスファイルパスを返す"""

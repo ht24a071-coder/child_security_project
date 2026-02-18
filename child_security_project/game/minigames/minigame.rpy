@@ -5,7 +5,7 @@ init -1 python:
     # 共通基盤クラス
     # =========================================================================
     class BaseMinigame(object):
-        def __init__(self, key="dismiss", title="ミニゲーム", text="スペースキーを押して開始！"):
+        def __init__(self, key="dismiss", title="ミニゲーム", text="ボタンを押して開始！"):
             self.key = key
             self.title = title
             self.text = text
@@ -73,7 +73,7 @@ init -1 python:
             self.current_count = 0
             self._real_start_time = None
             self.title = "れんだミニゲーム"
-            self.text = "けっていボタン　か　スペースをれんだしろ！"
+            self.text = "けっていボタンを　れんだしろ！"
 
         def get_remaining(self):
             # まだ始まってない、あるいは開始時刻が決まってないなら制限時間をそのまま返す
@@ -106,23 +106,34 @@ init -1 python:
                 self.result = "perfect" if rem > self.time_limit * 0.5 else "good"
                 self.show_result = self.finished = True
 
-    # 3. 脱出ミニゲーム
-    class EscapeMinigame(MovingBarMinigame):
+    # 3. 脱出ミニゲーム（連打ベースに変更）
+    class EscapeMinigame(MashingMinigame):
         def __init__(self, difficulty="hard", **kwargs):
-            settings = {"easy": (2.0, 50), "normal": (3.5, 35), "hard": (5.0, 20)}
-            speed, trange = settings.get(difficulty, settings["hard"])
-            super(EscapeMinigame, self).__init__(speed=speed, target_range=trange, width=500, height=80, **kwargs)
+            # 難易度を連打回数と制限時間にマッピング
+            # easy: 10回/4秒, normal: 20回/5秒, hard: 30回/5秒
+            settings = {
+                "easy": (10, 4.0), 
+                "normal": (20, 5.0), 
+                "hard": (30, 5.0)
+            }
+            count, limit = settings.get(difficulty, settings["hard"])
+            
+            # 親クラス(MashingMinigame)を初期化
+            super(EscapeMinigame, self).__init__(target_count=count, time_limit=limit, **kwargs)
+            
             self.difficulty = difficulty
+            self.title = "にげろ！"
+            # テキストはイベント側で "ボタンを連打して..." になっているので、
+            # デフォルトは汎用的なものにしておく
+            if "text" not in kwargs:
+                self.text = "ボタンを れんだして にげきれ！"
 
-        def update(self, st, at):
-            pos = self.update_position(st, multiplier=250)
-            bar = Solid("#ff3333", xsize=self.bar_width, ysize=self.height)
-            return Transform(child=bar, xalign=0.5, yalign=0.5, xoffset=int(pos)), 0.0
-
-        def check_timing(self):
-            if not self.started or self.show_result: return
-            self.result = "success" if abs(self.position) <= self.target_range else "fail"
-            self.show_result = True
+        # update, on_mash は MashingMinigame のものをそのまま使う
+        # 必要ならオーバーライドして演出を変える
+        
+        # 既存のイベントコードが check_timing を呼んでいる場合の互換性維持
+        # （ただしイベント側が screen escape_minigame を呼んでいるなら、
+        #  screen側も対応が必要。screen escape_minigame は minigame.rpy 内にあるので修正する）
 
 # =============================================================================
 # 共通：説明オーバーレイ（これを各ゲーム画面の中で使う）
@@ -286,25 +297,43 @@ screen escape_minigame(game):
         use minigame_intro_overlay(game)
     else:
         # ゲーム本編
+        if not game.finished:
+            timer 0.05 repeat True action Function(renpy.restart_interaction)
+            
         add Solid("#220000CC")
         vbox:
             align (0.5, 0.5)
             spacing 25
-            text "にげろ！" size 36 xalign 0.5 color "#ff6666" bold True
-            fixed:
-                xsize game.width + 40 ysize game.height + 40 xalign 0.5
-                add Solid("#1a0000", xsize=game.width+20, ysize=game.height+20) align (0.5, 0.5)
-                add Solid("#00ff00", xsize=game.target_range*2, ysize=game.height) align (0.5, 0.5) alpha 0.4
-                add DynamicDisplayable(game.update)
+            text "にげろ！" size 40 xalign 0.5 color "#ff6666" bold True outlines [(3, "#000", 0, 0)]
             
+            # 残り時間
+            text "のこり: [game.get_remaining():.1f] びょう" size 28 xalign 0.5 color "#ffff00"
+
+            # ゲージ表示 (MashingMinigame.update を利用)
+            frame:
+                xsize 420 ysize 50 xalign 0.5 background "#440000"
+                add DynamicDisplayable(game.update) align (0.0, 0.5)
+            
+            text "[game.current_count] / [game.target_count]" size 50 xalign 0.5 color "#ffcc00" bold True
+
             if game.show_result:
-                $ res_txt = "にげきった！" if game.result == "success" else "つかまった..."
-                text res_txt size 50 xalign 0.5 color "#fff" bold True
+                # MashingMinigameは perfect/good/miss を返すが、
+                # EscapeMinigameの呼び出し元は success/fail を期待している場合がある
+                # クラス側で吸収するか、ここで変換するか。
+                # 呼び出し元コード(event_encounter_danger.rpy)は `_return == "success"` を期待している。
+                # MashingMinigame.on_mash は perfect/good をセットする。
+                # 互換性のため、return値を変換するロジックを入れる。
+                
+                $ success = (game.result in ["perfect", "good"])
+                $ res_txt = "にげきった！" if success else "つかまった..."
+                text res_txt size 60 xalign 0.5 color "#fff" bold True outlines [(4, "#f00", 0, 0)]
 
         if not game.show_result:
-            key game.key action Function(game.check_timing)
+            key game.key action Function(game.on_mash)
         else:
-            timer 1.5 action Return(game.result)
+            # 呼び出し元が success/fail を期待しているので変換して返す
+            $ ret_val = "success" if (game.result in ["perfect", "good"]) else "fail"
+            timer 1.5 action Return(ret_val)
 
 # ボタンのスタイル
 style confirm_button:

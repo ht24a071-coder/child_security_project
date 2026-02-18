@@ -544,7 +544,7 @@ screen shout_minigame(game):
 
             # フォールバック案内
             elif not game.mic_available:
-                text "スペースキーを れんだ！！":
+                text "ボタンを れんだ！！":
                     size 30
                     color "#ff8800"
                     bold True
