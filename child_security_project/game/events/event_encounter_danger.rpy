@@ -154,7 +154,7 @@ label .escape_fail_no_110:
     $ game = EscapeMinigame(
         difficulty="hard",
         title="全力疾走！", 
-        text="スペースキーを連打して\n駅までダッシュしろ！"
+        text="ボタンを連打して\n110番の家までダッシュしろ！"
     )
     call screen escape_minigame(game)
     

@@ -26,7 +26,7 @@ label .choice_dash:
     pc "いまなら まだ まにあうはず……！"
     
     # 連打ミニゲーム
-    "（れんだ！スペースキーを れんだして わたれ！）"
+    "（れんだ！ボタンを れんだして わたれ！）"
     
     python:
         dash_game = MashingMinigame(target_count=15, time_limit=2.5, key="dismiss")
@@ -94,7 +94,7 @@ label .choice_hand:
         target_count=20, 
         time_limit=5.0, 
         title="にげろ！", 
-        text="スペースキーをれんだして\nダッシュしろ！"
+        text="ボタンをれんだして\nダッシュしろ！"
     )
     call screen mashing_minigame(game)
     $ res = _return

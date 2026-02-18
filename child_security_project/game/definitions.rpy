@@ -149,6 +149,18 @@ init python:
         if not found:
             encountered_events.append((stranger_type, event_name))
 
+    def record_encounter(char_type, event_name):
+        """遭遇イベントを記録（不審者以外用）"""
+        # 重複チェック
+        found = False
+        for c_type, e_name in encountered_events:
+            if e_name == event_name:
+                found = True
+                break
+        
+        if not found:
+            encountered_events.append((char_type, event_name))
+
     def get_stranger_voice(line_id):
         """現在のstranger_typeに対応するボイスファイルパスを返す"""
         return stranger_voice_map.get(stranger_type, {}).get(line_id, None)

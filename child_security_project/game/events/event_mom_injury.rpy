@@ -90,7 +90,7 @@ label .refuse_car_mom:
                 target_count=15, 
                 time_limit=5.0, 
                 title="にげろ", 
-                text="スペースキーを連打して\nダッシュしろ！"
+                text="ボタンを連打して\nダッシュしろ！"
             )
             call screen mashing_minigame(game)
             window show
