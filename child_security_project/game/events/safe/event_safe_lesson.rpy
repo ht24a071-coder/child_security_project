@@ -19,8 +19,8 @@ label safe_e_lesson_dispatch:
     return
 
 label safe_e_lesson_teacher:
-    show teacher with dissolve
-    # 先生役として teacher を使用
+    show woman with dissolve
+    # 先生役として woman を使用（あるいは専用画像があればそちら）
     
     $ record_encounter("teacher", "safe_person")
     
@@ -48,11 +48,11 @@ label safe_e_lesson_teacher:
     "{i}{rb}先生{/rb}{rt}せんせい{/rt}の{rb}話{/rb}{rt}はなし{/rt}をよく{rb}聞{/rb}{rt}き{/rt}けました！{/i}"
     "{i}「いかのおすし」を{rb}思{/rb}{rt}おも{/rt}い{rb}出{/rb}{rt}だ{/rt}して、{rb}自分{/rb}{rt}じぶん{/rt}の{rb}身{/rb}{rt}み{/rt}を{rb}守{/rb}{rt}まも{/rt}ろう！{/i}"
     
-    hide teacher with dissolve
+    hide woman with dissolve
     return
 
 label safe_e_lesson_officer:
-    show officer with dissolve
+    call show_officer_wrapper from _call_show_officer_wrapper_1
     
     $ record_encounter("officer", "officer")
     
@@ -76,5 +76,5 @@ label safe_e_lesson_officer:
     "{i}お{rb}巡{/rb}{rt}まわ{/rt}りさんのアドバイスを{rb}聞{/rb}{rt}き{/rt}けました！{/i}"
     "{i}{rb}大人{/rb}{rt}おとな{/rt}に{rb}話{/rb}{rt}はな{/rt}しかけられても、{rb}距離{/rb}{rt}きょり{/rt}を{rb}保{/rb}{rt}たも{/rt}つことが{rb}大事{/rb}{rt}だいじ{/rt}だよ。{/i}"
     
-    hide officer with dissolve
+    call hide_officer_wrapper from _call_hide_officer_wrapper_1
     return

@@ -56,7 +56,7 @@ label initialize_game:
 # =============================================================================
 label going_school_start:
     $ game_mode = "going_school"
-    call initialize_game
+    call initialize_game from _call_initialize_game
 
     # どの家から出発するか選ぶ
     # "どこの いえから はじめますか？"
@@ -75,7 +75,7 @@ label going_school_start:
 # =============================================================================
 label going_home_start:
     $ game_mode = "going_home"
-    call initialize_game
+    call initialize_game from _call_initialize_game_1
     
     scene start with fade
 
@@ -106,11 +106,11 @@ label travel_loop:
 
     # 歩数での強制終了
     if StepCount == (MaxStep/2):
-        call Event_Warning_Stop
+        call Event_Warning_Stop from _call_Event_Warning_Stop
     elif StepCount >= MaxStep:
-        call Event_Force_Stop
+        call Event_Force_Stop from _call_Event_Force_Stop
         
-    call trigger_node_event(node_data)
+    call trigger_node_event(node_data) from _call_trigger_node_event
 
     window hide
 
@@ -239,7 +239,7 @@ label arrival_home:
     "ようやく いえの まえに ついた……。"
     
     # ミニゲームを入れる場所
-    call recall_minigame
+    call recall_minigame from _call_recall_minigame
 
     jump game_clear
 
@@ -251,7 +251,7 @@ label arrival_school:
     "がっこうに ついた！"
     
     # ミニゲームを入れる場所
-    call recall_minigame
+    call recall_minigame from _call_recall_minigame_1
     
     jump game_clear
 
@@ -306,7 +306,7 @@ label game_clear:
     hide screen minimap
     
     call screen game_feedback
-    call game_end_processing
+    call game_end_processing from _call_game_end_processing
     return
 
 # =============================================================================

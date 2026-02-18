@@ -4,13 +4,9 @@
 
 label suspi_e_acquaintance:
 
-    $ setup_stranger("acquaintance")
-    
-    # 知り合い設定：まずは日常会話から油断させる
-    "だれかが てを ふっている。"
-    "よくみると、きんじょの おじさんだった。"
-    
-    show stranger with dissolve
+
+    call show_stranger_wrapper from _call_show_stranger_wrapper_acquaintance
+
     
     $ _v = get_stranger_voice("003") 
     if _v:
@@ -51,7 +47,7 @@ label .follow_acquaintance:
     
     "おじさんは ひと気のない ほうへ あるいていく。"
     
-    hide stranger
+    call hide_stranger_wrapper from _call_hide_stranger_wrapper
     scene black with fade
     
     "{i}しっている ひとでも、かってに ついていってはいけません。{/i}"
@@ -75,7 +71,7 @@ label .refuse_acquaintance:
     
     "あわてて そのばを はなれた。"
     
-    hide stranger with dissolve
+    call hide_stranger_wrapper(dissolve) from _call_hide_stranger_wrapper_1
     
     "{i}よくできた！しっている ひとでも、ついていってはいけないよ。{/i}"
     "{i}「ちょっとだけ」といわれても、ことわって すぐに はなれよう。{/i}"
@@ -94,7 +90,7 @@ label .buzzer_acquaintance:
     stranger "おいおい！なにをするんだ！"
     
     "おじさんは びっくりして いなくなった。"
-    hide stranger with dissolve
+    call hide_stranger_wrapper(dissolve) from _call_hide_stranger_wrapper_2
     
     pc "（ちょっと こわかった...）"
     

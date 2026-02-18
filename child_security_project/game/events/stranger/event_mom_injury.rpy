@@ -4,10 +4,7 @@
 
 label suspi_e_mom_injury:
 
-    $ setup_stranger("mom_injury")
-    "とつぜん、しらない おとなが はなしかけてきた。"
-    
-    show stranger with dissolve
+    call show_stranger_wrapper from _call_show_stranger_wrapper_mom
     
     $ _v = get_stranger_voice("003") # Hello的なボイスがあれば
     if _v:
@@ -20,9 +17,32 @@ label suspi_e_mom_injury:
     stranger "そうなんだ！いまから くるまで びょういんに つれていってあげるよ！"
     stranger "さあ、はやく のって！"
     
-    # 強制イベントフロー
-    pc "ママが しんぱいだ..."
-    pc "でも、しらない ひとには ついていっちゃダメだ！"
+    # 選択肢
+    menu:
+        "くるまに のる":
+            jump .get_in_car_mom
+        
+        "のらない":
+            jump .refuse_car_mom
+        
+        "ぼうはんブザーを ならす":
+            jump .buzzer_car_mom
+            
+# -----------------------------------------------------------------------------
+# 車に乗る（GAME OVER）
+# -----------------------------------------------------------------------------
+label .get_in_car_mom:
+    pc "ママが しんぱいだ...！"
+    pc "わかりました、つれていってください！"
+    
+    stranger "よしよし、いいこだね..."
+    
+    hide stranger
+    scene black with fade
+    
+    "{i}それは わるいおとなの うそでした。{/i}"
+    "{i}しらないひとの くるまに のってはいけません。{/i}"
+    "{i}「おかあさんが けがをした」といわれても、ついていっては いけません。{/i}"
     
     pc "いきません！"
     
@@ -105,7 +125,7 @@ label .escape_success_mom:
     
     stranger "チッ...！"
     "ふしんしゃは にげていった。"
-    hide stranger with dissolve
+    call hide_stranger_wrapper(dissolve) from _call_hide_stranger_wrapper_19
     
     # 助けに来る人をランダム決定
     $ is_officer = renpy.random.choice([True, False])
@@ -161,4 +181,29 @@ label .escape_fail_mom:
     "{i}ふしんしゃに むりやり くるまに のせられてしまった...{/i}"
     jump game_over
 
-
+# -----------------------------------------------------------------------------
+# 防犯ブザー（大正解）
+# -----------------------------------------------------------------------------
+label .buzzer_car_mom:
+    play audio "audio/buzzer.mp3"
+    
+    $ update_score(20)
+    
+    "ピピピピピ！！"
+    stranger "うわっ！？"
+    
+    "ふしんしゃは あわてて にげていった！"
+    hide stranger with dissolve
+    
+    show woman with dissolve
+    woman "だいじょうぶ！？"
+    pc "おかあさんが けがをしたって..."
+    woman "それは うそかもしれないよ。おうちのひとに でんわしてみようか？"
+    
+    "（かくにんしたら、ママは 元気でした）"
+    
+    woman "よかったね！あやしいと おもったら すぐ ブザーだね！"
+    hide woman with dissolve
+    
+    "{i}すばらしい！うそかもしれないと おもって ブザーを ならせたね！{/i}"
+    return
