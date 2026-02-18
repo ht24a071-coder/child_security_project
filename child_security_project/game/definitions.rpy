@@ -3,6 +3,7 @@ default current_step = 0
 default has_encountered_suspicious = False 
 default flag_know_110 = False 
 default total_score = 0
+default score_history = []
 default trust_point = 0
 default current_score = 0
 default is_window_hovered = False # テキストウィンドウのホバー状態
@@ -172,11 +173,19 @@ transform score_float_up:
 
 # 4. 便利な関数（update_score）
 init python:
-    def update_score(amount):
+    def update_score(amount, reason=None):
         # グローバル変数のスコアを更新
         global total_score
         total_score += amount
         
+        # 履歴に追加
+        # reasonがない場合は自動的に補完するか、Noneのままにして表示側で処理
+        if reason:
+             score_history.append((amount, reason))
+        else:
+             # 理由がない場合のデフォルト表記（必要なら）
+             pass
+
         # ポップアップ演出を表示（引数で増減値を渡す）
         renpy.show_screen("score_popup", amount=amount)
         

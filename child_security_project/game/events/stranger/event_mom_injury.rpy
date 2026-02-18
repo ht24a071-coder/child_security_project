@@ -48,7 +48,7 @@ label .get_in_car_mom:
 # のらない（正しい判断）
 # -----------------------------------------------------------------------------
 label .refuse_car_mom:
-    $ update_score(15)
+    $ update_score(15, "はっきりと ことわった")
     
     pc "いきません！"
     
@@ -125,7 +125,7 @@ label .forceful_mom_run:
 
 label .escape_success_mom_shout:
     # 大声成功
-    $ update_score(25)
+    $ update_score(25, "おおごえで げきたい")
     pc "やめてー！！"
     "ふしんしゃの てを ふりほどいて にげだした！"
     
@@ -136,7 +136,7 @@ label .escape_success_mom_shout:
 
 label .escape_success_mom_run:
     # 逃走成功
-    $ update_score(15)
+    $ update_score(15, "なんとか にげきった")
     "なんとか にげきった！"
     
     stranger "チッ...！"
@@ -167,7 +167,7 @@ label .escape_rescued_mom:
 
 label .escape_success_mom_buzzer:
     # ブザー成功時
-    $ update_score(15)
+    $ update_score(15, "ぼうはんブザーで げきたい")
     "ピピピピピ！！"
     stranger "うわっ、なんだ！！"
     "ふしんしゃは あわてて にげだした！"
@@ -206,7 +206,7 @@ label .escape_fail_mom:
 label .buzzer_car_mom:
     play audio "audio/buzzer.mp3"
     
-    $ update_score(20)
+    $ update_score(20, "ぼうはんブザーで げきたい")
     
     "ピピピピピ！！"
     stranger "うわっ！？"

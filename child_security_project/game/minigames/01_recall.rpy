@@ -24,7 +24,7 @@ init python:
             # ダミー用に color matrix で色を変えたバージョンなどを用意するのも手
             
             dummies = []
-            all_types = ["stranger", "stranger2", "officer", "woman"] # officerとか混ぜる？
+            all_types = ["stranger", "stranger2", "officer", "woman", "teacher", "parent"]
             
             for t in all_types:
                 if t != target_type:
@@ -33,11 +33,17 @@ init python:
             # 3択を作る
             import random
             options = [target_type]
-            # ダミーから2つ選ぶ（足りなければ重複許容）
-            while len(options) < 3:
-                d = random.choice(dummies)
-                options.append(d)
-                
+            
+            # ダミーから重複なしで選ぶ
+            if len(dummies) >= 2:
+                selected_dummies = random.sample(dummies, 2)
+                options.extend(selected_dummies)
+            elif len(dummies) == 1:
+                options.append(dummies[0])
+                # 足りない場合は仕方ないので重複させるか、空白にするか
+                # ここでは重複もやむなし（仕様上起きないはず）
+                options.append(dummies[0])
+
             random.shuffle(options)
             self.choices = options
             
@@ -112,23 +118,31 @@ screen recall_minigame_screen(game):
         
         for i, choice_type in enumerate(game.choices):
             button:
-                xysize (300, 500)
+                xysize (300, 600)
                 background "#ffffff22"
                 hover_background "#ffffff44"
                 
                 action Return(i) # 選択したインデックスを返す
                 
                 # 画像を表示
-                # choice_type から画像パスを解決
-                # ここでは簡易実装として if文で
+                # fit="contain" で枠内に収める
+                $ img_path = ""
                 if choice_type == "stranger":
-                    add "images/actor/stranger.png" zoom 0.5 align (0.5, 1.0)
+                     $ img_path = "images/actor/stranger.png"
                 elif choice_type == "stranger2":
-                    add "images/actor/stranger2.png" zoom 0.5 align (0.5, 1.0)
+                     $ img_path = "images/actor/stranger2.png"
                 elif choice_type == "officer":
-                    add "images/actor/officer.png" zoom 0.5 align (0.5, 1.0)
+                     $ img_path = "images/actor/officer.png"
                 elif choice_type == "woman":
-                    add "images/actor/woman.png" zoom 0.5 align (0.5, 1.0)
+                     $ img_path = "images/actor/woman.png"
+                elif choice_type == "teacher":
+                     $ img_path = "images/actor/teacher.png"
+                elif choice_type == "parent":
+                     $ img_path = "images/actor/woman3.png"
+                
+                if img_path:
+                    # fit="cover" & align(0.5, 0.0) で顔付近を中心にトリミング表示
+                    add Transform(img_path, fit="cover", xysize=(280, 580), align=(0.5, 0.0))
                 else:
                     text "?" size 100 align (0.5, 0.5)
 
@@ -237,7 +251,7 @@ label recall_minigame:
     
     if result_index == recall_game.correct_index:
         play audio "audio/se_good.ogg"
-        $ update_score(30)
+        $ update_score(30, "ふしんしゃの とくちょうを おぼえていた")
         
         if game_mode == "going_school":
             teacher "そう……よく　おぼえていたわね。"

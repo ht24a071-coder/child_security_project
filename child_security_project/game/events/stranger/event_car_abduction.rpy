@@ -63,7 +63,7 @@ label .get_in_car:
 # 断るルート（強引に乗せようとしてくる場合あり）
 # -----------------------------------------------------------------------------
 label .refuse_car:
-    $ update_score(10)
+    $ update_score(10, "はっきりと ことわった")
     
     pc "だいじょうぶです。じぶんで かえれますから。"
     
@@ -108,7 +108,7 @@ label .forceful_shout:
     show screen score_hud
     
     if _return != "miss":
-        $ update_score(25)
+        $ update_score(25, "おおごえで げきたい")
         play audio "audio/buzzer.mp3"
         stranger "ちっ...！"
         "ふしんしゃは くるまに のって にげていった！"
@@ -161,7 +161,7 @@ label .forceful_run:
     show screen score_hud
 
     if _return == "success":
-        $ update_score(15)
+        $ update_score(15, "なんとか にげきった")
         hide stranger
         
         "なんとか にげきった！"
@@ -241,7 +241,7 @@ label .run_away_car:
     hide stranger
     
     if _return == "success":
-        $ update_score(10)
+        $ update_score(10, "うまく にげられた")
         "うまく にげられた！"
     else:
         "なんとか にげられた..."
@@ -255,7 +255,7 @@ label .run_away_car:
 label .buzzer_car:
     play audio "audio/buzzer.mp3"
     
-    $ update_score(20)
+    $ update_score(20, "ぼうはんブザーで げきたい")
     
     "ピピピピピ！！"
     stranger "な、なんだ！？"

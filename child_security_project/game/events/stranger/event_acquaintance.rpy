@@ -12,19 +12,19 @@ label suspi_e_acquaintance:
     if _v:
         voice _v
     stranger "おーい、[player_name]ちゃん！"
-    stranger "学校おわりかい？ えらいねえ。"
+    stranger "{rb}学校{/rb}{rt}がっこう{/rt}おわりかい？ えらいねえ。"
 
     pc "あ、こんばんは。"
-    pc "（優しそうな おじさんだ。知ってる人だし安心かな？）"
+    pc "（{rb}優{/rb}{rt}やさ{/rt}しそうな おじさんだ。{rb}知{/rb}{rt}し{/rt}ってる{rb}人{/rb}{rt}ひと{/rt}だし{rb}安心{/rb}{rt}あんしん{/rt}かな？）"
 
-    stranger "お母さんは 元気にしてるかい？"
-    pc "うん、元気だよ。"
+    stranger "お{rb}母{/rb}{rt}かあ{/rt}さんは {rb}元気{/rb}{rt}げんき{/rt}にしてるかい？"
+    pc "うん、{rb}元気{/rb}{rt}げんき{/rt}だよ。"
     
-    stranger "そうかそうか。実はね、あっちに 可愛い子犬がいるんだ。"
-    stranger "[player_name]ちゃん、犬好きだよね？ ちょっと見ていかない？"
+    stranger "そうかそうか。{rb}実{/rb}{rt}じつ{/rt}はね、あっちに {rb}可愛{/rb}{rt}かわい{/rt}い{rb}子犬{/rb}{rt}こいぬ{/rt}がいるんだ。"
+    stranger "[player_name]ちゃん、{rb}犬{/rb}{rt}いぬ{/rt}{rb}好{/rb}{rt}す{/rt}きだよね？ ちょっと{rb}見{/rb}{rt}み{/rt}ていかない？"
 
-    pc "えっ、子犬..."
-    pc "（見たいな... 知ってる人だし...）"
+    pc "えっ、{rb}子犬{/rb}{rt}こいぬ{/rt}..."
+    pc "（{rb}見{/rb}{rt}み{/rt}たいな... {rb}知{/rb}{rt}し{/rt}ってる{rb}人{/rb}{rt}ひと{/rt}だし...）"
     
     # ここで選択肢
     menu:
@@ -45,7 +45,7 @@ label .follow_acquaintance:
     
     stranger "こっちだよ...もっと おくのほう..."
     
-    "おじさんは ひと気のない ほうへ あるいていく。"
+    "おじさんは ひと{rb}気{/rb}{rt}け{/rt}のない ほうへ あるいていく。"
     
     call hide_stranger_wrapper from _call_hide_stranger_wrapper
     scene black with fade
@@ -58,7 +58,7 @@ label .follow_acquaintance:
 # 断る（正解）
 # -----------------------------------------------------------------------------
 label .refuse_acquaintance:
-    $ update_score(10)
+    $ update_score(10, "ことわった")
     
     pc "ごめんなさい！いま いそいでるんです！"
     
@@ -81,7 +81,7 @@ label .refuse_acquaintance:
 label .buzzer_acquaintance:
     play audio "audio/buzzer.mp3"
     
-    $ update_score(15)
+    $ update_score(15, "ぼうはんブザーで げきたい")
     
     "ピピピピピ！！"
     stranger "おいおい！なにをするんだ！"

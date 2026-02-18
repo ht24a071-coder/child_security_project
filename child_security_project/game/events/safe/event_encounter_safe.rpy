@@ -20,7 +20,7 @@ label encounter_e_safe_person:
     # まず挨拶への反応
     menu:
         "こんにちは！":
-            $ update_score(5)
+            $ update_score(5, "あいさつ")
             pc "こんにちは！"
             if _safe_is_teacher:
                 teacher "げんきな あいさつだね！"
@@ -71,7 +71,7 @@ label .greet_back:
     call screen timing_minigame(greet_game)
     
     if _return == "perfect":
-        $ update_score(15)
+        $ update_score(15, "げんきな あいさつ")
         pc "さようなら！きを つけます！"
         "PERFECT!! とても げんきな あいさつだ！"
         if _safe_is_teacher:
@@ -79,7 +79,7 @@ label .greet_back:
         else:
             woman "まあ、げんきね！いいこだわ。バイバイ！"
     elif _return == "good":
-        $ update_score(10)
+        $ update_score(10, "よい あいさつ")
         pc "さようなら！"
         "GOOD! ちゃんと あいさつできたね！"
         if _safe_is_teacher:
@@ -87,7 +87,7 @@ label .greet_back:
         else:
             woman "いいこね。バイバイ！"
     else:
-        $ update_score(5)
+        $ update_score(5, "あいさつ")
         pc "…さようなら"
         if _safe_is_teacher:
             teacher "バイバイ！"
@@ -132,7 +132,7 @@ label .buzzer_safe:
         officer "ふつうの ひとには ならしちゃダメだよ。"
         hide officer with dissolve
     
-    $ update_score(-5)
+    $ update_score(-5, "ブザーの ごしよう")
     
     call show_feedback("buzzer_misuse") from _call_fb_safe_2
     return

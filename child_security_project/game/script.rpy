@@ -40,6 +40,7 @@ label initialize_game:
     $ has_encountered_suspicious = False
     $ encountered_events = [] # 遭遇イベント履歴リセット
     $ total_score = 0
+    $ score_history = []
     hide screen score_hud
 
     scene black

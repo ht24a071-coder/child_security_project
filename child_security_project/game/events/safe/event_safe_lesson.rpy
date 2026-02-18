@@ -43,7 +43,7 @@ label safe_e_lesson_teacher:
     
     teacher "よし、{rb}気{/rb}{rt}き{/rt}をつけて{rb}帰{/rb}{rt}かえ{/rt}ってね。"
     
-    $ update_score(15)
+    $ update_score(15, "あんぜんきょうしつ")
     
     call show_feedback("lesson_teacher") from _call_fb_lesson_1
     
@@ -70,7 +70,7 @@ label safe_e_lesson_officer:
     
     officer "よし、{rb}気{/rb}{rt}き{/rt}をつけてな。"
     
-    $ update_score(15)
+    $ update_score(15, "あんぜんきょうしつ")
     
     call show_feedback("lesson_officer") from _call_fb_lesson_2
     
