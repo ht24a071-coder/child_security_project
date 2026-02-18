@@ -260,6 +260,45 @@
         493
       ]
     },
+    "d": {
+      "bg": "L_area_0",
+      "links": {
+        "{rb}保育園{/rb}{rt}ほいくえん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "e",
+        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "school_park"
+      },
+      "group": "suspicious",
+      "chance": 60,
+      "minimap": [
+        761,
+        341
+      ]
+    },
+    "e": {
+      "bg": "L_area_0",
+      "links": {
+        "{rb}小道{/rb}{rt}こみち{/rt}に{rb}入{/rb}{rt}はい{/rt}る": "f",
+        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "d"
+      },
+      "group": "suspicious",
+      "chance": 70,
+      "minimap": [
+        752,
+        420
+      ]
+    },
+    "f": {
+      "bg": "L_area_0",
+      "links": {
+        "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "g",
+        "{rb}保育園{/rb}{rt}ほいくえん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "e"
+      },
+      "group": "suspicious",
+      "chance": 70,
+      "minimap": [
+        722,
+        425
+      ]
+    },
     "g": {
       "bg": "back_g",
       "links": {
