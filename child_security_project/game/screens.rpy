@@ -141,6 +141,9 @@ style window:
     ysize gui.textbox_height
 
     background Image("gui/textbox.png", xalign=0.5, yalign=1.0)
+    
+    # マウスカーソルをボタン（指）に変える
+    hover_mouse "button"
 
 style namebox:
     xpos gui.name_xpos
@@ -248,9 +251,15 @@ screen quick_menu():
     ## 他のスクリーンの上に表示する。
     zorder 100
 
-    # クイックメニューの表示切り替え（L1 or Tab）
-    key "pad_left_shoulder" action ToggleVariable("show_quick_menu")
+    # クイックメニューの表示切り替え
+    # key "pad_left_shoulder" action ToggleVariable("show_quick_menu") # L1は無効化（誤操作防止）
+    # key "pad_y_press" action ToggleVariable("show_quick_menu") # Yボタンはマップ呼び出し（def_minimap.rpy）に譲る
     key "K_TAB" action ToggleVariable("show_quick_menu")
+    
+    # 誤操作防止のため、LRボタンでのロールバック/スキップを無効化したい場合はここで上書き
+    # ただしグローバルなkeymap変更の方が確実ですが、スクリーン表示中だけでも効果あり
+    key "pad_left_shoulder" action NullAction()
+    key "pad_right_shoulder" action NullAction()
 
     if quick_menu and show_quick_menu:
 
@@ -293,27 +302,49 @@ screen controller_guide():
                     hbox:
                         spacing 5
                         text "Ⓐ" size 26 color "#4FC3F7" yoffset 3 font gui.interface_text_font
-                        text "決定" size 22 color "#ddd"
+                        text "決定/送る" size 22 color "#ddd"
 
                     hbox:
                         spacing 5
-                        text "Ⓑ" size 26 color "#FF8A65" yoffset 3 font gui.interface_text_font
-                        text "戻る" size 22 color "#ddd"
+                        text "Ⓨ" size 26 color "#FFEB3B" yoffset 3 font gui.interface_text_font # Yボタンガイド
+                        text "マップ" size 22 color "#ddd"
                 else:
                     hbox:
                         spacing 5
                         text "Ⓐ" size 26 color "#4FC3F7" yoffset 3 font gui.interface_text_font
-                        text "決定" size 22 color "#ddd"
+                        text "決定/送る" size 22 color "#ddd"
 
                     hbox:
                         spacing 5
-                        text "Ⓑ" size 26 color "#FF8A65" yoffset 3 font gui.interface_text_font
-                        text "戻る" size 22 color "#ddd"
+                        text "Ⓨ" size 26 color "#FFEB3B" yoffset 3 font gui.interface_text_font
+                        text "マップ" size 22 color "#ddd"
 
                 hbox:
                     spacing 5
                     text "◁▷△▽" size 26 color "#aaa" yoffset 3 font gui.interface_text_font
                     text "移動" size 22 color "#ddd"
+
+init python:
+    # コントローラーの誤操作防止設定
+    # ロールバックとスキップをL/Rから削除
+    if "pad_left_shoulder" in config.keymap["rollback"]:
+        config.keymap["rollback"].remove("pad_left_shoulder")
+    if "pad_right_shoulder" in config.keymap["fast_skip"]:
+        config.keymap["fast_skip"].remove("pad_right_shoulder")
+        
+    # Bボタン（pad_b_press）が game_menu に割り当たっているのを解除
+    # 代わりにマップ閉じる等は別途 screen 側で key "pad_b_press" を定義して制御する形にする
+    if "pad_b_press" in config.keymap["game_menu"]:
+        config.keymap["game_menu"].remove("pad_b_press")
+
+    # Bボタンを "hide_windows"（ウィンドウ非表示）に割り当てる
+    # セーブ画面を開くより安全で便利
+    if "pad_b_press" not in config.keymap["hide_windows"]:
+        config.keymap["hide_windows"].append("pad_b_press")
+
+    # テキスト送りのフォーカス問題対策
+    # マウス操作時にウィンドウ外クリックでも進むようにする
+    config.disable_input = False
 
 
 style controller_guide_frame:
@@ -520,6 +551,13 @@ screen main_menu():
                 spacing 0
                 text "📢" size 70 xalign 0.5 color "#fff"
                 text "おおごえ" size 22 xalign 0.5 color "#fff" bold True outlines [(2, "#4FC3F7", 0, 0)]
+
+        # --- デバッグボタン (右下) ---
+        textbutton "🐞" action ShowMenu("debug_event_menu"):
+            xalign 1.0
+            yalign 1.0
+            text_size 40
+            text_color "#ffffff80"
 
 style main_menu_frame is empty
 style main_menu_vbox is vbox

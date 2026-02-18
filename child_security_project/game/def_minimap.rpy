@@ -245,6 +245,7 @@ screen minimap():
         action Show("fullscreen_map")
 
     key "K_y" action Show("fullscreen_map")
+    key "pad_y_press" action Show("fullscreen_map") # Yボタンでも開けるように追加
 
 # =============================================================================
 # 家選択用マップ画面
