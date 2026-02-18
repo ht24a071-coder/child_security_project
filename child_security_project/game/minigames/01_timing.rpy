@@ -47,23 +47,6 @@ init -1 python:
             else: self.result = "miss"
             self.show_result = True
 
-    # 3. 脱出ミニゲーム
-    class EscapeMinigame(MovingBarMinigame):
-        def __init__(self, difficulty="hard", **kwargs):
-            settings = {"easy": (2.0, 50), "normal": (3.5, 35), "hard": (5.0, 20)}
-            speed, trange = settings.get(difficulty, settings["hard"])
-            super(EscapeMinigame, self).__init__(speed=speed, target_range=trange, width=500, height=80, **kwargs)
-            self.difficulty = difficulty
-
-        def update(self, st, at):
-            pos = self.update_position(st, multiplier=250)
-            bar = Solid("#ff3333", xsize=self.bar_width, ysize=self.height)
-            return Transform(child=bar, xalign=0.5, yalign=0.5, xoffset=int(pos)), 0.0
-
-        def check_timing(self):
-            if not self.started or self.show_result: return
-            self.result = "success" if abs(self.position) <= self.target_range else "fail"
-            self.show_result = True
 
 # =============================================================================
 # 各種ゲーム画面
@@ -96,34 +79,6 @@ screen timing_minigame(game):
                 $ res_txt = {"perfect": "PERFECT!!", "good": "GOOD!", "miss": "MISS..."}.get(game.result)
                 $ res_clr = {"perfect": "#ff0", "good": "#0f0", "miss": "#f00"}.get(game.result)
                 text res_txt size 50 xalign 0.5 color res_clr bold True outlines [(3, "#000", 0, 0)]
-
-        if not game.show_result:
-            key game.key action Function(game.check_timing)
-        else:
-            timer 1.5 action Return(game.result)
-
-# 3. 脱出
-screen escape_minigame(game):
-    modal True
-
-    if not game.started:
-        use minigame_intro_overlay(game)
-    else:
-        # ゲーム本編
-        add Solid("#220000CC")
-        vbox:
-            align (0.5, 0.5)
-            spacing 25
-            text "にげろ！" size 36 xalign 0.5 color "#ff6666" bold True
-            fixed:
-                xsize game.width + 40 ysize game.height + 40 xalign 0.5
-                add Solid("#1a0000", xsize=game.width+20, ysize=game.height+20) align (0.5, 0.5)
-                add Solid("#00ff00", xsize=game.target_range*2, ysize=game.height) align (0.5, 0.5) alpha 0.4
-                add DynamicDisplayable(game.update)
-            
-            if game.show_result:
-                $ res_txt = "にげきった！" if game.result == "success" else "つかまった..."
-                text res_txt size 50 xalign 0.5 color "#fff" bold True
 
         if not game.show_result:
             key game.key action Function(game.check_timing)

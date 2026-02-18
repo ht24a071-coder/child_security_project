@@ -5,6 +5,7 @@ default flag_know_110 = False
 default total_score = 0
 default trust_point = 0
 default current_score = 0
+default is_window_hovered = False # テキストウィンドウのホバー状態
 
 # プレイヤー設定
 default player_name = "ナナシ"
@@ -23,6 +24,7 @@ define woman = Character("おねえさん", color="#c8ffc8", ctc="ctc_icon", ctc
 define teacher = Character("先生", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
 define stranger = Character("???", color="#ff8888", ctc="ctc_icon", ctc_position="nestled")
 define pc = Character("[player_name]", image="player", ctc="ctc_icon", ctc_position="nestled")
+define parent = Character("お母さん", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
 define t = Character("伊東マンショ", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
 
 # 不審者のランダム画像用
@@ -53,7 +55,8 @@ define MAX_STEPS = 10
 image side player = "images/icons/[player_icon].png"
 image side officer = "images/actor/officer.png"
 image side woman = "images/actor/woman.png"
-image side teacher = "images/actor/woman2.png"
+image side teacher = "images/actor/teacher.png"
+image side parent = "images/actor/woman3.png" # お母さん（仮）
 image side stranger = ConditionSwitch(
     "stranger_type == 'stranger2'", "images/actor/stranger2.png",
     "True", "images/actor/stranger.png"
@@ -62,7 +65,24 @@ image stranger = ConditionSwitch(
     "stranger_type == 'stranger2'", "images/actor/stranger2.png",
     "True", "images/actor/stranger.png"
 )
-image teacher = "images/actor/woman2.png"
+image teacher = "images/actor/teacher.png"
+image parent = "images/actor/woman3.png"
+
+# 学校周辺のノードリスト
+define NEAR_SCHOOL_NODES = ["start_point", "school_park", "bunki_1", "d", "e", "street_1"]
+
+init python:
+    def get_helper_data():
+        """現在地に基づいて助けに来る人（キャラ画像名、名前）を返す"""
+        # 現在のノードを取得（global current_node を想定、なければ safe デフォルト）
+        # ただし current_node は script.rpy 等で管理されているはず
+        # ここでは renpy.store.current_node を参照する
+        c_node = getattr(renpy.store, "current_node", "")
+        
+        if c_node in NEAR_SCHOOL_NODES:
+            return "teacher", "先生"
+        else:
+            return "officer", "おまわりさん"
 
 # -----------------------------------------------------------
 # スコア表示システム
@@ -113,6 +133,7 @@ screen score_hud():
                         color "#00ffff"
                         size 24
                         bold True
+                        outlines [(3, "#000000", 0, 0)] # ルビが見やすいように太めのアウトライン
                         yalign 0.5
 
 # 2. 点数変動時のポップアップ演出
@@ -241,7 +262,11 @@ init python:
 # クリック待ちアイコン（CTC）
 # -----------------------------------------------------------
 image ctc_icon:
-    Text("▼", size=24, color="#ffffff", outlines=[(2, "#000000", 0, 0)])
+    # ホバー時は黄色、通常は白
+    ConditionSwitch(
+        "is_window_hovered", Text("▼", size=24, color="#ffff00", outlines=[(2, "#000000", 0, 0)]),
+        "True", Text("▼", size=24, color="#ffffff", outlines=[(2, "#000000", 0, 0)])
+    )
     alpha 1.0
     linear 0.5 alpha 0.0
     linear 0.5 alpha 1.0

@@ -82,13 +82,23 @@ label .buzzer_safe:
     
     call hide_woman_wrapper from _call_hide_woman_wrapper_1
     
-    call show_officer_wrapper from _call_show_officer_wrapper
-    officer "どうしたの？"
-    pc "あ、あの……"
-    officer "ぼうはんブザーは ほんとうに あぶないときに つかうものだよ。"
-    officer "ふつうの ひとには ならしちゃダメだよ。"
-    
-    call hide_officer_wrapper from _call_hide_officer_wrapper
+    python:
+        h_tag, _ = get_helper_data()
+
+    if h_tag == "teacher":
+        show teacher with dissolve
+        teacher "どうしたの？"
+        pc "あ、あの……"
+        teacher "ぼうはんブザーは ほんとうに あぶないときに つかうものだよ。"
+        teacher "ふつうの ひとには ならしちゃダメだよ。"
+        hide teacher with dissolve
+    else:
+        show officer with dissolve
+        officer "どうしたの？"
+        pc "あ、あの……"
+        officer "ぼうはんブザーは ほんとうに あぶないときに つかうものだよ。"
+        officer "ふつうの ひとには ならしちゃダメだよ。"
+        hide officer with dissolve
     
     $ update_score(-5)
     

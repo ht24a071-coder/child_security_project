@@ -99,8 +99,15 @@ style frame:
 
 screen say(who, what):
 
-    window:
+    button:
         id "window"
+        action Return() # クリックで読み進める
+        key_events True # キー入力を受け付ける（誤操作防止）
+        
+        # ホバー状態の監視（CTCアイコンの色変更用）
+        hovered SetVariable("is_window_hovered", True)
+        unhovered SetVariable("is_window_hovered", False)
+
 
         if who is not None:
 
@@ -134,13 +141,22 @@ style namebox is default
 style namebox_label is say_label
 
 
+
+# ダイアログウィンドウのホバー演出用
+transform window_hover_brighten:
+    on idle:
+        ease 0.15 matrixcolor IdentityMatrix()
+    on hover:
+        ease 0.15 matrixcolor BrightnessMatrix(0.15)
+
 style window:
     xalign 0.5
     xfill True
     yalign gui.textbox_yalign
     ysize gui.textbox_height
 
-    background Image("gui/textbox.png", xalign=0.5, yalign=1.0)
+    # 背景画像にホバー演出（明るくなる）を適用
+    background At(Image("gui/textbox.png", xalign=0.5, yalign=1.0), window_hover_brighten)
     
     # マウスカーソルをボタン（指）に変える
     hover_mouse "button"

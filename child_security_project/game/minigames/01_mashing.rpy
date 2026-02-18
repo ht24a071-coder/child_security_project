@@ -2,7 +2,7 @@ init -1 python:
     # 2. 連打ミニゲーム (統合版)
     # Logic based on minigame_mash.rpy (better visuals), Structure based on BaseMinigame
     class MashingMinigame(BaseMinigame):
-        def __init__(self, target_count=10, time_limit=3.0, **kwargs):
+        def __init__(self, target_count=10, time_limit=8.0, **kwargs):
             # デフォルトタイトル・テキストを設定（引数で上書き可能）
             if "title" not in kwargs: kwargs["title"] = "れんだミニゲーム"
             if "text" not in kwargs: kwargs["text"] = "スペースキーを れんだしろ！"
@@ -17,6 +17,27 @@ init -1 python:
             # 演出用 (from minigame_mash.rpy)
             self.last_press_time = 0.0
             self.shake_offset = (0, 0)
+            
+    class EscapeMinigame(MashingMinigame):
+        def __init__(self, difficulty="normal", **kwargs):
+            # 難易度に応じた設定
+            settings = {
+                "easy":   {"target_count": 10, "time_limit": 5.0},
+                "normal": {"target_count": 15, "time_limit": 5.0},
+                "hard":   {"target_count": 25, "time_limit": 5.0} # 5秒で25回=連打力5/s
+            }
+            params = settings.get(difficulty, settings["normal"])
+            
+            # タイトル等のデフォルト
+            if "title" not in kwargs: kwargs["title"] = "にげろ！"
+            if "text" not in kwargs: kwargs["text"] = "ボタンを れんだして にげきれ！"
+            
+            super(EscapeMinigame, self).__init__(
+                target_count=params["target_count"], 
+                time_limit=params["time_limit"], 
+                **kwargs
+            )
+
 
         def get_remaining(self):
             # まだ始まってない、あるいは開始時刻が決まってないなら制限時間をそのまま返す
@@ -95,7 +116,7 @@ screen mashing_minigame(game):
                 xalign 0.5
                 
                 # タイトルや説明はIntroで出たので、ここではゲーム進行に集中
-                text "連打しろ！" size 40 xalign 0.5 color "#ff0000" bold True outlines [(2, "#fff", 0, 0)]
+                text "れんだしろ！" size 40 xalign 0.5 color "#ff0000" bold True outlines [(2, "#fff", 0, 0)]
                 
                 text "のこり: [game.get_remaining():.1f] びょう" size 28 xalign 0.5 color "#ffff00"
                 

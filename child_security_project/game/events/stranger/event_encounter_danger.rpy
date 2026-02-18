@@ -13,6 +13,7 @@ label encounter_e_stranger:
     stranger "こんにちは～"
     
     # まず挨拶への反応
+    # まず呼びかけ
     menu:
         "こんにちは":
             pc "こんにちは..."
@@ -27,18 +28,16 @@ label encounter_e_stranger:
 
     pc "いりません！"
     
-    # 強制イベント化
+    # 強制イベント化（ステージ1：腕を掴まれる）
     stranger "いいから おいでよ！"
     "ふしんしゃは うでを つかもうとしてきた！"
     
     pc "（つかまる！）"
 
+    # Stage 1: 大声のみ（パニック状態）
     menu:
         "おおごえを だす":
             jump .shout_stranger
-
-        "にげる":
-            jump .flee_stranger
 
 # -----------------------------------------------------------------------------
 # 大声を出すルート
@@ -58,11 +57,21 @@ label .buzzer_stranger:
     
     $ update_score(20)
     
-    show woman with dissolve
-    woman "どうしたの！？ すごい おとが したけど！"
-    pc "しらない ひとに こえを かけられて……"
-    woman "ブザーを ならしたのね。えらいわ！"
-    hide woman with dissolve
+    python:
+        h_tag, _ = get_helper_data()
+    
+    if h_tag == "teacher":
+        show teacher with dissolve
+        teacher "どうしたの！？ すごい おとが したけど！"
+        pc "しらない ひとに こえを かけられて……"
+        teacher "ブザーを ならしたのね。えらいわ！"
+        hide teacher with dissolve
+    else:
+        show officer with dissolve
+        officer "どうしたの！？ すごい おとが したけど！"
+        pc "しらない ひとに こえを かけられて……"
+        officer "ブザーを ならしたのね。えらい！"
+        hide officer with dissolve
     
     "{i}よくできた！防犯ブザーは こわいとおもったら すぐにならそう！{/i}"
     return
@@ -112,11 +121,21 @@ label .escape_buzzer:
     
     $ update_score(15)
     
-    show woman with dissolve
-    woman "どうしたの！？"
-    pc "しらない ひとに つれていかれそうに..."
-    woman "よくできたね！でも さいしょから ついていかないように しようね。"
-    hide woman with dissolve
+    python:
+        h_tag, _ = get_helper_data()
+
+    if h_tag == "teacher":
+        show teacher with dissolve
+        teacher "どうしたの！？"
+        pc "しらない ひとに つれていかれそうに..."
+        teacher "よくできたね！でも さいしょから ついていかないように しようね。"
+        hide teacher with dissolve
+    else:
+        show officer with dissolve
+        officer "どうしたの！？"
+        pc "しらない ひとに つれていかれそうに..."
+        officer "よくできたね！でも さいしょから ついていかないように しようね。"
+        hide officer with dissolve
     
     "{i}ぼうはんブザーで にげられた！でも さいしょから ついていかないのが いちばんだよ。{/i}"
     return
@@ -129,20 +148,36 @@ label .escape_110:
     python:
         escape_game = EscapeMinigame(difficulty="normal", key="K_SPACE")
     
-    call screen escape_minigame(escape_game)
+    call screen mashing_minigame(escape_game)
     
     hide stranger
     
     if _return == "success":
         $ update_score(30)
         "「こども110ばんの いえ」に かけこんだ！"
-        show officer with dissolve
-        officer "どうしたの！？"
-        pc "しらない ひとに つれていかれそうに……！"
-        officer "だいじょうぶ、ここは あんぜんだよ。よく にげてきたね！"
-        hide officer with dissolve
+        
+        python:
+            h_tag, _ = get_helper_data()
+        
+        if h_tag == "teacher":
+            show teacher with dissolve
+            teacher "どうしたの！？"
+            pc "しらない ひとに つれていかれそうに……！"
+            teacher "だいじょうぶ、ここは あんぜんだよ。よく にげてきたね！"
+            hide teacher with dissolve
+        else:
+            show officer with dissolve
+            officer "どうしたの！？"
+            pc "しらない ひとに つれていかれそうに……！"
+            officer "だいじょうぶ、ここは あんぜんだよ。よく にげてきたね！"
+            hide officer with dissolve
+        
         "{i}すばらしい！110ばんの いえを おぼえていたから にげられたね！{/i}"
     else:
+        call fallback_buzzer_sequence
+        if _return == "success":
+            jump .escape_buzzer
+        
         $ update_score(10)
         "なんとか にげきった…でも こわかった…"
         "{i}あぶなかったね。さいしょから ついていかないように しよう。{/i}"
@@ -155,12 +190,15 @@ label .escape_fail_no_110:
     
 
     # ゲーム
-    $ game = EscapeMinigame(
-        difficulty="hard",
+    $ game = MashingMinigame(
+        target_count=15,
+        time_limit=8.0,
         title="全力疾走！", 
         text="スペースキーを連打して\n駅までダッシュしろ！"
     )
-    call screen escape_minigame(game)
+    call screen mashing_minigame(game)
+    
+    hide stranger
     
     hide stranger
     
@@ -170,6 +208,10 @@ label .escape_fail_no_110:
         "{i}あぶなかったね。「110ばんの いえ」を おぼえておけば もっと あんぜんだよ。{/i}"
         return
     else:
+        call fallback_buzzer_sequence
+        if _return == "success":
+            jump .escape_buzzer
+            
         scene black with fade
         "{i}にげられなかった……{/i}"
         "{i}「こども110ばんの いえ」を みつけたら、ばしょを おぼえておこう！{/i}"
@@ -182,7 +224,7 @@ label .escape_home:
     python:
         escape_game = EscapeMinigame(difficulty="hard", key="K_SPACE")
     
-    call screen escape_minigame(escape_game)
+    call screen mashing_minigame(escape_game)
     
     hide stranger
     
@@ -193,11 +235,16 @@ label .escape_home:
         "（いそいで かぎを あけなきゃ！）"
         
         python:
-            key_game = TimingMinigame(speed=6.0, perfect_range=15, good_range=25, key="K_SPACE")
+            # 鍵を開けるゲームも連打に変更（焦って連打するイメージ）
+            key_game = MashingMinigame(target_count=20, time_limit=5.0, title="かぎをあけろ！", text="ボタンをれんだして\nかぎをあけろ！")
         
-        call screen timing_minigame(key_game)
+        call screen mashing_minigame(key_game)
         
         if _return == "miss":
+            call fallback_buzzer_sequence
+            if _return == "success":
+                jump .escape_buzzer
+                
             "かぎが あかない…！"
             stranger "まてまて～"
             scene black with fade
@@ -207,9 +254,20 @@ label .escape_home:
         else:
             $ update_score(5)
             "なんとか いえに にげこめた…"
+            
+            show parent with dissolve
+            parent "おかえり！どうしたの、そんなにあわてて？"
+            pc "しらない ひとに..."
+            parent "よかった、ぶじで。もうだいじょうぶよ。"
+            hide parent with dissolve
+            
             "{i}あぶなかったね。つぎからは さいしょから ついていかないようにね。{/i}"
             return
     else:
+        call fallback_buzzer_sequence
+        if _return == "success":
+            jump .escape_buzzer
+
         scene black with fade
         "{i}にげられなかった……{/i}"
         "{i}さいしょから しらない ひとに ついていかないように しよう。{/i}"
@@ -230,11 +288,21 @@ label .escape_shout:
         stranger "うわっ…！"
         hide stranger with dissolve
         
-        show woman with dissolve
-        woman "どうしたの！？ だいじょうぶ！？"
+    python:
+        h_tag, _ = get_helper_data()
+
+    if h_tag == "teacher":
+        show teacher with dissolve
+        teacher "どうしたの！？ だいじょうぶ！？"
         pc "しらない ひとに……"
-        woman "こわかったね。よく おおごえを だせたね！"
-        hide woman with dissolve
+        teacher "こわかったね。よく おおごえを だせたね！"
+        hide teacher with dissolve
+    else:
+        show officer with dissolve
+        officer "どうしたの！？ だいじょうぶ！？"
+        pc "しらない ひとに……"
+        officer "こわかったね。よく おおごえを だせたね！"
+        hide officer with dissolve
         "{i}よくがんばった！でも さいしょから ついていかないのが いちばんだよ。{/i}"
     else:
         hide stranger
@@ -246,6 +314,10 @@ label .escape_shout:
                 jump .buzzer_stranger
             
             "……":
+                call fallback_buzzer_sequence
+                if _return == "success":
+                    jump .escape_buzzer
+                    
                 scene black with fade
                 jump game_over
     return
@@ -272,48 +344,186 @@ label .refuse_stranger:
 # -----------------------------------------------------------------------------
 label .shout_stranger:
     pc "「たすけてーー！！」"
-    
-    "（ほんとうに おおきな こえを だしてみよう！）"
-    
+
+    "（ほんとうに おおきな こえを だそう！）"
+
+    # UI一時非表示
+    hide screen minimap
+    hide screen score_hud
+
     python:
-        # 連打ゲーム (または逃走ゲーム)
-        escape_game = EscapeMinigame(difficulty="normal", key="dismiss")
-    
-    call screen escape_minigame(escape_game)
-    
-    if _return == "success":
-        # 成功
-        jump .stranger_escaped
+        # ステージ1：大声ゲーム (ShoutMinigame)
+        # 固定ダメージロジック使用 (threshold=0.35, duration=3.0)
+        shout_game = ShoutMinigame(threshold=0.35, duration=8.0)
+
+    call screen shout_minigame(shout_game)
+
+    # UI復帰
+    show screen minimap
+    show screen score_hud
+
+    if _return != "miss":
+        # 成功 -> 撃退
+        jump .stranger_repelled
     else:
-        # 失敗 -> ブザーチャンス
+        # 失敗 -> ステージ2へ（ここはブザーチャンスなし、つれていかれる途中）
+        jump .stage2_choice
+
+label .stage2_choice:
+    stranger "うるさいな！ こっちに こい！"
+    "ふしんしゃは さらにつよく ひっぱってきた！"
+    
+    pc "（こわい... でも にげなきゃ！）"
+    
+    menu:
+        "おおごえを だす":
+            jump .stage2_shout
+            
+        "にげる":
+            jump .stage2_run
+
+label .stage2_shout:
+    # ステージ2の大声（難易度アップ）
+    pc "「やめてーー！！」"
+    
+    # UI一時非表示
+    hide screen minimap
+    hide screen score_hud
+
+    python:
+        shout_game = ShoutMinigame(threshold=0.45, duration=8.0)
+
+    call screen shout_minigame(shout_game)
+
+    # UI復帰
+    show screen minimap
+    show screen score_hud
+
+    if _return != "miss":
+        jump .stranger_repelled
+    else:
+        # 失敗 -> ステージ3へ
+        jump .stage3_choice
+
+label .stage2_run:
+    # ステージ2の逃走（Mashing）
+    pc "（ふりほどいて にげる！）"
+    
+    # UI一時非表示
+    hide screen minimap
+    hide screen score_hud
+
+    python:
+        # 連打ゲーム
+        escape_game = MashingMinigame(target_count=15, time_limit=8.0)
+
+    call screen mashing_minigame(escape_game)
+
+    # UI復帰
+    show screen minimap
+    show screen score_hud
+
+    if _return == "perfect" or _return == "good":
+         jump .stranger_repelled_run
+    else:
+         jump .stage3_choice
+
+label .stage3_choice:
+    stranger "いいかげんに しろ！"
+    "ふしんしゃが つよく うでを 引っ張った！"
+    
+    pc "（もう だめかも... でも ぼうはんブザーが ある！）"
+    
+    menu:
+        "おおごえを だす":
+            jump .stage3_shout
+            
+        "にげる":
+            jump .stage3_run
+            
+        "ぼうはんブザー":
+            jump .buzzer_stranger
+
+label .stage3_shout:
+     # ステージ3の大声（最終）
+    pc "「だれかーー！！」"
+    
+    hide screen minimap
+    hide screen score_hud
+    python:
+        shout_game = ShoutMinigame(threshold=0.5, duration=8.0)
+    call screen shout_minigame(shout_game)
+    show screen minimap
+    show screen score_hud
+
+    if _return != "miss":
+        jump .stranger_repelled
+    else:
         call fallback_buzzer_sequence
         if _return == "success":
-            $ update_score(10)
-            jump .stranger_repelled_buzzer
-        else:
-             "やっぱり こえが でない……"
-             "（どうしよう…！？）"
-             menu:
-                "ぼうはんブザーを ならす！":
-                    jump .buzzer_stranger
-                
-                "……":
-                    scene black with fade
-                    jump game_over
+            jump .buzzer_stranger
+        jump .game_over_capture
 
-    stranger "うわっ！ ちょ、ちょっと……！"
+label .stage3_run:
+     # ステージ3の逃走
+    pc "（にげるんだ！！）"
+    
+    hide screen minimap
+    hide screen score_hud
+    python:
+        escape_game = MashingMinigame(target_count=20, time_limit=8.0)
+    call screen mashing_minigame(escape_game)
+    show screen minimap
+    show screen score_hud
+
+    if _return == "perfect" or _return == "good":
+        jump .stranger_repelled_run
+    else:
+        call fallback_buzzer_sequence
+        if _return == "success":
+            jump .buzzer_stranger
+        jump .game_over_capture
+
+label .stranger_repelled:
+    $ update_score(20)
+    play audio "audio/buzzer.mp3"
+    stranger "ちっ...！"
+    "ふしんしゃは くるまに のって にげていった！"
     hide stranger with dissolve
     
-    "ふしんしゃは にげていった！"
+    call .after_encounter_success
+    return
+
+label .stranger_repelled_run:
+    $ update_score(20)
+    "なんとか にげきった！"
+    hide stranger with dissolve
     
+    call .after_encounter_success
+    return
+
+label .game_over_capture:
+    scene black with fade
+    "{i}ふしんしゃに つれさられてしまった...{/i}"
+    jump game_over
+
+label .after_encounter_success:
+    python:
+        h_tag, _ = get_helper_data()
     
-    show woman with dissolve
-    woman "どうしたの！？ だいじょうぶ！？"
-    pc "しらない ひとに こえを かけられて……"
-    woman "こわかったね。よく おおごえを だせたね！"
-    hide woman with dissolve
-    
-    "{i}すばらしい！おおごえを だすと まわりの ひとが たすけに きてくれるよ！{/i}"
+    if h_tag == "teacher":
+        show teacher with dissolve
+        teacher "だいじょうぶ！？"
+        pc "しらない ひとに..."
+        teacher "こわかったね。よく がんばったね！"
+        hide teacher with dissolve
+    else:
+        show officer with dissolve
+        officer "だいじょうぶ！？"
+        pc "しらない ひとに..."
+        officer "こわかったね。よく がんばったね！"
+        hide officer with dissolve
+    "{i}よくできた！あぶないときは おおごえを だしたり にげたりしよう！{/i}"
     return
 
 # -----------------------------------------------------------------------------
@@ -333,7 +543,7 @@ label .flee_success:
     python:
         flee_game = EscapeMinigame(difficulty="normal", key="K_SPACE")
     
-    call screen escape_minigame(flee_game)
+    call screen mashing_minigame(flee_game)
     
     hide stranger
     
@@ -341,14 +551,28 @@ label .flee_success:
         $ update_score(35)
         "PERFECT!! 「こども110ばんの いえ」に かけこんだ！"
     else:
+        call fallback_buzzer_sequence
+        if _return == "success":
+             jump .escape_buzzer
+             
         $ update_score(20)
         "なんとか にげられた！"
     
-    show officer with dissolve
-    officer "どうしたの！？"
-    pc "しらない ひとに おいかけられて……！"
-    officer "だいじょうぶ、ここは あんぜんだよ。よく にげてきたね！"
-    hide officer with dissolve
+    python:
+        h_tag, _ = get_helper_data()
+    
+    if h_tag == "teacher":
+        show teacher with dissolve
+        teacher "どうしたの！？"
+        pc "しらない ひとに おいかけられて……！"
+        teacher "だいじょうぶ、ここは あんぜんだよ。よく にげてきたね！"
+        hide teacher with dissolve
+    else:
+        show officer with dissolve
+        officer "どうしたの！？"
+        pc "しらない ひとに おいかけられて……！"
+        officer "だいじょうぶ、ここは あんぜんだよ。よく にげてきたね！"
+        hide officer with dissolve
     
     "{i}よくできた！しらない ひとには ぜったいに ついていかないように しよう。{/i}"
     return
@@ -360,6 +584,10 @@ label .flee_fail:
     pc "（どこに にげればいいの……！？）"
     
     stranger "まてまて～"
+    
+    call fallback_buzzer_sequence
+    if _return == "success":
+         jump .escape_buzzer
     
     hide stranger
     scene black with fade
