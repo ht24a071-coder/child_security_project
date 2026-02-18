@@ -286,9 +286,12 @@ label game_clear:
                 feedback_tips.append("しっている ひとでも、いやなことを されたら おとなに いおうね。")
                 feedback_tips.append("かってに ついていくのは、しっている ひとでも ダメだよ。")
                 
-            if has_officer or has_safe_person:
-                feedback_tips.append("ちいきの ひとに、げんきよく あいさつ できたかな？")
+            if has_officer:
+                feedback_tips.append("おまわりさんや せんせいの はなしを よく きけたかな？")
                 feedback_tips.append("こまったときは、こども110ばんの いえや こうばんに たすけを もとめよう。")
+            elif has_safe_person:
+                feedback_tips.append("あんぜんな ひとには げんきに あいさつ できたかな？")
+                feedback_tips.append("あぶない ひとと あんぜんな ひとを みわける ちからを つけよう。")
 
         # 2. スコアに基づくフィードバック
         if total_score >= 50:
