@@ -4,28 +4,47 @@
 
 label encounter_e_safe_person:
 
+    python:
+        h_tag, _unused = get_helper_data()
+        _safe_is_teacher = (h_tag == "teacher")
+    
     "だれかが ちかづいてきた。"
     
-    show woman with dissolve
-    
-    woman "こんにちは！"
+    if _safe_is_teacher:
+        show teacher with dissolve
+        teacher "こんにちは！"
+    else:
+        show woman with dissolve
+        woman "こんにちは！"
     
     # まず挨拶への反応
     menu:
         "こんにちは！":
             $ update_score(5)
             pc "こんにちは！"
-            woman "げんきな あいさつだね！"
+            if _safe_is_teacher:
+                teacher "げんきな あいさつだね！"
+            else:
+                woman "げんきな あいさつだね！"
         
         "...（むしする）":
             pc "..."
-            woman "あら、はずかしがりやさんね。"
+            if _safe_is_teacher:
+                teacher "あら、はずかしがりやさんね。"
+            else:
+                woman "あら、はずかしがりやさんね。"
         
         "（ぼうはんブザーを にぎる）":
             pc "（ねんのため...）"
-            woman "？"
+            if _safe_is_teacher:
+                teacher "？"
+            else:
+                woman "？"
     
-    woman "がっこうの かえり？きを つけてね。"
+    if _safe_is_teacher:
+        teacher "がっこうの かえり？きを つけてね。"
+    else:
+        woman "がっこうの かえり？きを つけてね。"
     
     "（そう いって、その ひとは さっていこうとした。）"
 
@@ -55,18 +74,30 @@ label .greet_back:
         $ update_score(15)
         pc "さようなら！きを つけます！"
         "PERFECT!! とても げんきな あいさつだ！"
-        woman "まあ、げんきね！いいこだわ。バイバイ！"
+        if _safe_is_teacher:
+            teacher "まあ、げんきね！いいこだわ。バイバイ！"
+        else:
+            woman "まあ、げんきね！いいこだわ。バイバイ！"
     elif _return == "good":
         $ update_score(10)
         pc "さようなら！"
         "GOOD! ちゃんと あいさつできたね！"
-        woman "いいこね。バイバイ！"
+        if _safe_is_teacher:
+            teacher "いいこね。バイバイ！"
+        else:
+            woman "いいこね。バイバイ！"
     else:
         $ update_score(5)
         pc "…さようなら"
-        woman "バイバイ！"
+        if _safe_is_teacher:
+            teacher "バイバイ！"
+        else:
+            woman "バイバイ！"
     
-    call hide_woman_wrapper from _call_hide_woman_wrapper
+    if _safe_is_teacher:
+        hide teacher with dissolve
+    else:
+        hide woman with dissolve
     
     "{i}よくできました！あいさつは コミュニケーションの きほんだね。{/i}"
     return
@@ -78,14 +109,15 @@ label .buzzer_safe:
     play audio "audio/buzzer.mp3"
     
     "ピピピピピ！！"
-    woman "えっ！？ ちょ、ちょっと！？"
     
-    call hide_woman_wrapper from _call_hide_woman_wrapper_1
-    
-    python:
-        h_tag, _unused = get_helper_data()
+    if _safe_is_teacher:
+        teacher "えっ！？ ちょ、ちょっと！？"
+        hide teacher with dissolve
+    else:
+        woman "えっ！？ ちょ、ちょっと！？"
+        hide woman with dissolve
 
-    if h_tag == "teacher":
+    if _safe_is_teacher:
         show teacher with dissolve
         teacher "どうしたの？"
         pc "あ、あの……"
@@ -111,9 +143,12 @@ label .buzzer_safe:
 # -----------------------------------------------------------------------------
 label .ignore_safe:
     pc "……"
-    woman "あら、シャイな こね。きを つけてね。"
-    
-    call hide_woman_wrapper from _call_hide_woman_wrapper_2
+    if _safe_is_teacher:
+        teacher "あら、シャイな こね。きを つけてね。"
+        hide teacher with dissolve
+    else:
+        woman "あら、シャイな こね。きを つけてね。"
+        hide woman with dissolve
     
     "{i}あいさつを かえすと、ちいきの ひとが あなたのことを おぼえてくれるよ。{/i}"
     return
