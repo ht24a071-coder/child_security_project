@@ -233,7 +233,9 @@ screen choice(items):
 
     vbox:
         for i in items:
-            textbutton i.caption action i.action
+            textbutton i.caption:
+                action [SoundAction("decide"), i.action]
+                hovered SoundAction("hover")
 
 
 style choice_vbox is vbox
@@ -283,14 +285,14 @@ screen quick_menu():
             style_prefix "quick"
             style "quick_menu"
 
-            textbutton _("ロールバック") action Rollback()
-            textbutton _("ヒストリー") action ShowMenu('history')
-            textbutton _("スキップ") action Skip() alternate Skip(fast=True, confirm=True)
-            textbutton _("オート") action Preference("auto-forward", "toggle")
-            textbutton _("セーブ") action ShowMenu('save')
-            textbutton _("Q.セーブ") action QuickSave()
-            textbutton _("Q.ロード") action QuickLoad()
-            textbutton _("設定") action ShowMenu('preferences')
+            textbutton _("ロールバック") action [SoundAction("cancel"), Rollback()] hovered SoundAction("hover")
+            textbutton _("ヒストリー") action [SoundAction("decide"), ShowMenu('history')] hovered SoundAction("hover")
+            textbutton _("スキップ") action [SoundAction("decide"), Skip()] alternate Skip(fast=True, confirm=True) hovered SoundAction("hover")
+            textbutton _("オート") action [SoundAction("decide"), Preference("auto-forward", "toggle")] hovered SoundAction("hover")
+            textbutton _("セーブ") action [SoundAction("decide"), ShowMenu('save')] hovered SoundAction("hover")
+            textbutton _("Q.セーブ") action [SoundAction("decide"), QuickSave()] hovered SoundAction("hover")
+            textbutton _("Q.ロード") action [SoundAction("decide"), QuickLoad()] hovered SoundAction("hover")
+            textbutton _("設定") action [SoundAction("decide"), ShowMenu('preferences')] hovered SoundAction("hover")
 
 
 ## 次のコードは、プレイヤーが明示的にインターフェースを隠さない限り quick_menu
@@ -413,38 +415,38 @@ screen navigation():
 
         if main_menu:
 
-            textbutton _("スタート") action Start()
+            textbutton _("スタート") action [SoundAction("decide"), Start()] hovered SoundAction("hover")
 
         else:
 
-            textbutton _("ヒストリー") action ShowMenu("history")
+            textbutton _("ヒストリー") action [SoundAction("decide"), ShowMenu("history")] hovered SoundAction("hover")
 
-            textbutton _("セーブ") action ShowMenu("save")
+            textbutton _("セーブ") action [SoundAction("decide"), ShowMenu("save")] hovered SoundAction("hover")
 
-        textbutton _("ロード") action ShowMenu("load")
+        textbutton _("ロード") action [SoundAction("decide"), ShowMenu("load")] hovered SoundAction("hover")
 
-        textbutton _("環境設定") action ShowMenu("preferences")
+        textbutton _("環境設定") action [SoundAction("decide"), ShowMenu("preferences")] hovered SoundAction("hover")
 
         if _in_replay:
 
-            textbutton _("リプレイ終了") action EndReplay(confirm=True)
+            textbutton _("リプレイ終了") action [SoundAction("cancel"), EndReplay(confirm=True)] hovered SoundAction("hover")
 
         elif not main_menu:
 
-            textbutton _("メインメニュー") action MainMenu()
+            textbutton _("メインメニュー") action [SoundAction("cancel"), MainMenu()] hovered SoundAction("hover")
 
-        textbutton _("バージョン情報") action ShowMenu("about")
+        textbutton _("バージョン情報") action [SoundAction("decide"), ShowMenu("about")] hovered SoundAction("hover")
 
         if renpy.variant("pc") or (renpy.variant("web") and not renpy.variant("mobile")):
 
             ## モバイルデバイスにはヘルプは不要であるか不適切です。
-            textbutton _("ヘルプ") action ShowMenu("help")
+            textbutton _("ヘルプ") action [SoundAction("decide"), ShowMenu("help")] hovered SoundAction("hover")
 
         if renpy.variant("pc"):
 
             ## 終了ボタンはiOSでは使用できません。また、AndroidやWebでは必要あ
             ## りません。
-            textbutton _("終了") action Quit(confirm=not main_menu)
+            textbutton _("終了") action [SoundAction("cancel"), Quit(confirm=not main_menu)] hovered SoundAction("hover")
 
 
 style navigation_button is gui_button
@@ -503,7 +505,8 @@ screen main_menu():
         # --- 登校ボタン ---
         button:
             at button_hover_pop
-            action Start("going_school_start")
+            action [SoundAction("decide"), Start("going_school_start")]
+            hovered SoundAction("hover")
             xysize (180, 180)
             padding (0, 0)
             hover_foreground Solid("#ffffff00")
@@ -520,7 +523,8 @@ screen main_menu():
         # --- 下校ボタン ---
         button:
             at button_hover_pop
-            action Start("going_home_start")
+            action [SoundAction("decide"), Start("going_home_start")]
+            hovered SoundAction("hover")
             xysize (180, 180)
             padding (0, 0)
             hover_foreground Solid("#ffffff00")
@@ -537,7 +541,8 @@ screen main_menu():
         # --- ランキングボタン ---
         button:
             at button_hover_pop
-            action ShowMenu("ranking_menu")
+            action [SoundAction("decide"), ShowMenu("ranking_menu")]
+            hovered SoundAction("hover")
             xysize (180, 180)
             padding (0, 0)
             hover_foreground Solid("#ffffff00")
@@ -554,7 +559,8 @@ screen main_menu():
         # --- おおごえテストボタン ---
         button:
             at button_hover_pop
-            action Start("test_mic_minigame")
+            action [SoundAction("decide"), Start("test_mic_minigame")]
+            hovered SoundAction("hover")
             xysize (180, 180)
             padding (0, 0)
             hover_foreground Solid("#ffffff00")
@@ -569,7 +575,7 @@ screen main_menu():
                 text "おおごえ" size 22 xalign 0.5 color "#fff" bold True outlines [(2, "#4FC3F7", 0, 0)]
 
         # --- デバッグボタン (右下) ---
-        textbutton "🐞" action ShowMenu("debug_event_menu"):
+        textbutton "🐞" action [SoundAction("decide"), ShowMenu("debug_event_menu")]:
             xalign 1.0
             yalign 1.0
             text_size 40
@@ -676,8 +682,8 @@ screen game_menu(title, scroll=None, yinitial=0.0, spacing=0):
 
     textbutton _("戻る"):
         style "return_button"
-
-        action Return()
+        hovered SoundAction("hover")
+        action [SoundAction("cancel"), Return()]
 
     label title
 

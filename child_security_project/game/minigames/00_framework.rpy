@@ -149,7 +149,8 @@ screen minigame_intro_overlay(game):
         textbutton "START":
             style "confirm_button"
             xalign 0.5
-            action SetField(game, "started", True)
+            action [SoundAction("minigame_start"), SetField(game, "started", True)]
+            hovered SoundAction("hover")
             at intro_fade_up
 
 # ボタンのスタイル

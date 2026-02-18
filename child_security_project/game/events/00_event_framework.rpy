@@ -50,5 +50,9 @@ label hide_woman_wrapper(transition=dissolve):
 # 現状は関数呼び出し $ update_score() が主流なので、ラベル版も用意しておく
 
 label add_score(amount):
+    if amount > 0:
+        $ play_se("good")
+    else:
+        $ play_se("bad")
     $ update_score(amount)
     return
