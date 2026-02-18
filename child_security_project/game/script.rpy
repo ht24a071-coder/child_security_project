@@ -270,7 +270,7 @@ label game_clear:
         # 1. 遭遇したイベントに基づくアドバイス
         has_stranger = any(e[1] in ["suspicious", "stranger", "car", "mom_injury"] for e in encountered_events)
         has_acquaintance = any(e[1] == "acquaintance" for e in encountered_events)
-        has_officer = any(e[1] == "officer" for e in encountered_events)
+        has_officer = any(e[1] in ["officer", "teacher"] for e in encountered_events)
         has_safe_person = any(e[1] == "safe_person" for e in encountered_events)
         
         # 誰も会わなかった場合

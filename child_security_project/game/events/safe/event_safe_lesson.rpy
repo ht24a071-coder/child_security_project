@@ -19,10 +19,10 @@ label safe_e_lesson_dispatch:
     return
 
 label safe_e_lesson_teacher:
-    show woman with dissolve
-    # 先生役として woman を使用（あるいは専用画像があればそちら）
+    show teacher with dissolve
+    # 先生役として teacher を使用
     
-    $ record_encounter("teacher")
+    $ record_encounter("teacher", "teacher")
     
     teacher "あ、[player_name]さん。こんにちは。"
     
@@ -47,7 +47,7 @@ label safe_e_lesson_teacher:
     
     call show_feedback("lesson_teacher") from _call_fb_lesson_1
     
-    hide woman with dissolve
+    hide teacher with dissolve
     return
 
 label safe_e_lesson_officer:
