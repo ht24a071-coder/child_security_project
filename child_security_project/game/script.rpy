@@ -263,24 +263,44 @@ label game_clear:
     $ feedback_title = "GAME CLEAR!!"
     $ feedback_score = total_score
     
-    if total_score >= 50:
-        $ feedback_message = "すばらしい！あんぜん いしきが とても たかいね！"
-        $ feedback_tips = [
-            "「いかのおすし」を かんぺきに おぼえているね！",
-            "これからも あんぜんに きをつけて すごそう！"
-        ]
-    elif total_score >= 30:
-        $ feedback_message = "よくできました！"
-        $ feedback_tips = [
-            "あいさつを しっかりできていたね。",
-            "110ばんの いえも おぼえておこう！"
-        ]
-    else:
-        $ feedback_message = "もう すこし きを つけよう！"
-        $ feedback_tips = [
-            "しらない ひとには きを つけてね。",
-            "「いかのおすし」を おもいだそう！"
-        ]
+    python:
+        # フィードバックのヒントを動的に生成
+        feedback_tips = []
+        
+        # 1. 遭遇したイベントに基づくアドバイス
+        has_stranger = any(e[1] in ["suspicious", "stranger", "car", "mom_injury"] for e in encountered_events)
+        has_acquaintance = any(e[1] == "acquaintance" for e in encountered_events)
+        has_officer = any(e[1] == "officer" for e in encountered_events)
+        has_safe_person = any(e[1] == "safe_person" for e in encountered_events)
+        
+        # 誰も会わなかった場合
+        if not encountered_events:
+            feedback_tips.append("よりみちを せずに、まっすぐ かえれたね！")
+            feedback_tips.append("だれにも あわないのが いちばん あんぜんだよ。")
+        else:
+            if has_stranger:
+                feedback_tips.append("しらない ひとは、ぜったいに ついていかない ようにしよう。")
+                feedback_tips.append("こわいと おもったら、すぐに ぼうはんブザーを つかおうね。")
+            
+            if has_acquaintance:
+                feedback_tips.append("しっている ひとでも、いやなことを されたら おとなに いおうね。")
+                feedback_tips.append("かってに ついていくのは、しっている ひとでも ダメだよ。")
+                
+            if has_officer or has_safe_person:
+                feedback_tips.append("ちいきの ひとに、げんきよく あいさつ できたかな？")
+                feedback_tips.append("こまったときは、こども110ばんの いえや こうばんに たすけを もとめよう。")
+
+        # 2. スコアに基づくフィードバック
+        if total_score >= 50:
+             feedback_message = "すばらしい！あんぜん いしきが とても たかいね！"
+             feedback_tips.append("これからも そのちょうしで きをつけよう！")
+        elif total_score >= 30:
+             feedback_message = "よくできました！"
+             if not has_stranger and not has_acquaintance:
+                 feedback_tips.append("つぎは あいさつも もっと げんきよく してみよう！")
+        else:
+             feedback_message = "もう すこし きを つけよう！"
+             feedback_tips.append("「いかのおすし」を もういちど かくにんしよう！")
     
     hide screen score_hud
     hide screen minimap

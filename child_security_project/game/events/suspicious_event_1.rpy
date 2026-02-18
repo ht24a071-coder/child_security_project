@@ -19,9 +19,91 @@ label suspi_e_test_1:
 
         "ごめんなさい。まっすぐ{rb}帰{/rb}{rt}かえ{/rt}らないといけないんです":
             $ update_score(15)
-            stranger "えー、つまんないな～"
-            hide stranger with dissolve
             
-            "{i}よくできた！{rb}知{/rb}{rt}し{/rt}らない{rb}人{/rb}{rt}ひと{/rt}の{rb}誘{/rb}{rt}さそ{/rt}いはきっぱり{rb}断{/rb}{rt}ことわ{/rt}ろう！{/i}"
+            pc "いりません！"
+            
+            # 強制連れ去りイベント
+            stranger "いいから こいよ！"
+            "ふしんしゃは うでを つかもうとしてきた！"
+            
+            menu:
+                "おおごえを だす":
+                    jump .shout_cake
+                
+                "にげる":
+                    jump .run_cake
 
+label .shout_cake:
+    # 大声ミニゲーム
+    window hide
+    $ shout_game = ShoutMinigame(threshold=0.5, duration=5.0)
+    call screen shout_minigame(shout_game)
+    window show
+    
+    if _return != "miss":
+        jump .cake_success
+    else:
+        call fallback_buzzer_sequence
+        if _return == "success":
+            jump .cake_success_buzzer
+        else:
+            jump .cake_fail
+
+label .run_cake:
+    # 逃走ミニゲーム（連打）
+    window hide
+    $ game = MashingMinigame(target_count=15, time_limit=5.0, title="にげろ", text="ボタンを連打して\nダッシュしろ！")
+    call screen mashing_minigame(game)
+    window show
+    
+    if _return == "perfect" or _return == "good":
+        jump .cake_success
+    else:
+        call fallback_buzzer_sequence
+        if _return == "success":
+            jump .cake_success_buzzer
+        else:
+            jump .cake_fail
+
+label .cake_success:
+    $ update_score(20)
+    play audio "audio/buzzer.mp3"
+    stranger "ちっ...！"
+    "ふしんしゃは おおごえに おどろいて にげていった！"
+    hide stranger with dissolve
+    jump .cake_rescued
+
+label .cake_success_buzzer:
+    $ update_score(15)
+    "ピピピピピ！！"
+    stranger "うわっ、なんだ！！"
+    "ふしんしゃは あわてて にげだした！"
+    hide stranger with dissolve
+    jump .cake_rescued
+
+label .cake_rescued:
+    # 助けに来る人をランダム決定
+    $ is_officer = renpy.random.choice([True, False])
+    
+    if is_officer:
+         show officer with dissolve
+         officer "どうしたの！？"
+         pc "しらない ひとに つれていかれそうに..."
+         officer "こわかったね！よく がんばったね！"
+         hide officer with dissolve
+    else:
+         show teacher with dissolve
+         teacher "どうしたの！？"
+         pc "しらない ひとに つれていかれそうに..."
+         teacher "こわかったわね！よく がんばったわね！"
+         hide teacher with dissolve
+    
+    "{i}よくできた！しらない ひとには ぜったいに ついていかないように しよう。{/i}"
     return
+
+label .cake_fail:
+    pc "はなしてよー！"
+    stranger "うるさい！"
+    scene black with fade
+    "{i}ふしんしゃに つれさられてしまった...{/i}"
+    jump game_over

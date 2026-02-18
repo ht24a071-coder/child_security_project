@@ -6,7 +6,7 @@ label encounter_e_safe_person:
 
     "だれかが ちかづいてきた。"
     
-    call show_woman_wrapper from _call_show_woman_wrapper
+    show woman with dissolve
     
     woman "こんにちは！"
     
@@ -44,7 +44,7 @@ label encounter_e_safe_person:
 # -----------------------------------------------------------------------------
 label .greet_back:
     # ミニゲーム：元気よく挨拶
-    "（スペースキーで タイミングよく あいさつしよう！）"
+    "（ボタンで タイミングよく あいさつしよう！）"
     
     python:
         greet_game = TimingMinigame(speed=3.0, perfect_range=50, good_range=80, key="K_SPACE")

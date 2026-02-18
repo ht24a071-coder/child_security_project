@@ -15,7 +15,7 @@
     "school_park": {
       "bg": "back_school_park",
       "links": {
-        "{rb}学校{/rb}{rt}がっこう{/rt}へ{rb}戻{/rb}{rt}もど{/rt}る": "start_point",
+        "{rb}学校{/rb}{rt}がっこう{/rt}に{rb}入{/rb}{rt}はい{/rt}る": "start_point",
         "{rb}学校{/rb}{rt}がっこう{/rt}から{rb}左{/rb}{rt}ひだり{/rt}に{rb}進{/rb}{rt}すす{/rt}む": "bunki_1",
         "{rb}学校{/rb}{rt}がっこう{/rt}から{rb}右{/rb}{rt}みぎ{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "d"
       },
@@ -446,14 +446,7 @@
   },
   "event_pools": {
     "safe": [
-      [
-        "event_main_choice",
-        [
-          "officer"
-        ]
-      ],
-      "safe_e_lesson_teacher",
-      "safe_e_lesson_officer"
+      "safe_e_lesson_dispatch"
     ],
     "suspicious": [
       "suspi_e_test_1",
