@@ -288,22 +288,22 @@ label .escape_shout:
         stranger "うわっ…！"
         hide stranger with dissolve
         
-    python:
-        h_tag, _ = get_helper_data()
+        python:
+            h_tag, _ = get_helper_data()
 
-    if h_tag == "teacher":
-        show teacher with dissolve
-        teacher "どうしたの！？ だいじょうぶ！？"
-        pc "しらない ひとに……"
-        teacher "こわかったね。よく おおごえを だせたね！"
-        hide teacher with dissolve
-    else:
-        show officer with dissolve
-        officer "どうしたの！？ だいじょうぶ！？"
-        pc "しらない ひとに……"
-        officer "こわかったね。よく おおごえを だせたね！"
-        hide officer with dissolve
-        "{i}よくがんばった！でも さいしょから ついていかないのが いちばんだよ。{/i}"
+        if h_tag == "teacher":
+            show teacher with dissolve
+            teacher "どうしたの！？ だいじょうぶ！？"
+            pc "しらない ひとに……"
+            teacher "こわかったね。よく おおごえを だせたね！"
+            hide teacher with dissolve
+        else:
+            show officer with dissolve
+            officer "どうしたの！？ だいじょうぶ！？"
+            pc "しらない ひとに……"
+            officer "こわかったね。よく おおごえを だせたね！"
+            hide officer with dissolve
+            "{i}よくがんばった！でも さいしょから ついていかないのが いちばんだよ。{/i}"
     else:
         hide stranger
         "{i}こえが でなかった……{/i}"
@@ -593,8 +593,3 @@ label .flee_fail:
     scene black with fade
     "{i}ふしんしゃに つれさられてしまった...{/i}"
     jump game_over
-    
-
-
-
-
