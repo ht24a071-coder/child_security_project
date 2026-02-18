@@ -22,7 +22,7 @@ label safe_e_lesson_teacher:
     show woman with dissolve
     # 先生役として woman を使用（あるいは専用画像があればそちら）
     
-    $ record_encounter("teacher", "safe_person")
+    $ record_encounter("teacher")
     
     teacher "あ、[player_name]さん。こんにちは。"
     

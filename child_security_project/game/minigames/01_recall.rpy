@@ -99,9 +99,9 @@ label recall_minigame:
         show teacher at center with dissolve
         teacher "おはよう！　ぶじに　ついて　よかったわ。"
     else:
-        # 親 (woman)
-        show woman at center with dissolve
-        woman "おかえり！　ぶじで　よかったわ。"
+        # 親 (parent)
+        show parent at center with dissolve
+        parent "おかえり！　ぶじで　よかったわ。"
 
     # 不審者遭遇チェック
     if len(encountered_events) == 0:
@@ -110,10 +110,10 @@ label recall_minigame:
             teacher "きょうは　あやしいひとは　いなかったみたいね。\nきょうも　げんきに　すごしましょう！"
         else:
             
-            woman "きょうは　あやしいひとは　いなかったのね。\nてあらい　うがいを　しっかりしてね！"
+            parent "きょうは　あやしいひとは　いなかったのね。\nてあらい　うがいを　しっかりしてね！"
         
         hide teacher
-        hide woman
+        hide parent
         return
 
     # 遭遇あり：タイプを確認
@@ -139,12 +139,12 @@ label recall_minigame:
             pc "うん、ちいきの　ひとに　あったよ！"
             teacher "そう、あいさつできたかな？\nちいきの　ひとは　みんなを　まもってくれているのよ。"
         else:
-            woman "きょうは　だれかに　あった？"
+            parent "きょうは　だれかに　あった？"
             pc "うん、ちいきの　ひとに　あったよ！"
-            woman "そう、あいさつできた？\nこまっていることがあったら　そうだんしようね。"
+            parent "そう、あいさつできた？\nこまっていることがあったら　そうだんしようね。"
             
         hide teacher
-        hide woman
+        hide parent
         return
 
     # ここから下は不審者（または怪しい知り合い）の場合
@@ -152,8 +152,8 @@ label recall_minigame:
         teacher "……あら？　なにか　あったの？"
         teacher "えっ、あやしいひとに　あったの！？\nどんな　ひとだったか　おしえてくれる？"
     else:
-        woman "……えっ？　なにか　あったの？"
-        woman "あやしいひとに　あったの！？\nどんな　ひとだったか　おしえて？"
+        parent "……えっ？　なにか　あったの？"
+        parent "あやしいひとに　あったの！？\nどんな　ひとだったか　おしえて？"
 
     # ミニゲームセットアップ
     python:
@@ -163,10 +163,16 @@ label recall_minigame:
     if not is_ready:
         "（おもいだせない……）"
         hide teacher
-        hide woman
+        hide parent
         return
         
     # ミニゲーム開始
+    # 全キャラを一旦非表示（クイズ画面と被らないように）
+    hide teacher
+    hide parent
+    hide woman
+    hide officer
+    hide stranger
     # UI一時非表示
     hide screen minimap
     hide screen score_hud
@@ -177,6 +183,12 @@ label recall_minigame:
     # UI復帰
     show screen minimap
     show screen score_hud
+    
+    # クイズ後のキャラ再表示
+    if game_mode == "going_school":
+        show teacher at center with dissolve
+    else:
+        show parent at center with dissolve
     
     if result_index == recall_game.correct_index:
         play audio "audio/se_good.ogg"
@@ -189,11 +201,11 @@ label recall_minigame:
             else:
                 teacher "すぐに　けいさつに　れんらくするわ！\nおしえてくれて　ありがとう。"
         else:
-            woman "そう……よく　おぼえていたわね。"
+            parent "そう……よく　おぼえていたわね。"
             if is_acquaintance:
-                woman "しっている ひとでも、いやなことを されたら すぐに おしえてね。\nなにか あったら すぐに ママに いうのよ。"
+                parent "しっている ひとでも、いやなことを されたら すぐに おしえてね。\nなにか あったら すぐに ママに いうのよ。"
             else:
-                woman "すぐに　けいさつに　れんらくするわ！\nぶじに　かえってこれて　ほんとうに　よかった！"
+                parent "すぐに　けいさつに　れんらくするわ！\nぶじに　かえってこれて　ほんとうに　よかった！"
             
         "{i}せいかい！よく おぼえていたね！{/i}"
     else:
@@ -202,10 +214,10 @@ label recall_minigame:
         if game_mode == "going_school":
             teacher "うーん、ちょっと　ちがうみたい……？\nでも、ぶじで　よかったわ。"
         else:
-            woman "うーん、ひょっとして　みまちがいかな……？\nでも、ぶじで　よかったわ。"
+            parent "うーん、ひょっとして　みまちがいかな……？\nでも、ぶじで　よかったわ。"
 
         "{i}ざんねん...とくちょうを よく おぼえておこう。{/i}"
         
     hide teacher
-    hide woman
+    hide parent
     return

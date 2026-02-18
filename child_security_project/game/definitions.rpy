@@ -62,11 +62,13 @@ image side stranger = ConditionSwitch(
     "True", "images/actor/stranger.png"
 )
 image stranger = ConditionSwitch(
-    "stranger_type == 'stranger2'", "images/actor/stranger2.png",
-    "True", "images/actor/stranger.png"
+    "stranger_type == 'stranger2'", Transform("images/actor/stranger2.png", fit="contain", ysize=900),
+    "True", Transform("images/actor/stranger.png", fit="contain", ysize=900)
 )
-image teacher = "images/actor/teacher.png"
-image parent = "images/actor/woman3.png"
+image teacher = Transform("images/actor/teacher.png", fit="contain", ysize=900)
+image parent = Transform("images/actor/woman3.png", fit="contain", ysize=900)
+image woman = Transform("images/actor/woman.png", fit="contain", ysize=900)
+image officer = Transform("images/actor/officer.png", fit="contain", ysize=900)
 
 # 学校周辺のノードリスト
 define NEAR_SCHOOL_NODES = ["start_point", "school_park", "bunki_1", "d", "e", "street_1"]
