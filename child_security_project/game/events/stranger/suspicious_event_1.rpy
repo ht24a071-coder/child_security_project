@@ -12,8 +12,7 @@ label suspi_e_test_1:
             hide stranger
             scene black with fade
             
-            "{i}{rb}知{/rb}{rt}し{/rt}らない{rb}人{/rb}{rt}ひと{/rt}についていってはいけないよ！{/i}"
-            "{i}「いかのおすし」を{rb}思{/rb}{rt}おも{/rt}い{rb}出{/rb}{rt}だ{/rt}そう！{/i}"
+            call show_feedback("followed_stranger") from _call_fb_s1_1
             
             jump game_over
 
@@ -120,12 +119,12 @@ label .cake_rescued:
          teacher "こわかったわね！よく がんばったわね！"
          hide teacher with dissolve
     
-    "{i}よくできた！しらない ひとには ぜったいに ついていかないように しよう。{/i}"
+    call show_feedback("no_follow") from _call_fb_s1_2
     return
 
 label .cake_fail:
     pc "はなしてよー！"
     stranger "うるさい！"
     scene black with fade
-    "{i}ふしんしゃに つれさられてしまった...{/i}"
+    call show_feedback("captured") from _call_fb_s1_3
     jump game_over

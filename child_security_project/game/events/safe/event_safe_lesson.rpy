@@ -45,8 +45,7 @@ label safe_e_lesson_teacher:
     
     $ update_score(15)
     
-    "{i}{rb}先生{/rb}{rt}せんせい{/rt}の{rb}話{/rb}{rt}はなし{/rt}をよく{rb}聞{/rb}{rt}き{/rt}けました！{/i}"
-    "{i}「いかのおすし」を{rb}思{/rb}{rt}おも{/rt}い{rb}出{/rb}{rt}だ{/rt}して、{rb}自分{/rb}{rt}じぶん{/rt}の{rb}身{/rb}{rt}み{/rt}を{rb}守{/rb}{rt}まも{/rt}ろう！{/i}"
+    call show_feedback("lesson_teacher") from _call_fb_lesson_1
     
     hide woman with dissolve
     return
@@ -73,8 +72,7 @@ label safe_e_lesson_officer:
     
     $ update_score(15)
     
-    "{i}お{rb}巡{/rb}{rt}まわ{/rt}りさんのアドバイスを{rb}聞{/rb}{rt}き{/rt}けました！{/i}"
-    "{i}{rb}大人{/rb}{rt}おとな{/rt}に{rb}話{/rb}{rt}はな{/rt}しかけられても、{rb}距離{/rb}{rt}きょり{/rt}を{rb}保{/rb}{rt}たも{/rt}つことが{rb}大事{/rb}{rt}だいじ{/rt}だよ。{/i}"
+    call show_feedback("lesson_officer") from _call_fb_lesson_2
     
     call hide_officer_wrapper from _call_hide_officer_wrapper_1
     return

@@ -12,8 +12,7 @@ label suspi_e_test_2:
             hide stranger
             scene black with fade
             
-            "{i}{rb}知{/rb}{rt}し{/rt}らない{rb}人{/rb}{rt}ひと{/rt}の{rb}車{/rb}{rt}くるま{/rt}には{rb}乗{/rb}{rt}の{/rt}っちゃダメ！{/i}"
-            "{i}「いかのおすし」の「の」={rb}乗{/rb}{rt}の{/rt}らない！{/i}"
+            call show_feedback("got_in_car") from _call_fb_s2_1
             
             jump game_over
 
@@ -116,11 +115,11 @@ label .car_2_rescued:
          teacher "こわかったわね！よく がんばったわね！"
          hide teacher with dissolve
     
-    "{i}えらい！{rb}知{/rb}{rt}し{/rt}らない{rb}人{/rb}{rt}ひと{/rt}の{rb}車{/rb}{rt}くるま{/rt}には{rb}絶対{/rb}{rt}ぜったい{/rt}{rb}乗{/rb}{rt}の{/rt}らないでね！{/i}"
+    call show_feedback("no_follow") from _call_fb_s2_2
     return
 
 label .car_2_fail:
     stranger "つかまえた！"
     scene black with fade
-    "{i}ふしんしゃに つれさられてしまった...{/i}"
+    call show_feedback("captured") from _call_fb_s2_3
     jump game_over

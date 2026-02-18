@@ -55,8 +55,7 @@ label .get_in_car:
     hide stranger
     scene black with fade
     
-    "{i}しらない ひとの くるまに のってはいけません！{/i}"
-    "{i}「いかのおすし」の「の」＝のらない！{/i}"
+    call show_feedback("got_in_car") from _call_fb_car_1
     
     jump game_over
 
@@ -133,7 +132,7 @@ label .forceful_shout:
              teacher "先生から おまわりさんに れんらくしておくわね。"
              hide teacher with dissolve
         
-        "{i}すばらしい！おおごえを だして たすけを よべたね！{/i}"
+        call show_feedback("shout_success") from _call_fb_car_2
         return
     else:
         # 失敗 -> ブザーチャンス
@@ -176,7 +175,7 @@ label .forceful_run:
             hide officer with dissolve
             $ update_score(10)
         
-        "{i}よく にげられたね！あやしい くるまには ちかづかないようにしよう。{/i}"
+        call show_feedback("run_success_car") from _call_fb_car_3
         return
     else:
         # 失敗 -> ブザーチャンス
@@ -213,7 +212,7 @@ label .car_gameover:
     stranger "つかまえた！"
     hide stranger
     scene black with fade
-    "{i}ふしんしゃに つれさられてしまった...{/i}"
+    call show_feedback("captured") from _call_fb_car_4
     jump game_over
 
 
@@ -247,7 +246,7 @@ label .run_away_car:
     else:
         "なんとか にげられた..."
     
-    "{i}よくできた！あやしい くるまには ちかづかず、すぐ にげよう！{/i}"
+    call show_feedback("run_car_success") from _call_fb_car_5
     return
 
 # -----------------------------------------------------------------------------
@@ -270,5 +269,5 @@ label .buzzer_car:
     woman "よくできたね！あやしいと おもったら すぐ ブザーだね！"
     hide woman with dissolve
     
-    "{i}すばらしい！あやしいと おもったら すぐに ぼうはんブザーを ならそう！{/i}"
+    call show_feedback("buzzer_success_car") from _call_fb_car_6
     return

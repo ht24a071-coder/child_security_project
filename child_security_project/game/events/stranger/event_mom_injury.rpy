@@ -40,9 +40,7 @@ label .get_in_car_mom:
     hide stranger
     scene black with fade
     
-    "{i}それは わるいおとなの うそでした。{/i}"
-    "{i}しらないひとの くるまに のってはいけません。{/i}"
-    "{i}「おかあさんが けがをした」といわれても、ついていっては いけません。{/i}"
+    call show_feedback("got_in_car_mom") from _call_fb_mom_1
     
     jump game_over
 
@@ -164,8 +162,7 @@ label .escape_rescued_mom:
          teacher "こわかったわね！よく がんばったわね！"
          hide teacher with dissolve
     
-    "{i}よくできた！しらない ひとが [player_name]ちゃんの うでを ひっぱったりしたら、おおごえを だして にげよう！{/i}"
-    "{i}かならず ほかの おとなに かくにんしようね。{/i}"
+    call show_feedback("escape_success_mom") from _call_fb_mom_2
     return
 
 label .escape_success_mom_buzzer:
@@ -200,7 +197,7 @@ label .escape_fail_mom:
     stranger "うるさい！ くるまに のるんだ！"
     
     scene black with fade
-    "{i}ふしんしゃに むりやり くるまに のせられてしまった...{/i}"
+    call show_feedback("captured_mom") from _call_fb_mom_3
     jump game_over
 
 # -----------------------------------------------------------------------------
@@ -227,5 +224,5 @@ label .buzzer_car_mom:
     woman "よかったね！あやしいと おもったら すぐ ブザーだね！"
     hide woman with dissolve
     
-    "{i}すばらしい！うそかもしれないと おもって ブザーを ならせたね！{/i}"
+    call show_feedback("buzzer_success_mom_injury") from _call_fb_mom_4
     return

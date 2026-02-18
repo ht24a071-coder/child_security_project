@@ -50,9 +50,7 @@ label .follow_acquaintance:
     call hide_stranger_wrapper from _call_hide_stranger_wrapper
     scene black with fade
     
-    "{i}しっている ひとでも、かってに ついていってはいけません。{/i}"
-    "{i}わるいことを かんがえている 人も いるかもしれません。{/i}"
-    "{i}かならず おうちのひとに きいてからに しましょう。{/i}"
+    call show_feedback("acquaintance_follow") from _call_fb_acq_1
     
     jump game_over
 
@@ -73,8 +71,7 @@ label .refuse_acquaintance:
     
     call hide_stranger_wrapper(dissolve) from _call_hide_stranger_wrapper_1
     
-    "{i}よくできた！しっている ひとでも、ついていってはいけないよ。{/i}"
-    "{i}「ちょっとだけ」といわれても、ことわって すぐに はなれよう。{/i}"
+    call show_feedback("acquaintance_refuse") from _call_fb_acq_2
     
     return
 
@@ -94,7 +91,6 @@ label .buzzer_acquaintance:
     
     pc "（ちょっと こわかった...）"
     
-    "{i}すごい！しっている ひとでも、こわいと おもったら ブザーを ならして いいんだよ。{/i}"
-    "{i}じぶんの みを まもるのが いちばん だいじだからね。{/i}"
+    call show_feedback("acquaintance_buzzer") from _call_fb_acq_3
     
     return

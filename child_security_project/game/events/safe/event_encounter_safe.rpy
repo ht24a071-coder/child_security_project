@@ -99,7 +99,7 @@ label .greet_back:
     else:
         hide woman with dissolve
     
-    "{i}よくできました！あいさつは コミュニケーションの きほんだね。{/i}"
+    call show_feedback("greeting_success") from _call_fb_safe_1
     return
 
 # -----------------------------------------------------------------------------
@@ -134,8 +134,7 @@ label .buzzer_safe:
     
     $ update_score(-5)
     
-    "{i}ぼうはんブザーは ほんとうに あぶないときだけ つかおうね。{/i}"
-    "{i}でも、あやしいと おもったら つかうゆうきも だいじだよ。{/i}"
+    call show_feedback("buzzer_misuse") from _call_fb_safe_2
     return
 
 # -----------------------------------------------------------------------------
@@ -150,5 +149,5 @@ label .ignore_safe:
         woman "あら、シャイな こね。きを つけてね。"
         hide woman with dissolve
     
-    "{i}あいさつを かえすと、ちいきの ひとが あなたのことを おぼえてくれるよ。{/i}"
+    call show_feedback("greeting_ignore") from _call_fb_safe_3
     return

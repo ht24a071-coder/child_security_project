@@ -73,7 +73,7 @@ label .buzzer_stranger:
         officer "ブザーを ならしたのね。えらい！"
         hide officer with dissolve
     
-    "{i}よくできた！防犯ブザーは こわいとおもったら すぐにならそう！{/i}"
+    call show_feedback("buzzer_success") from _call_fb_ed_1
     return
 
 # -----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ label .escape_buzzer:
         officer "よくできたね！でも さいしょから ついていかないように しようね。"
         hide officer with dissolve
     
-    "{i}ぼうはんブザーで にげられた！でも さいしょから ついていかないのが いちばんだよ。{/i}"
+    call show_feedback("buzzer_success_but_no_follow") from _call_fb_ed_2
     return
 
 # 110番の家に逃げる（フラグあり→成功）
@@ -172,7 +172,7 @@ label .escape_110:
             officer "だいじょうぶ、ここは あんぜんだよ。よく にげてきたね！"
             hide officer with dissolve
         
-        "{i}すばらしい！110ばんの いえを おぼえていたから にげられたね！{/i}"
+        call show_feedback("escape_110_success") from _call_fb_ed_3
     else:
         call fallback_buzzer_sequence
         if _return == "success":
@@ -180,7 +180,7 @@ label .escape_110:
         
         $ update_score(10)
         "なんとか にげきった…でも こわかった…"
-        "{i}あぶなかったね。さいしょから ついていかないように しよう。{/i}"
+        call show_feedback("partial_escape") from _call_fb_ed_4
     return
 
 # 110番の家を知らない
@@ -205,7 +205,7 @@ label .escape_fail_no_110:
     if _return == "success":
         $ update_score(5)
         "なんとか にげきった……"
-        "{i}あぶなかったね。「110ばんの いえ」を おぼえておけば もっと あんぜんだよ。{/i}"
+        call show_feedback("escape_110_unknown") from _call_fb_ed_5
         return
     else:
         call fallback_buzzer_sequence
@@ -213,8 +213,7 @@ label .escape_fail_no_110:
             jump .escape_buzzer
             
         scene black with fade
-        "{i}にげられなかった……{/i}"
-        "{i}「こども110ばんの いえ」を みつけたら、ばしょを おぼえておこう！{/i}"
+        call show_feedback("escape_110_fail") from _call_fb_ed_6
         jump game_over
 
 # 家に走るルート（とても難しい）
@@ -248,8 +247,7 @@ label .escape_home:
             "かぎが あかない…！"
             stranger "まてまて～"
             scene black with fade
-            "{i}かぎを あけるのに てまどってしまった…{/i}"
-            "{i}いえに にげるより、110ばんの いえや おみせに にげるほうが あんぜんだよ。{/i}"
+            call show_feedback("key_failed") from _call_fb_ed_7
             jump game_over
         else:
             $ update_score(5)
@@ -261,7 +259,7 @@ label .escape_home:
             parent "よかった、ぶじで。もうだいじょうぶよ。"
             hide parent with dissolve
             
-            "{i}あぶなかったね。つぎからは さいしょから ついていかないようにね。{/i}"
+            call show_feedback("run_success_but_dangerous") from _call_fb_ed_8
             return
     else:
         call fallback_buzzer_sequence
@@ -269,8 +267,7 @@ label .escape_home:
             jump .escape_buzzer
 
         scene black with fade
-        "{i}にげられなかった……{/i}"
-        "{i}さいしょから しらない ひとに ついていかないように しよう。{/i}"
+        call show_feedback("escape_failed_no_follow") from _call_fb_ed_9
         jump game_over
 
 # 大声を出して逃げる（マイク使用）
@@ -303,10 +300,10 @@ label .escape_shout:
             pc "しらない ひとに……"
             officer "こわかったね。よく おおごえを だせたね！"
             hide officer with dissolve
-            "{i}よくがんばった！でも さいしょから ついていかないのが いちばんだよ。{/i}"
+            call show_feedback("shout_success_but_no_follow") from _call_fb_ed_10
     else:
         hide stranger
-        "{i}こえが でなかった……{/i}"
+        call show_feedback("voice_failed") from _call_fb_ed_11
         
         "（どうしよう…！？）"
         menu:
@@ -336,7 +333,7 @@ label .refuse_stranger:
     
     hide stranger with dissolve
     
-    "{i}よくできた！しらない ひとの さそいは きっぱり ことわろう！{/i}"
+    call show_feedback("refuse_success") from _call_fb_ed_12
     return
 
 # -----------------------------------------------------------------------------
@@ -504,7 +501,7 @@ label .stranger_repelled_run:
 
 label .game_over_capture:
     scene black with fade
-    "{i}ふしんしゃに つれさられてしまった...{/i}"
+    call show_feedback("captured") from _call_fb_ed_13
     jump game_over
 
 label .after_encounter_success:
@@ -523,7 +520,7 @@ label .after_encounter_success:
         pc "しらない ひとに..."
         officer "こわかったね。よく がんばったね！"
         hide officer with dissolve
-    "{i}よくできた！あぶないときは おおごえを だしたり にげたりしよう！{/i}"
+    call show_feedback("danger_repelled") from _call_fb_ed_14
     return
 
 # -----------------------------------------------------------------------------
@@ -574,7 +571,7 @@ label .flee_success:
         officer "だいじょうぶ、ここは あんぜんだよ。よく にげてきたね！"
         hide officer with dissolve
     
-    "{i}よくできた！しらない ひとには ぜったいに ついていかないように しよう。{/i}"
+    call show_feedback("no_follow") from _call_fb_ed_15
     return
 
 # 110番の家を覚えていない → 失敗
@@ -591,5 +588,5 @@ label .flee_fail:
     
     hide stranger
     scene black with fade
-    "{i}ふしんしゃに つれさられてしまった...{/i}"
+    call show_feedback("captured") from _call_fb_ed_16
     jump game_over
