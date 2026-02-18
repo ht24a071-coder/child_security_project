@@ -8,14 +8,14 @@ label special_e_find_110:
 
     menu:
         "110{rb}番{/rb}{rt}ばん{/rt}！":
-            $ update_score(15)
+            $ update_score(15, "110ばんのクイズ")
             woman "{rb}正解{/rb}{rt}せいかい{/rt}！すごいね、ちゃんと{rb}知{/rb}{rt}し{/rt}ってるんだ。"
             woman "{rb}何{/rb}{rt}なに{/rt}か{rb}怖{/rb}{rt}こわ{/rt}いことがあったら、すぐに110{rb}番{/rb}{rt}ばん{/rt}に{rb}電話{/rb}{rt}でんわ{/rt}してね。"
             woman "{rb}警察{/rb}{rt}けいさつ{/rt}のお{rb}兄{/rb}{rt}にい{/rt}さんお{rb}姉{/rb}{rt}ねえ{/rt}さんが{rb}助{/rb}{rt}たす{/rt}けてくれるからね。"
             call show_feedback("quiz_110_correct") from _call_fb_110_1
 
         "119{rb}番{/rb}{rt}ばん{/rt}？":
-            $ update_score(5)
+            $ update_score(5, "110ばんのクイズ")
             woman "{rb}惜{/rb}{rt}お{/rt}しい！119{rb}番{/rb}{rt}ばん{/rt}は{rb}救急車{/rb}{rt}きゅうきゅうしゃ{/rt}や{rb}消防車{/rb}{rt}しょうぼうしゃ{/rt}だよ。"
             woman "{rb}怖{/rb}{rt}こわ{/rt}い{rb}人{/rb}{rt}ひと{/rt}に{rb}会{/rb}{rt}あ{/rt}ったときは110{rb}番{/rb}{rt}ばん{/rt}に{rb}電話{/rb}{rt}でんわ{/rt}してね。"
             woman "110は「ひゃくとおばん」って{rb}覚{/rb}{rt}おぼ{/rt}えるといいよ！"

@@ -17,7 +17,7 @@ label suspi_e_test_2:
             jump game_over
 
         "{rb}大丈夫{/rb}{rt}だいじょうぶ{/rt}です。{rb}自分{/rb}{rt}じぶん{/rt}で{rb}帰{/rb}{rt}かえ{/rt}れます":
-            $ update_score(15)
+            $ update_score(15, "はっきりと ことわった")
             
             stranger "いいから のりなよ！"
             "ふしんしゃは うでを つかもうとしてきた！"
@@ -76,7 +76,7 @@ label .run_car_2:
             jump .car_2_fail
 
 label .car_2_success_shout:
-    $ update_score(25)
+    $ update_score(25, "おおごえで げきたい")
     play audio "audio/buzzer.mp3"
     stranger "ちっ...！"
     "ふしんしゃは おおごえに おどろいて にげていった！"
@@ -84,13 +84,13 @@ label .car_2_success_shout:
     jump .car_2_rescued
 
 label .car_2_success_run:
-    $ update_score(15)
+    $ update_score(15, "なんとか にげきった")
     "なんとか にげきった！"
     hide stranger with dissolve
     jump .car_2_rescued
 
 label .car_2_success_buzzer:
-    $ update_score(15)
+    $ update_score(15, "ぼうはんブザーで げきたい")
     "ピピピピピ！！"
     stranger "うわっ、なんだ！！"
     "ふしんしゃは あわてて にげだした！"

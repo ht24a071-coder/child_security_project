@@ -24,7 +24,7 @@ init python:
             # ダミー用に color matrix で色を変えたバージョンなどを用意するのも手
             
             dummies = []
-            all_types = ["stranger", "stranger2", "officer", "woman"] # officerとか混ぜる？
+            all_types = ["stranger", "stranger2", "officer", "woman", "teacher", "parent"]
             
             for t in all_types:
                 if t != target_type:
@@ -33,11 +33,17 @@ init python:
             # 3択を作る
             import random
             options = [target_type]
-            # ダミーから2つ選ぶ（足りなければ重複許容）
-            while len(options) < 3:
-                d = random.choice(dummies)
-                options.append(d)
-                
+            
+            # ダミーから重複なしで選ぶ
+            if len(dummies) >= 2:
+                selected_dummies = random.sample(dummies, 2)
+                options.extend(selected_dummies)
+            elif len(dummies) == 1:
+                options.append(dummies[0])
+                # 足りない場合は仕方ないので重複させるか、空白にするか
+                # ここでは重複もやむなし（仕様上起きないはず）
+                options.append(dummies[0])
+
             random.shuffle(options)
             self.choices = options
             
@@ -129,6 +135,10 @@ screen recall_minigame_screen(game):
                     add "images/actor/officer.png" zoom 0.5 align (0.5, 1.0)
                 elif choice_type == "woman":
                     add "images/actor/woman.png" zoom 0.5 align (0.5, 1.0)
+                elif choice_type == "teacher":
+                    add "images/actor/teacher.png" zoom 0.5 align (0.5, 1.0)
+                elif choice_type == "parent":
+                    add "images/actor/woman3.png" zoom 0.5 align (0.5, 1.0)
                 else:
                     text "?" size 100 align (0.5, 0.5)
 
@@ -237,7 +247,7 @@ label recall_minigame:
     
     if result_index == recall_game.correct_index:
         play audio "audio/se_good.ogg"
-        $ update_score(30)
+        $ update_score(30, "ふしんしゃの とくちょうを おぼえていた")
         
         if game_mode == "going_school":
             teacher "そう……よく　おぼえていたわね。"

@@ -55,7 +55,7 @@ label .buzzer_stranger:
     
     "ふしんしゃは おとにおどろいて にげていった！"
     
-    $ update_score(20)
+    $ update_score(20, "ぼうはんブザーで げきたい")
     
     python:
         h_tag, _unused = get_helper_data()
@@ -119,7 +119,7 @@ label .escape_buzzer:
     
     hide stranger with dissolve
     
-    $ update_score(15)
+    $ update_score(15, "ぼうはんブザーで にげきった")
     
     python:
         h_tag, _unused = get_helper_data()
@@ -153,7 +153,7 @@ label .escape_110:
     hide stranger
     
     if _return == "success":
-        $ update_score(30)
+        $ update_score(30, "110ばんのいえに にげこんだ")
         "「こども110ばんの いえ」に かけこんだ！"
         
         python:
@@ -178,7 +178,7 @@ label .escape_110:
         if _return == "success":
             jump .escape_buzzer
         
-        $ update_score(10)
+        $ update_score(10, "なんとか にげきった")
         "なんとか にげきった…でも こわかった…"
         call show_feedback("partial_escape") from _call_fb_ed_4
     return
@@ -250,7 +250,7 @@ label .escape_home:
             call show_feedback("key_failed") from _call_fb_ed_7
             jump game_over
         else:
-            $ update_score(5)
+            $ update_score(5, "いえに にげこんだ")
             "なんとか いえに にげこめた…"
             
             show parent with dissolve
@@ -280,7 +280,7 @@ label .escape_shout:
     call screen shout_minigame(shout_game)
     
     if _return != "miss":
-        $ update_score(15)
+        $ update_score(15, "おおごえで たすけを よんだ")
         play audio "audio/buzzer.mp3"
         stranger "うわっ…！"
         hide stranger with dissolve
@@ -323,7 +323,7 @@ label .escape_shout:
 # 逃げるルート
 # -----------------------------------------------------------------------------
 label .refuse_stranger:
-    $ update_score(15)
+    $ update_score(15, "はっきりと ことわった")
     
     pc "ごめんなさい！まっすぐ かえらないといけないんです！"
     stranger "えー、ちょっとだけだよ～"
@@ -482,7 +482,7 @@ label .stage3_run:
         jump .game_over_capture
 
 label .stranger_repelled:
-    $ update_score(25)
+    $ update_score(25, "おおごえで げきたい")
     play audio "audio/buzzer.mp3"
     stranger "ちっ...！"
     "ふしんしゃは くるまに のって にげていった！"
@@ -545,7 +545,7 @@ label .flee_success:
     hide stranger
     
     if _return == "success":
-        $ update_score(35)
+        $ update_score(35, "110ばんのいえに にげこんだ")
         "PERFECT!! 「こども110ばんの いえ」に かけこんだ！"
     else:
         call fallback_buzzer_sequence

@@ -58,7 +58,7 @@ label .follow_acquaintance:
 # 断る（正解）
 # -----------------------------------------------------------------------------
 label .refuse_acquaintance:
-    $ update_score(10)
+    $ update_score(10, "ことわった")
     
     pc "ごめんなさい！いま いそいでるんです！"
     
@@ -81,7 +81,7 @@ label .refuse_acquaintance:
 label .buzzer_acquaintance:
     play audio "audio/buzzer.mp3"
     
-    $ update_score(15)
+    $ update_score(15, "ぼうはんブザーで げきたい")
     
     "ピピピピピ！！"
     stranger "おいおい！なにをするんだ！"

@@ -65,6 +65,38 @@ screen game_feedback():
                         xalign 0.5
                         outlines [(2, "#000000", 0, 0)]
             
+            # スコア履歴
+            if len(score_history) > 0:
+                frame:
+                    background "#00000060"
+                    padding (30, 15)
+                    xalign 0.5
+                    xfill True
+                    ymaximum 180 # 高さ制限
+
+                    viewport:
+                        scrollbars "vertical"
+                        mousewheel True
+                        draggable True
+                        
+                        vbox:
+                            spacing 5
+                            
+                            for amount, reason in score_history:
+                                hbox:
+                                    spacing 20
+                                    # 理由テキスト
+                                    text "[reason!t]":
+                                        size 24
+                                        color "#FFFFFF"
+                                        min_width 400
+                                    
+                                    # 点数
+                                    if amount >= 0:
+                                        text "+[amount]" size 24 color "#76FF03" xalign 1.0 bold True outlines [(1, "#000", 0, 0)]
+                                    else:
+                                        text "[amount]" size 24 color "#FF1744" xalign 1.0 bold True outlines [(1, "#000", 0, 0)]
+
             # メッセージ
             text feedback_message:
                 size 26
