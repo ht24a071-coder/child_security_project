@@ -17,7 +17,7 @@ init python:
             
             # 直近の遭遇、あるいはランダムに1つ選ぶ
             # ここでは「最後に遭遇した人」を正解にする
-            target_type, _ = encountered_events[-1]
+            target_type, _unused = encountered_events[-1]
             
             # ダミーの不審者リスト（定義されてる画像から適当に）
             # ここでは簡易的に stranger, stranger2 を使いまわすが、理想はもっと種類があるべき

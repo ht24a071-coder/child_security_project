@@ -83,7 +83,7 @@ label .buzzer_safe:
     call hide_woman_wrapper from _call_hide_woman_wrapper_1
     
     python:
-        h_tag, _ = get_helper_data()
+        h_tag, _unused = get_helper_data()
 
     if h_tag == "teacher":
         show teacher with dissolve

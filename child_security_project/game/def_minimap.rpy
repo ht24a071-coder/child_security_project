@@ -168,7 +168,8 @@ screen minimap():
     $ pin_scale = cfg["pin_scale"]
     
     # 現在地の座標を取得（ホバー時はその場所、なければ現在地）
-    $ current_pos_node = minimap_hover_node if minimap_hover_node else current_node
+    $ _cur_node = globals().get("current_node", None)
+    $ current_pos_node = minimap_hover_node if minimap_hover_node else _cur_node
     $ pos = map_coordinates.get(current_pos_node, None) if current_pos_node else None
     
     frame:
@@ -348,7 +349,8 @@ screen fullscreen_map():
     # 設定値を取得
     $ cfg = minimap_config
     $ fzoom = 0.85
-    $ pos = map_coordinates.get(current_node, None) if current_node else None
+    $ _cur_node = globals().get("current_node", None)
+    $ pos = map_coordinates.get(_cur_node, None) if _cur_node else None
 
     # 背景を暗く
     add Solid("#000000CC")
@@ -406,8 +408,8 @@ screen fullscreen_map():
                             zoom 0.8
 
             # 現在地ピン（最前面）
-            if current_node in map_coordinates:
-                $ c_pos = map_coordinates[current_node]
+            if _cur_node and _cur_node in map_coordinates:
+                $ c_pos = map_coordinates[_cur_node]
                 if c_pos:
                     $ pin_x = int(c_pos[0] * p_zoom)
                     $ pin_y = int(c_pos[1] * p_zoom)

@@ -17,27 +17,6 @@ init -1 python:
             # 演出用 (from minigame_mash.rpy)
             self.last_press_time = 0.0
             self.shake_offset = (0, 0)
-            
-    class EscapeMinigame(MashingMinigame):
-        def __init__(self, difficulty="normal", **kwargs):
-            # 難易度に応じた設定
-            settings = {
-                "easy":   {"target_count": 10, "time_limit": 5.0},
-                "normal": {"target_count": 15, "time_limit": 5.0},
-                "hard":   {"target_count": 25, "time_limit": 5.0} # 5秒で25回=連打力5/s
-            }
-            params = settings.get(difficulty, settings["normal"])
-            
-            # タイトル等のデフォルト
-            if "title" not in kwargs: kwargs["title"] = "にげろ！"
-            if "text" not in kwargs: kwargs["text"] = "ボタンを れんだして にげきれ！"
-            
-            super(EscapeMinigame, self).__init__(
-                target_count=params["target_count"], 
-                time_limit=params["time_limit"], 
-                **kwargs
-            )
-
 
         def get_remaining(self):
             # まだ始まってない、あるいは開始時刻が決まってないなら制限時間をそのまま返す
@@ -86,6 +65,27 @@ init -1 python:
                 rem = self.get_remaining()
                 self.result = "perfect" if rem > self.time_limit * 0.5 else "good"
                 self.show_result = self.finished = True
+            
+    class EscapeMinigame(MashingMinigame):
+        def __init__(self, difficulty="normal", **kwargs):
+            # 難易度に応じた設定
+            settings = {
+                "easy":   {"target_count": 10, "time_limit": 5.0},
+                "normal": {"target_count": 15, "time_limit": 5.0},
+                "hard":   {"target_count": 25, "time_limit": 5.0} # 5秒で25回=連打力5/s
+            }
+            params = settings.get(difficulty, settings["normal"])
+            
+            # タイトル等のデフォルト
+            if "title" not in kwargs: kwargs["title"] = "にげろ！"
+            if "text" not in kwargs: kwargs["text"] = "ボタンを れんだして にげきれ！"
+            
+            super(EscapeMinigame, self).__init__(
+                target_count=params["target_count"], 
+                time_limit=params["time_limit"], 
+                **kwargs
+            )
+            # get_remaining, update, on_mash は親クラス MashingMinigame から継承
 
 
 # -----------------------------------------------------------------------------
