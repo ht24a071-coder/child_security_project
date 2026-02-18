@@ -456,6 +456,41 @@ screen shout_minigame(game):
         
         add Solid("#000000DD")
         
+        # ---------------------------------------------------------------
+        # 背景アニメーション（激しさ・爆発感 / 赤・黄色系）
+        # ---------------------------------------------------------------
+        # 音波を模した同心円（パルス）
+        add Solid("#330000", xsize=600, ysize=600):
+            align (0.5, 0.5)
+            at mg_bg_pulse(delay=0.0, lo=0.8, hi=1.2, period=1.2)
+        add Solid("#220000", xsize=900, ysize=900):
+            align (0.5, 0.5)
+            at mg_bg_pulse(delay=0.4, lo=0.85, hi=1.1, period=1.6)
+        add Solid("#110000", xsize=1200, ysize=1200):
+            align (0.5, 0.5)
+            at mg_bg_pulse(delay=0.8, lo=0.9, hi=1.05, period=2.0)
+
+        # 左右に浮遊する炎のような図形
+        add Solid("#ff2200", xsize=80, ysize=80) rotate 45 alpha 0.15:
+            align (0.05, 0.4)
+            at mg_bg_float(delay=0.0, amp=30)
+        add Solid("#ff6600", xsize=60, ysize=60) rotate 30 alpha 0.15:
+            align (0.95, 0.3)
+            at mg_bg_float(delay=0.7, amp=25)
+        add Solid("#ffaa00", xsize=50, ysize=50) rotate 60 alpha 0.15:
+            align (0.08, 0.7)
+            at mg_bg_float(delay=1.4, amp=20)
+        add Solid("#ff4400", xsize=70, ysize=70) rotate 15 alpha 0.15:
+            align (0.92, 0.65)
+            at mg_bg_float(delay=0.3, amp=35)
+
+        # ダメージフラッシュ（damage_flash > 0 のとき赤く光る）
+        if game.damage_flash > 0.0:
+            add Solid("#ff0000", xsize=1920, ysize=1080) alpha game.damage_flash:
+                at mg_flash_in
+
+        # ---------------------------------------------------------------
+        
         # 叫び文字演出（背景側）
         for txt_data in game.shout_texts:
             $ txt = txt_data[0]

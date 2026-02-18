@@ -55,6 +55,51 @@ init python:
 screen recall_minigame_screen(game):
     modal True
     add Solid("#000000CC")
+
+    # ---------------------------------------------------------------
+    # 背景アニメーション（謎解き・思い出し感 / 暗い青・グレー系）
+    # ---------------------------------------------------------------
+    # 霧のようにゆっくり浮遊する半透明の大きな図形
+    add Solid("#001133", xsize=400, ysize=400):
+        align (0.15, 0.3)
+        at mg_bg_float(delay=0.0, amp=20)
+    add Solid("#002244", xsize=300, ysize=300):
+        align (0.85, 0.6)
+        at mg_bg_float(delay=1.2, amp=15)
+    add Solid("#001122", xsize=500, ysize=500):
+        align (0.5, 0.8)
+        at mg_bg_float(delay=0.6, amp=25)
+    add Solid("#003355", xsize=250, ysize=250):
+        align (0.2, 0.75)
+        at mg_bg_float(delay=1.8, amp=18)
+
+    # 上から降ってくる疑問符パーティクル（上昇の逆：yoffset正方向）
+    # mg_particle_rise を反転させて「降下」に使う
+    add Solid("#334466", xsize=6, ysize=6):
+        align (0.1, 0.0)
+        at mg_particle_rise(delay=0.0, rise=-500, period=4.0)
+    add Solid("#445577", xsize=8, ysize=8):
+        align (0.3, 0.0)
+        at mg_particle_rise(delay=1.5, rise=-500, period=3.5)
+    add Solid("#334466", xsize=5, ysize=5):
+        align (0.6, 0.0)
+        at mg_particle_rise(delay=0.8, rise=-500, period=4.5)
+    add Solid("#556688", xsize=7, ysize=7):
+        align (0.8, 0.0)
+        at mg_particle_rise(delay=2.2, rise=-500, period=3.8)
+    add Solid("#445577", xsize=6, ysize=6):
+        align (0.45, 0.0)
+        at mg_particle_rise(delay=1.0, rise=-500, period=4.2)
+
+    # 横に流れる細い光の帯
+    add Solid("#224466", xsize=1280, ysize=2) alpha 0.3:
+        align (0.5, 0.35)
+        at mg_bg_drift(delay=0.0, dist=40, period=5.0)
+    add Solid("#335577", xsize=1280, ysize=2) alpha 0.3:
+        align (0.5, 0.65)
+        at mg_bg_drift(delay=2.0, dist=-40, period=4.5)
+
+    # ---------------------------------------------------------------
     
     vbox:
         align (0.5, 0.1)

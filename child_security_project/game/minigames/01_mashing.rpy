@@ -102,7 +102,44 @@ screen mashing_minigame(game):
         if not game.finished:
             timer 0.05 repeat True action Function(renpy.restart_interaction)
         add Solid("#000000CC")
-        
+
+        # ---------------------------------------------------------------
+        # 背景アニメーション（ゲーム中演出）
+        # ---------------------------------------------------------------
+        # 左右から流れ込む斜め帯（赤・オレンジ系）
+        add Solid("#ff2200", xsize=800, ysize=60) rotate -20 alpha 0.08:
+            align (0.5, 0.2)
+            at mg_bg_drift(delay=0.0, dist=80, period=3.0)
+        add Solid("#ff6600", xsize=800, ysize=60) rotate -20 alpha 0.08:
+            align (0.5, 0.5)
+            at mg_bg_drift(delay=0.8, dist=-80, period=3.2)
+        add Solid("#ffaa00", xsize=800, ysize=60) rotate -20 alpha 0.08:
+            align (0.5, 0.8)
+            at mg_bg_drift(delay=1.6, dist=60, period=2.8)
+
+        # 上昇するパーティクル（左・中・右）
+        add Solid("#ff4400", xsize=8, ysize=8) alpha 0.5:
+            align (0.2, 1.0)
+            at mg_particle_rise(delay=0.0, rise=700, period=2.5)
+        add Solid("#ff8800", xsize=6, ysize=6) alpha 0.5:
+            align (0.5, 1.0)
+            at mg_particle_rise(delay=0.9, rise=700, period=3.0)
+        add Solid("#ffcc00", xsize=10, ysize=10) alpha 0.5:
+            align (0.75, 1.0)
+            at mg_particle_rise(delay=1.7, rise=700, period=2.2)
+        add Solid("#ff2200", xsize=7, ysize=7) alpha 0.5:
+            align (0.35, 1.0)
+            at mg_particle_rise(delay=0.4, rise=700, period=2.8)
+        add Solid("#ff6600", xsize=9, ysize=9) alpha 0.5:
+            align (0.88, 1.0)
+            at mg_particle_rise(delay=1.3, rise=700, period=3.3)
+
+        # 連打ヒット時のフラッシュ（shake_offset が非ゼロのとき光る）
+        if game.shake_offset != (0, 0):
+            add Solid("#ff4400", xsize=1920, ysize=1080) alpha 0.5:
+                at mg_flash_in
+
+        # ---------------------------------------------------------------
         frame:
             xalign 0.5 yalign 0.5
             xsize 600 ysize 500

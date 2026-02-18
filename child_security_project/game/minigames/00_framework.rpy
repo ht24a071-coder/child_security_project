@@ -48,6 +48,57 @@ transform intro_bg_shape(delay, start_x, start_y):
 
 # ----------------------------------------
 
+# =============================================================================
+# ゲーム中 共通アニメーション (ATL)
+# =============================================================================
+
+# ゆっくり上下に浮遊する（背景図形用）
+transform mg_bg_float(delay=0.0, amp=15):
+    yoffset 0
+    pause delay
+    block:
+        easeout 1.8 yoffset amp
+        easeout 1.8 yoffset 0
+        easeout 1.8 yoffset -amp
+        easeout 1.8 yoffset 0
+        repeat
+
+# 拡大縮小を繰り返すパルス（同心円・光彩用）
+transform mg_bg_pulse(delay=0.0, lo=0.9, hi=1.1, period=1.6):
+    zoom lo
+    pause delay
+    block:
+        ease period/2 zoom hi
+        ease period/2 zoom lo
+        repeat
+
+# 画面をゆっくり横に流れる（帯・粒子用）
+transform mg_bg_drift(delay=0.0, dist=120, period=4.0):
+    xoffset 0
+    pause delay
+    block:
+        linear period/2 xoffset dist
+        linear period/2 xoffset 0
+        repeat
+
+# 下から上へ消えながら上昇するパーティクル
+transform mg_particle_rise(delay=0.0, rise=300, period=3.0):
+    yoffset 0 alpha 0.0
+    pause delay
+    block:
+        alpha 0.6
+        linear period yoffset -rise alpha 0.0
+        yoffset 0
+        repeat
+
+# 画面全体を一瞬光らせるフラッシュ（叫び・連打ヒット時用）
+transform mg_flash_in:
+    alpha 0.0
+    linear 0.05 alpha 0.7
+    linear 0.25 alpha 0.0
+
+# ----------------------------------------
+
 screen minigame_intro_overlay(game):
     modal True
     

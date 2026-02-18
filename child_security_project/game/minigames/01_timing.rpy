@@ -62,6 +62,44 @@ screen timing_minigame(game):
     else:
         # ゲーム本編
         add Solid("#000000AA")
+
+        # ---------------------------------------------------------------
+        # 背景アニメーション（集中・リズム感 / 青・紫系）
+        # ---------------------------------------------------------------
+        # 背景に浮かぶ大きな円（パルス）
+        add Solid("#1a0066", xsize=500, ysize=500):
+            align (0.5, 0.5)
+            at mg_bg_pulse(delay=0.0, lo=0.85, hi=1.15, period=2.0)
+        add Solid("#000033", xsize=700, ysize=700):
+            align (0.5, 0.5)
+            at mg_bg_pulse(delay=0.5, lo=0.9, hi=1.05, period=2.4)
+
+        # 上部・下部を流れる光の帯
+        add Solid("#3300ff", xsize=1280, ysize=4) alpha 0.25:
+            align (0.5, 0.15)
+            at mg_bg_drift(delay=0.0, dist=60, period=3.5)
+        add Solid("#6600ff", xsize=1280, ysize=4) alpha 0.25:
+            align (0.5, 0.25)
+            at mg_bg_drift(delay=1.2, dist=-60, period=3.0)
+        add Solid("#3300ff", xsize=1280, ysize=4) alpha 0.25:
+            align (0.5, 0.75)
+            at mg_bg_drift(delay=0.6, dist=50, period=3.8)
+        add Solid("#6600ff", xsize=1280, ysize=4) alpha 0.25:
+            align (0.5, 0.85)
+            at mg_bg_drift(delay=1.8, dist=-50, period=3.2)
+
+        # 左右に浮遊する菱形（装飾）
+        add Solid("#220066", xsize=60, ysize=60) rotate 45 alpha 0.3:
+            align (0.1, 0.3)
+            at mg_bg_float(delay=0.0, amp=20)
+        add Solid("#110044", xsize=40, ysize=40) rotate 45 alpha 0.3:
+            align (0.9, 0.6)
+            at mg_bg_float(delay=1.0, amp=15)
+        add Solid("#330088", xsize=50, ysize=50) rotate 45 alpha 0.3:
+            align (0.15, 0.7)
+            at mg_bg_float(delay=0.5, amp=25)
+
+        # ---------------------------------------------------------------
         vbox:
             align (0.5, 0.5)
             spacing 20
