@@ -87,7 +87,7 @@ label .forceful_mom_shout:
     window show
     
     if _return == "perfect":
-        jump .escape_success_mom
+        jump .escape_success_mom_shout
     else:
         call fallback_buzzer_sequence
         if _return == "success":
@@ -117,7 +117,7 @@ label .forceful_mom_run:
     window show
     
     if _return == "perfect" or _return == "good":
-        jump .escape_success_mom
+        jump .escape_success_mom_run
     else:
                 call fallback_buzzer_sequence
                 if _return == "success":
@@ -125,15 +125,28 @@ label .forceful_mom_run:
                 else:
                      jump .escape_fail_mom
 
-label .escape_success_mom:
-    # 逃走成功
-    $ update_score(15)
+label .escape_success_mom_shout:
+    # 大声成功
+    $ update_score(25)
     pc "やめてー！！"
     "ふしんしゃの てを ふりほどいて にげだした！"
     
     stranger "チッ...！"
     "ふしんしゃは にげていった。"
-    call hide_stranger_wrapper(dissolve) from _call_hide_stranger_wrapper_19
+    call hide_stranger_wrapper(dissolve) from _call_hide_stranger_wrapper_shout
+    jump .escape_rescued_mom
+
+label .escape_success_mom_run:
+    # 逃走成功
+    $ update_score(15)
+    "なんとか にげきった！"
+    
+    stranger "チッ...！"
+    "ふしんしゃは にげていった。"
+    call hide_stranger_wrapper(dissolve) from _call_hide_stranger_wrapper_run
+    jump .escape_rescued_mom
+
+label .escape_rescued_mom:
     
     # 助けに来る人をランダム決定
     $ is_officer = renpy.random.choice([True, False])

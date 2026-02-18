@@ -49,7 +49,7 @@ label .shout_cake:
     window show
     
     if _return != "miss":
-        jump .cake_success
+        jump .cake_success_shout
     else:
         call fallback_buzzer_sequence
         if _return == "success":
@@ -73,7 +73,7 @@ label .run_cake:
     window show
     
     if _return == "perfect" or _return == "good":
-        jump .cake_success
+        jump .cake_success_run
     else:
         call fallback_buzzer_sequence
         if _return == "success":
@@ -81,11 +81,17 @@ label .run_cake:
         else:
             jump .cake_fail
 
-label .cake_success:
-    $ update_score(20)
+label .cake_success_shout:
+    $ update_score(25)
     play audio "audio/buzzer.mp3"
     stranger "ちっ...！"
     "ふしんしゃは おおごえに おどろいて にげていった！"
+    hide stranger with dissolve
+    jump .cake_rescued
+
+label .cake_success_run:
+    $ update_score(15)
+    "なんとか にげきった！"
     hide stranger with dissolve
     jump .cake_rescued
 

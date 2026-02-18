@@ -485,7 +485,7 @@ label .stage3_run:
         jump .game_over_capture
 
 label .stranger_repelled:
-    $ update_score(20)
+    $ update_score(25)
     play audio "audio/buzzer.mp3"
     stranger "ちっ...！"
     "ふしんしゃは くるまに のって にげていった！"
@@ -495,7 +495,7 @@ label .stranger_repelled:
     return
 
 label .stranger_repelled_run:
-    $ update_score(20)
+    $ update_score(15)
     "なんとか にげきった！"
     hide stranger with dissolve
     

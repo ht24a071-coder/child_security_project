@@ -109,7 +109,7 @@ label .forceful_shout:
     show screen score_hud
     
     if _return != "miss":
-        $ update_score(20)
+        $ update_score(25)
         play audio "audio/buzzer.mp3"
         stranger "ちっ...！"
         "ふしんしゃは くるまに のって にげていった！"
@@ -162,7 +162,7 @@ label .forceful_run:
     show screen score_hud
 
     if _return == "success":
-        $ update_score(25)
+        $ update_score(15)
         hide stranger
         
         "なんとか にげきった！"

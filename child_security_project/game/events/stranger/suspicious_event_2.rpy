@@ -45,7 +45,7 @@ label .shout_car_2:
     window show
     
     if _return != "miss":
-        jump .car_2_success
+        jump .car_2_success_shout
     else:
         call fallback_buzzer_sequence
         if _return == "success":
@@ -68,7 +68,7 @@ label .run_car_2:
     window show
     
     if _return == "perfect" or _return == "good":
-        jump .car_2_success
+        jump .car_2_success_run
     else:
         call fallback_buzzer_sequence
         if _return == "success":
@@ -76,11 +76,17 @@ label .run_car_2:
         else:
             jump .car_2_fail
 
-label .car_2_success:
-    $ update_score(20)
+label .car_2_success_shout:
+    $ update_score(25)
     play audio "audio/buzzer.mp3"
     stranger "ちっ...！"
     "ふしんしゃは おおごえに おどろいて にげていった！"
+    hide stranger with dissolve
+    jump .car_2_rescued
+
+label .car_2_success_run:
+    $ update_score(15)
+    "なんとか にげきった！"
     hide stranger with dissolve
     jump .car_2_rescued
 
