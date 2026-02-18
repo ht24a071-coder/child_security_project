@@ -44,10 +44,18 @@ label suspi_e_mom_injury:
 label .forceful_mom_shout:
     # 大声ミニゲーム
     window hide
+    # UI一時非表示
+    hide screen minimap
+    hide screen score_hud
+    
     # 難易度調整: 閾値0.6, 制限時間8秒
     $ shout_game = ShoutMinigame(threshold=0.6, duration=8.0)
     call screen shout_minigame(shout_game)
     hide screen shout_minigame
+    
+    # UI復帰
+    show screen minimap
+    show screen score_hud
     window show
     
     if _return == "perfect":
@@ -62,6 +70,10 @@ label .forceful_mom_shout:
 label .forceful_mom_run:
     # 連打ミニゲーム
     window hide
+    # UI一時非表示
+    hide screen minimap
+    hide screen score_hud
+    
     # 難易度調整: 15回/5秒
     $ game = MashingMinigame(
         target_count=15, 
@@ -70,6 +82,10 @@ label .forceful_mom_run:
         text="ボタンを連打して\nダッシュしろ！"
     )
     call screen mashing_minigame(game)
+    
+    # UI復帰
+    show screen minimap
+    show screen score_hud
     window show
     
     if _return == "perfect" or _return == "good":

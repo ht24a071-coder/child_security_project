@@ -322,15 +322,23 @@ init -1 python:
                     damage_threshold = self.threshold * 0.8
                     
                     if self.current_volume >= damage_threshold:
-                        # 指数関数的にダメージを増加させる
-                        # (現在音量 - 最低ライン) の2乗 * 係数
-                        excess = self.current_volume - damage_threshold
-                        # 係数を調整 (0.2の差でそれなりのダメージになるように)
-                        if excess > 0:
-                            # 二乗をやめてリニア（比例）にすることで、突発的な大ダメージを防ぐ
-                            # 係数6.0: 最大(0.8)で4.8ダメ/frame -> 96DPS -> HP500を約5秒で撃破可能
-                            damage = excess * 6.0
-                            is_attacking = True
+                        # 以前は音量に応じてダメージが変わっていたが、
+                        # 「近くで叫べばすぐ終わる」という問題を解消するため固定値に変更
+                        # 3.0ダメージ/frame -> 60FPSで180DPS -> HP500を3秒弱
+                        # 調整: HP=100ならもっと低く。
+                        # 現在のHP=100 (init参照)。duration=5.0s。
+                        # 5秒で削り切るには 20DPS 必要 = 20/60 = 0.33/frame?
+                        # updateは dt=0.02 (50FPS相当) で呼ばれている前提なら
+                        # 100 / (5.0 * 50) = 0.4 damage/frame
+                        # 余裕を持たせて 0.6 くらいにする
+                        
+                        # 修正: updateはRen'PyのDisplayable updateなのでFPS依存だが、dt=0.02固定で計算している
+                        # 実際には st - start_time で経過時間は正しいが、1フレームの重みはフレームレートによる
+                        # とはいえ、dt=0.02 固定加算ではないので、
+                        # 確実に削れるように少し大きめに設定
+                        
+                        damage = 0.8  # 固定ダメージ (約2秒～3秒で満タンから削りきれるくらい)
+                        is_attacking = True
                 else:
                     # 連打モードは後述のon_mashで処理
                     pass

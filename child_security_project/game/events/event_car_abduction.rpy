@@ -95,10 +95,18 @@ label .forceful_shout:
     
     "（ほんとうに おおきな こえを だそう！）"
     
+    # UI一時非表示
+    hide screen minimap
+    hide screen score_hud
+
     python:
         shout_game = ShoutMinigame(threshold=0.35, duration=3.0)
     
     call screen shout_minigame(shout_game)
+    
+    # UI復帰
+    show screen minimap
+    show screen score_hud
     
     if _return != "miss":
         $ update_score(20)
@@ -140,11 +148,19 @@ label .forceful_shout:
 label .forceful_run:
     pc "（にげなきゃ！）"
     
+    # UI一時非表示
+    hide screen minimap
+    hide screen score_hud
+
     python:
         escape_game = EscapeMinigame(difficulty="hard", key="dismiss")
     
     call screen escape_minigame(escape_game)
     
+    # UI復帰
+    show screen minimap
+    show screen score_hud
+
     if _return == "success":
         $ update_score(25)
         hide stranger
@@ -210,10 +226,18 @@ label .run_away_car:
     
     $ update_score(15)
     
+    # UI一時非表示
+    hide screen minimap
+    hide screen score_hud
+
     python:
         escape_game = EscapeMinigame(difficulty="normal", key="dismiss")
     
     call screen escape_minigame(escape_game)
+    
+    # UI復帰
+    show screen minimap
+    show screen score_hud
     
     hide stranger
     

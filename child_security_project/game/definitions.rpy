@@ -14,13 +14,16 @@ default player_icon = "bear"
 default deck_suspicious = []
 default deck_safe = []
  
-# キャラクター定義
-define officer = Character("おまわりさん", color="#c8ffc8")
-define woman = Character("おねえさん", color="#c8ffc8")
-define teacher = Character("先生", color="#c8ffc8")
-define stranger = Character("???", color="#ff8888")  # 不審者用
-define pc = Character("[player_name]", image="player")
-define t = Character("伊東マンショ", color="#c8ffc8")
+# 全キャラクター・ナレーション共通でCTCを設定
+define narrator = Character(ctc="ctc_icon", ctc_position="nestled")
+
+# キャラクター定義（CTC追加）
+define officer = Character("おまわりさん", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
+define woman = Character("おねえさん", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
+define teacher = Character("先生", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
+define stranger = Character("???", color="#ff8888", ctc="ctc_icon", ctc_position="nestled")
+define pc = Character("[player_name]", image="player", ctc="ctc_icon", ctc_position="nestled")
+define t = Character("伊東マンショ", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
 
 # 不審者のランダム画像用
 default stranger_type = "stranger"
@@ -50,7 +53,7 @@ define MAX_STEPS = 10
 image side player = "images/icons/[player_icon].png"
 image side officer = "images/actor/officer.png"
 image side woman = "images/actor/woman.png"
-image side teacher = "images/actor/teacher.png"
+image side teacher = "images/actor/woman2.png"
 image side stranger = ConditionSwitch(
     "stranger_type == 'stranger2'", "images/actor/stranger2.png",
     "True", "images/actor/stranger.png"
@@ -59,7 +62,7 @@ image stranger = ConditionSwitch(
     "stranger_type == 'stranger2'", "images/actor/stranger2.png",
     "True", "images/actor/stranger.png"
 )
-image teacher = "images/actor/teacher.png"
+image teacher = "images/actor/woman2.png"
 
 # -----------------------------------------------------------
 # スコア表示システム
@@ -79,15 +82,38 @@ screen score_hud():
         padding (20, 10)        # 枠の内側の余白
         background "#00000080"  # 半透明の黒背景
 
-        # ★修正ポイント：
-        # 文字と数字を「一行のテキスト」にまとめることで、
-        # ズレずにきれいに真ん中に配置されます。
-        text "スコア: [total_score]":
-            color "#ffff00"  # 黄色
-            size 32          # 文字サイズ
-            bold True        # 太字
-            xalign 0.5       # 左右の真ん中寄せ
-            yalign 0.5       # 上下の真ん中寄せ
+        hbox:
+            spacing 20
+            
+            # スコア表示
+            text "スコア: [total_score]":
+                color "#ffff00"  # 黄色
+                size 32          # 文字サイズ
+                bold True        # 太字
+                yalign 0.5       # 上下の真ん中寄せ
+
+            # 目的地表示（下校モードのみ）
+            if game_mode == "going_home" and target_home:
+                hbox:
+                    spacing 5
+                    yalign 0.5
+                    add "images/gui/icon_home.png" yalign 0.5 zoom 0.8
+                    
+                    $ home_name = ""
+                    if target_home == "home_nw":
+                        $ home_name = "{rb}左上{/rb}{rt}ひだりうえ{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                    elif target_home == "home_sw":
+                        $ home_name = "{rb}左下{/rb}{rt}ひだりした{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                    elif target_home == "home_se":
+                        $ home_name = "{rb}右下{/rb}{rt}みぎした{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                    elif target_home == "home_w":
+                        $ home_name = "{rb}左{/rb}{rt}ひだり{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                    
+                    text "目的地: [home_name]":
+                        color "#00ffff"
+                        size 24
+                        bold True
+                        yalign 0.5
 
 # 2. 点数変動時のポップアップ演出
 screen score_popup(amount):
@@ -197,15 +223,27 @@ init python:
         if persistent.controller_layout == "nintendo":
             # Aボタン（XboxのB位置）で決定
             config.pad_bindings["pad_b_press"] = [ "dismiss", "button_select", "bar_activate", "bar_deactivate", "chosen" ]
-            # Bボタン（XboxのA位置）でキャンセル
-            config.pad_bindings["pad_a_press"] = [ "game_menu", "hide_windows" ]
+            # Bボタン（XboxのA位置）でおおごえミニゲームキャンセル等はスクリプト側でやるが、メニューを開かないように
+            # "game_menu" を削除し "hide_windows" のみにする
+            config.pad_bindings["pad_a_press"] = [ "hide_windows" ]
             
         # Standardレイアウト（A決定=下、B戻る=右）
         else:
             # Aボタン（XboxのA位置）で決定
             config.pad_bindings["pad_a_press"] = [ "dismiss", "button_select", "bar_activate", "bar_deactivate", "chosen" ]
             # Bボタン（XboxのB位置）でキャンセル
-            config.pad_bindings["pad_b_press"] = [ "game_menu", "hide_windows" ]
+            config.pad_bindings["pad_b_press"] = [ "hide_windows" ]
 
     # 初期化時に適用
     update_controller_bindings()
+
+# -----------------------------------------------------------
+# クリック待ちアイコン（CTC）
+# -----------------------------------------------------------
+image ctc_icon:
+    Text("▼", size=24, color="#ffffff", outlines=[(2, "#000000", 0, 0)])
+    alpha 1.0
+    linear 0.5 alpha 0.0
+    linear 0.5 alpha 1.0
+    repeat
+

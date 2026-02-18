@@ -12,7 +12,15 @@ label fallback_buzzer_sequence:
     "でも まだ ぼうはんブザーが ある！！"
     
     # ブザーチャンス画面呼び出し
+    # UI一時非表示
+    hide screen minimap
+    hide screen score_hud
+    
     call screen buzzer_chance_screen
+    
+    # UI復帰
+    show screen minimap
+    show screen score_hud
     
     if _return == "success":
         jump .buzzer_success

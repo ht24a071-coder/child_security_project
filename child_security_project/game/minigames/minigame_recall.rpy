@@ -95,23 +95,24 @@ label recall_minigame:
     # 到着時の会話イベント
     # モードによって相手を変える
     if game_mode == "going_school":
-        # 先生 (woman2)
-        show woman2 at center with dissolve
-        "せんせい" "おはよう！　ぶじに　ついて　よかったわ。"
+        # 先生 (teacher)
+        show teacher at center with dissolve
+        teacher "おはよう！　ぶじに　ついて　よかったわ。"
     else:
         # 親 (woman)
         show woman at center with dissolve
-        "お母さん" "おかえり！　ぶじで　よかったわ。"
+        woman "おかえり！　ぶじで　よかったわ。"
 
     # 不審者遭遇チェック
     if len(encountered_events) == 0:
         # 遭遇なし：平和な会話で終了
         if game_mode == "going_school":
-            "せんせい" "きょうは　あやしいひとは　いなかったみたいね。\nきょうも　げんきに　すごしましょう！"
+            teacher "きょうは　あやしいひとは　いなかったみたいね。\nきょうも　げんきに　すごしましょう！"
         else:
-            "お母さん" "きょうは　あやしいひとは　いなかったのね。\nてあらい　うがいを　しっかりしてね！"
+            
+            woman "きょうは　あやしいひとは　いなかったのね。\nてあらい　うがいを　しっかりしてね！"
         
-        hide woman2
+        hide teacher
         hide woman
         return
 
@@ -134,25 +135,25 @@ label recall_minigame:
     if is_safe_person:
         # 安全な人の場合は報告だけして終了（ミニゲームなし）
         if game_mode == "going_school":
-            "せんせい" "きょうは　だれかに　あった？"
+            teacher "きょうは　だれかに　あった？"
             pc "うん、ちいきの　ひとに　あったよ！"
-            "せんせい" "そう、あいさつできたかな？\nちいきの　ひとは　みんなを　まもってくれているのよ。"
+            teacher "そう、あいさつできたかな？\nちいきの　ひとは　みんなを　まもってくれているのよ。"
         else:
-            "お母さん" "きょうは　だれかに　あった？"
+            woman "きょうは　だれかに　あった？"
             pc "うん、ちいきの　ひとに　あったよ！"
-            "お母さん" "そう、あいさつできた？\nこまっていることがあったら　そうだんしようね。"
+            woman "そう、あいさつできた？\nこまっていることがあったら　そうだんしようね。"
             
-        hide woman2
+        hide teacher
         hide woman
         return
 
     # ここから下は不審者（または怪しい知り合い）の場合
     if game_mode == "going_school":
-        "せんせい" "……あら？　なにか　あったの？"
-        "せんせい" "えっ、あやしいひとに　あったの！？\nどんな　ひとだったか　おしえてくれる？"
+        teacher "……あら？　なにか　あったの？"
+        teacher "えっ、あやしいひとに　あったの！？\nどんな　ひとだったか　おしえてくれる？"
     else:
-        "お母さん" "……えっ？　なにか　あったの？"
-        "お母さん" "あやしいひとに　あったの！？\nどんな　ひとだったか　おしえて？"
+        woman "……えっ？　なにか　あったの？"
+        woman "あやしいひとに　あったの！？\nどんな　ひとだったか　おしえて？"
 
     # ミニゲームセットアップ
     python:
@@ -161,43 +162,51 @@ label recall_minigame:
         
     if not is_ready:
         "（おもいだせない……）"
-        hide woman2
+        hide teacher
         hide woman
         return
         
     # ミニゲーム開始
+    # UI一時非表示
+    hide screen minimap
+    hide screen score_hud
+    
     call screen recall_minigame_screen(recall_game)
     $ result_index = _return
+    
+    # UI復帰
+    show screen minimap
+    show screen score_hud
     
     if result_index == recall_game.correct_index:
         play audio "audio/se_good.ogg"
         $ update_score(30)
         
         if game_mode == "going_school":
-            "せんせい" "そう……よく　おぼえていたわね。"
+            teacher "そう……よく　おぼえていたわね。"
             if is_acquaintance:
-                "せんせい" "しらない ひとじゃなくても、いやなことを されたら すぐに おしえてね。\n先生から 親御さんに 連絡しておくわ。"
+                teacher "しらない ひとじゃなくても、いやなことを されたら すぐに おしえてね。\n先生から 親御さんに 連絡しておくわ。"
             else:
-                "せんせい" "すぐに　けいさつに　れんらくするわ！\nおしえてくれて　ありがとう。"
+                teacher "すぐに　けいさつに　れんらくするわ！\nおしえてくれて　ありがとう。"
         else:
-            "お母さん" "そう……よく　おぼえていたわね。"
+            woman "そう……よく　おぼえていたわね。"
             if is_acquaintance:
-                "お母さん" "しっている ひとでも、いやなことを されたら すぐに おしえてね。\nなにか あったら すぐに ママに いうのよ。"
+                woman "しっている ひとでも、いやなことを されたら すぐに おしえてね。\nなにか あったら すぐに ママに いうのよ。"
             else:
-                "お母さん" "すぐに　けいさつに　れんらくするわ！\nぶじに　かえってこれて　ほんとうに　よかった！"
+                woman "すぐに　けいさつに　れんらくするわ！\nぶじに　かえってこれて　ほんとうに　よかった！"
             
         "{i}せいかい！よく おぼえていたね！{/i}"
     else:
         play audio "audio/se_bad.ogg"
         
         if game_mode == "going_school":
-            "せんせい" "うーん、ちょっと　ちがうみたい……？\nでも、ぶじで　よかったわ。"
+            teacher "うーん、ちょっと　ちがうみたい……？\nでも、ぶじで　よかったわ。"
         else:
-            "お母さん" "うーん、ひょっとして　みまちがいかな……？\nでも、ぶじで　よかったわ。"
+            woman "うーん、ひょっとして　みまちがいかな……？\nでも、ぶじで　よかったわ。"
 
         "{i}ざんねん...とくちょうを よく おぼえておこう。{/i}"
         
-    hide woman2
+    hide teacher
     hide woman
     return
 

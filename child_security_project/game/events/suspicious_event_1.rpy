@@ -36,8 +36,16 @@ label suspi_e_test_1:
 label .shout_cake:
     # 大声ミニゲーム
     window hide
+    # UI一時非表示
+    hide screen minimap
+    hide screen score_hud
+    
     $ shout_game = ShoutMinigame(threshold=0.5, duration=5.0)
     call screen shout_minigame(shout_game)
+    
+    # UI復帰
+    show screen minimap
+    show screen score_hud
     window show
     
     if _return != "miss":
@@ -52,8 +60,16 @@ label .shout_cake:
 label .run_cake:
     # 逃走ミニゲーム（連打）
     window hide
+    # UI一時非表示
+    hide screen minimap
+    hide screen score_hud
+    
     $ game = MashingMinigame(target_count=15, time_limit=5.0, title="にげろ", text="ボタンを連打して\nダッシュしろ！")
     call screen mashing_minigame(game)
+    
+    # UI復帰
+    show screen minimap
+    show screen score_hud
     window show
     
     if _return == "perfect" or _return == "good":
