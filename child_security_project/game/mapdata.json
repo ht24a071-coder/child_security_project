@@ -363,7 +363,7 @@
       ]
     },
     "Kari006": {
-      "bg": "back_town",
+      "bg": "IMG20260214103954",
       "links": {
         "{rb}家{/rb}{rt}いえ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "home_se",
         "{rb}小道{/rb}{rt}こみち{/rt}を{rb}進{/rb}{rt}すす{/rt}む": "tunnel"
