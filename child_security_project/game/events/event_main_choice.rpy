@@ -7,7 +7,7 @@ label event_main_choice(human_type):
     window show dissolve
     
     $ greeting = "Greet_" + human_type
-    call expression greeting
+    call expression greeting from _call_expression
 
     menu:
         "あいさつをする":

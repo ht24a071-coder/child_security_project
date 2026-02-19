@@ -46,7 +46,7 @@ label .shout_car_2:
     if _return != "miss":
         jump .car_2_success_shout
     else:
-        call fallback_buzzer_sequence
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_15
         if _return == "success":
             jump .car_2_success_buzzer
         else:
@@ -69,7 +69,7 @@ label .run_car_2:
     if _return == "perfect" or _return == "good":
         jump .car_2_success_run
     else:
-        call fallback_buzzer_sequence
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_16
         if _return == "success":
             jump .car_2_success_buzzer
         else:

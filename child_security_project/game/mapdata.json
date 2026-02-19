@@ -67,7 +67,7 @@
     "home_nw": {
       "bg": "back_home",
       "links": {
-        "{rb}出発{/rb}{rt}しゅっぱつ{/rt}する": "narrow_path_entry"
+        "{rb}出発{/rb}{rt}しゅっぱつ{/rt}する": "Kari003"
       },
       "group": "none",
       "chance": 0,

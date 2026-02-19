@@ -174,7 +174,7 @@ label .escape_110:
         
         call show_feedback("escape_110_success") from _call_fb_ed_3
     else:
-        call fallback_buzzer_sequence
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_2
         if _return == "success":
             jump .escape_buzzer
         
@@ -208,7 +208,7 @@ label .escape_fail_no_110:
         call show_feedback("escape_110_unknown") from _call_fb_ed_5
         return
     else:
-        call fallback_buzzer_sequence
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_3
         if _return == "success":
             jump .escape_buzzer
             
@@ -240,7 +240,7 @@ label .escape_home:
         call screen mashing_minigame(key_game)
         
         if _return == "miss":
-            call fallback_buzzer_sequence
+            call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_4
             if _return == "success":
                 jump .escape_buzzer
                 
@@ -262,7 +262,7 @@ label .escape_home:
             call show_feedback("run_success_but_dangerous") from _call_fb_ed_8
             return
     else:
-        call fallback_buzzer_sequence
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_5
         if _return == "success":
             jump .escape_buzzer
 
@@ -311,7 +311,7 @@ label .escape_shout:
                 jump .buzzer_stranger
             
             "……":
-                call fallback_buzzer_sequence
+                call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_6
                 if _return == "success":
                     jump .escape_buzzer
                     
@@ -456,7 +456,7 @@ label .stage3_shout:
     if _return != "miss":
         jump .stranger_repelled
     else:
-        call fallback_buzzer_sequence
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_7
         if _return == "success":
             jump .buzzer_stranger
         jump .game_over_capture
@@ -476,7 +476,7 @@ label .stage3_run:
     if _return == "perfect" or _return == "good":
         jump .stranger_repelled_run
     else:
-        call fallback_buzzer_sequence
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_8
         if _return == "success":
             jump .buzzer_stranger
         jump .game_over_capture
@@ -488,7 +488,7 @@ label .stranger_repelled:
     "ふしんしゃは くるまに のって にげていった！"
     hide stranger with dissolve
     
-    call .after_encounter_success
+    call .after_encounter_success from _call_encounter_e_stranger_after_encounter_success
     return
 
 label .stranger_repelled_run:
@@ -496,7 +496,7 @@ label .stranger_repelled_run:
     "なんとか にげきった！"
     hide stranger with dissolve
     
-    call .after_encounter_success
+    call .after_encounter_success from _call_encounter_e_stranger_after_encounter_success_1
     return
 
 label .game_over_capture:
@@ -548,7 +548,7 @@ label .flee_success:
         $ update_score(35, "110ばんのいえに にげこんだ")
         "PERFECT!! 「こども110ばんの いえ」に かけこんだ！"
     else:
-        call fallback_buzzer_sequence
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_9
         if _return == "success":
              jump .escape_buzzer
              
@@ -582,7 +582,7 @@ label .flee_fail:
     
     stranger "まてまて～"
     
-    call fallback_buzzer_sequence
+    call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_10
     if _return == "success":
          jump .escape_buzzer
     

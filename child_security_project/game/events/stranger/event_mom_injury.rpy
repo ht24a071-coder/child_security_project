@@ -87,7 +87,7 @@ label .forceful_mom_shout:
     if _return == "perfect":
         jump .escape_success_mom_shout
     else:
-        call fallback_buzzer_sequence
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_11
         if _return == "success":
                 jump .escape_success_mom_buzzer
         else:
@@ -117,7 +117,7 @@ label .forceful_mom_run:
     if _return == "perfect" or _return == "good":
         jump .escape_success_mom_run
     else:
-                call fallback_buzzer_sequence
+                call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_12
                 if _return == "success":
                      jump .escape_success_mom_buzzer
                 else:

@@ -50,7 +50,7 @@ label .shout_cake:
     if _return != "miss":
         jump .cake_success_shout
     else:
-        call fallback_buzzer_sequence
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_13
         if _return == "success":
             jump .cake_success_buzzer
         else:
@@ -74,7 +74,7 @@ label .run_cake:
     if _return == "perfect" or _return == "good":
         jump .cake_success_run
     else:
-        call fallback_buzzer_sequence
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_14
         if _return == "success":
             jump .cake_success_buzzer
         else:

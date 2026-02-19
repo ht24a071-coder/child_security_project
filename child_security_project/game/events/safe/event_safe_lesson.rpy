@@ -7,15 +7,15 @@ label safe_e_lesson_dispatch:
     
     if game_mode == "going_school":
         # 登校時は警察官（見守り）
-        call safe_e_lesson_officer
+        call safe_e_lesson_officer from _call_safe_e_lesson_officer
     else:
         # 下校時
         # 学校付近なら先生
         if current_node in ["start_point", "school_park"]:
-            call safe_e_lesson_teacher
+            call safe_e_lesson_teacher from _call_safe_e_lesson_teacher
         else:
             # それ以外は警察官
-            call safe_e_lesson_officer
+            call safe_e_lesson_officer from _call_safe_e_lesson_officer_1
     return
 
 label safe_e_lesson_teacher:

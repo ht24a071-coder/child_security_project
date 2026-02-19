@@ -136,7 +136,7 @@ label .forceful_shout:
         return
     else:
         # 失敗 -> ブザーチャンス
-        call fallback_buzzer_sequence
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence
         if _return == "success":
             $ update_score(15)
             jump .car_repelled_buzzer
@@ -179,7 +179,7 @@ label .forceful_run:
         return
     else:
         # 失敗 -> ブザーチャンス
-        call fallback_buzzer_sequence
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_1
         if _return == "success":
             $ update_score(15)
             jump .car_repelled_buzzer
