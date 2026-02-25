@@ -1,0 +1,21 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\ht24a071\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\ht24a071\source\child_security_project
+collecting ... collected 11 items
+
+rls/tests/test_project.py::TestRLSProjectCreateDefault::test_create_default_creates_directory PASSED [  9%]
+rls/tests/test_project.py::TestRLSProjectCreateDefault::test_create_default_creates_json_file PASSED [ 18%]
+rls/tests/test_project.py::TestRLSProjectCreateDefault::test_create_default_contains_valid_json PASSED [ 27%]
+rls/tests/test_project.py::TestRLSProjectCreateDefault::test_create_default_schema_matches PASSED [ 36%]
+rls/tests/test_project.py::TestRLSProjectLoadSave::test_load_nonexistent_raises PASSED [ 45%]
+rls/tests/test_project.py::TestRLSProjectLoadSave::test_save_then_load_roundtrip PASSED [ 54%]
+rls/tests/test_project.py::TestRLSProjectLoadSave::test_save_utf8 PASSED [ 63%]
+rls/tests/test_project.py::TestRLSProjectProperties::test_base_resolution PASSED [ 72%]
+rls/tests/test_project.py::TestRLSProjectProperties::test_file_hashes_initially_empty PASSED [ 81%]
+rls/tests/test_project.py::TestRLSProjectProperties::test_set_and_get_file_hash PASSED [ 90%]
+rls/tests/test_project.py::TestRLSProjectProperties::test_exists PASSED  [100%]
+
+============================= 11 passed in 0.06s ==============================
+
+---STDERR---
