@@ -1,4 +1,4 @@
-﻿# =============================================================================
+# =============================================================================
 # メインスクリプト
 # 登校・下校両方に対応した設計
 # =============================================================================
@@ -9,6 +9,7 @@ default show_quick_menu = False  # クイックメニューの初期表示状態
 default minimap_hover_node = None  # 選択肢ホバー時の仮の行き先ノードID
 default StepCount = 0 # 内部歩数
 default MaxStep = 25 # 最大歩数
+default active_home = None # 選択された家
 
 # 全ホームノードのリスト
 define home_nodes = ["home_nw", "home_se", "home_sw", "home_w"]
@@ -26,6 +27,7 @@ label initialize_game:
         $ current_node = "home_se" 
         
     $ target_home = None # 下校時の目標地点（登校時はNone）
+    $ active_home = None # 選択された家（両モード共通）
     
     $ visited_nodes = []
     $ total_score = 0  # スコア初期化
@@ -63,6 +65,7 @@ label going_school_start:
     # "どこの いえから はじめますか？"
     call screen home_select_map()
     $ current_node = _return
+    $ active_home = _return
 
     show screen image_overlay("images/Tutorial.png", "チュートリアル")
 
@@ -83,6 +86,7 @@ label going_home_start:
     # "どの いえに かえりますか？"
     call screen home_select_map()
     $ target_home = _return
+    $ active_home = _return
 
     show screen image_overlay("images/Tutorial.png", "チュートリアル")
 
