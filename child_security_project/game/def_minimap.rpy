@@ -194,11 +194,15 @@ screen minimap():
                     $ marker_y = int(node_pos[1] * zoom)
                     
                     if node_id in home_nodes:
-                        # お家アイコン
-                        add cfg["home_marker"]:
-                            pos (marker_x, marker_y)
-                            anchor (0.5, 0.5)
-                            zoom 1.5
+                        $ _is_active = globals().get("active_home")
+                        if _is_active and node_id != _is_active:
+                            pass
+                        else:
+                            # お家アイコン
+                            add cfg["home_marker"]:
+                                pos (marker_x, marker_y)
+                                anchor (0.5, 0.5)
+                                zoom 1.5
                     elif node_id == "start_point":
                         # 学校アイコン
                         add cfg["school_marker"]:
@@ -380,10 +384,14 @@ screen fullscreen_map():
                     $ marker_y = int(node_pos[1] * p_zoom)
 
                     if node_id in home_nodes:
-                        add cfg["home_marker"]:
-                            pos (marker_x, marker_y)
-                            anchor (0.5, 0.5)
-                            zoom 1.6
+                        $ _is_active = globals().get("active_home")
+                        if _is_active and node_id != _is_active:
+                            pass
+                        else:
+                            add cfg["home_marker"]:
+                                pos (marker_x, marker_y)
+                                anchor (0.5, 0.5)
+                                zoom 1.6
                     elif node_id == "start_point":
                         add cfg["school_marker"]:
                             pos (marker_x, marker_y)
