@@ -28,6 +28,10 @@ label suspi_e_mom_injury:
         "ぼうはんブザーを ならす":
             jump .buzzer_car_mom
             
+        "むしして にげる":
+            $ update_score(20, "むしして にげた")
+            jump .forceful_run_mom
+            
 # -----------------------------------------------------------------------------
 # 車に乗る（GAME OVER）
 # -----------------------------------------------------------------------------
@@ -213,16 +217,30 @@ label .buzzer_car_mom:
     
     "ふしんしゃは あわてて にげていった！"
     hide stranger with dissolve
-    
-    show woman with dissolve
-    woman "だいじょうぶ！？"
-    pc "おかあさんが けがをしたって..."
-    woman "それは うそかもしれないよ。おうちのひとに でんわしてみようか？"
-    
-    "（かくにんしたら、ママは 元気でした）"
-    
-    woman "よかったね！あやしいと おもったら すぐ ブザーだね！"
-    hide woman with dissolve
+    python:
+        h_tag, h_name = get_helper_data()
+        _is_teacher = (h_tag == "teacher")
+
+    if _is_teacher:
+        show teacher with dissolve
+        teacher "だいじょうぶ！？"
+        pc "おかあさんが けがをしたって..."
+        teacher "それは うそかもしれないよ。おうちのひとに でんわしてみようか？"
+        
+        "（かくにんしたら、ママは 元気でした）"
+        
+        teacher "よかったね！あやしいと おもったら すぐ ブザーだね！"
+        hide teacher with dissolve
+    else:
+        show officer with dissolve
+        officer "だいじょうぶ！？"
+        pc "おかあさんが けがをしたって..."
+        officer "それは うそかもしれないよ。おうちのひとに でんわしてみようか？"
+        
+        "（かくにんしたら、ママは 元気でした）"
+        
+        officer "よかったね！あやしいと おもったら すぐ ブザーだね！"
+        hide officer with dissolve
     
     call show_feedback("buzzer_success_mom_injury") from _call_fb_mom_4
     return

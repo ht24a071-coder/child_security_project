@@ -1,4 +1,3 @@
-
 label Event_Force_Stop:
 
     scene Night with pixellate
@@ -11,6 +10,17 @@ label Event_Force_Stop:
     call game_over(set_message="よるになってしまった。") from _call_game_over
     return
 
+label Event_Force_School_Stop:
+
+    window show dissolve
+
+    "{i}ちこくしてしまった！{/i}"
+
+    window hide dissolve
+
+    call game_over(set_message="ちこくしてしまった...") from _call_game_over_school
+    return
+
 
 label Event_Warning_Stop:
 
@@ -18,6 +28,16 @@ label Event_Warning_Stop:
     window show dissolve
 
     "{i}{rb}暗{/rb}{rt}くら{/rt}くなってきた。{rb}早{/rb}{rt}はや{/rt}く{rb}帰{/rb}{rt}かえ{/rt}ろう。{/i}"
+
+    window hide dissolve
+
+    return
+
+label Event_Warning_School_Stop:
+
+    window show dissolve
+
+    "{i}ちこくしちゃうかも。いそいで がっこうにむかおう！{/i}"
 
     window hide dissolve
 

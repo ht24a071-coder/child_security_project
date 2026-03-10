@@ -1,4 +1,4 @@
-﻿################################################################################
+################################################################################
 ## 初期化
 ################################################################################
 
@@ -350,15 +350,13 @@ init python:
     if "pad_right_shoulder" in config.keymap["fast_skip"]:
         config.keymap["fast_skip"].remove("pad_right_shoulder")
         
-    # Bボタン（pad_b_press）が game_menu に割り当たっているのを解除
-    # 代わりにマップ閉じる等は別途 screen 側で key "pad_b_press" を定義して制御する形にする
-    if "pad_b_press" in config.keymap["game_menu"]:
-        config.keymap["game_menu"].remove("pad_b_press")
+    # Bボタン（pad_b_press）が hide_windows に割り当たっているのを解除
+    if "pad_b_press" in config.keymap["hide_windows"]:
+        config.keymap["hide_windows"].remove("pad_b_press")
 
-    # Bボタンを "hide_windows"（ウィンドウ非表示）に割り当てる
-    # セーブ画面を開くより安全で便利
-    if "pad_b_press" not in config.keymap["hide_windows"]:
-        config.keymap["hide_windows"].append("pad_b_press")
+    # Bボタンを "game_menu"（メニューを開く・戻る）に割り当てる
+    if "pad_b_press" not in config.keymap["game_menu"]:
+        config.keymap["game_menu"].append("pad_b_press")
 
     # テキスト送りのフォーカス問題対策
     # マウス操作時にウィンドウ外クリックでも進むようにする

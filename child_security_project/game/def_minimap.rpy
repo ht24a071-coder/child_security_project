@@ -37,7 +37,7 @@ init -5 python:
                 mx, my = v["minimap"]
                 # [0, 0] 以外なら上書き（有効な座標とみなす）
                 if mx != 0 or my != 0:
-                     map_coordinates[k] = (mx, my)
+                    map_coordinates[k] = (mx, my)
 
     # =========================================================================
     # リンクエディタ用ヘルパー関数 (Def Missing Functions Fix)
@@ -156,6 +156,13 @@ init -5 python:
             renpy.notify("保存失敗: " + str(e))
             print("Save Error: " + str(e))
 
+# 目的地ハイライト用のアニメーション
+transform blinking_highlight:
+    alpha 1.0
+    linear 0.8 alpha 0.4
+    linear 0.8 alpha 1.0
+    repeat
+
 # =============================================================================
 # ミニマップスクリーン
 # =============================================================================
@@ -194,21 +201,32 @@ screen minimap():
                     $ marker_y = int(node_pos[1] * zoom)
                     
                     if node_id in home_nodes:
-                        $ _is_active = globals().get("active_home")
-                        if _is_active and node_id != _is_active:
+                        if active_home and node_id != active_home:
                             pass
                         else:
                             # お家アイコン
-                            add cfg["home_marker"]:
-                                pos (marker_x, marker_y)
-                                anchor (0.5, 0.5)
-                                zoom 1.5
+                            if game_mode == "going_home" and node_id == active_home:
+                                add cfg["home_marker"] at blinking_highlight:
+                                    pos (marker_x, marker_y)
+                                    anchor (0.5, 0.5)
+                                    zoom 1.5
+                            else:
+                                add cfg["home_marker"]:
+                                    pos (marker_x, marker_y)
+                                    anchor (0.5, 0.5)
+                                    zoom 1.5
                     elif node_id == "start_point":
                         # 学校アイコン
-                        add cfg["school_marker"]:
-                            pos (marker_x, marker_y)
-                            anchor (0.5, 0.6)  # 少し上にずらす(中心より下を基準点にする＝画像が上がる)
-                            zoom 1.3           # 1.5 -> 1.3 に縮小
+                        if game_mode == "going_school":
+                            add cfg["school_marker"] at blinking_highlight:
+                                pos (marker_x, marker_y)
+                                anchor (0.5, 0.6)  # 少し上にずらす(中心より下を基準点にする＝画像が上がる)
+                                zoom 1.3           # 1.5 -> 1.3 に縮小
+                        else:
+                            add cfg["school_marker"]:
+                                pos (marker_x, marker_y)
+                                anchor (0.5, 0.6)
+                                zoom 1.3
                     elif _nav_color_map and node_id in _nav_color_map:
                         # 行き先ノード → カラーマーカー画像に差し替え
                         $ nav_color, nav_img = _nav_color_map[node_id]
@@ -384,19 +402,30 @@ screen fullscreen_map():
                     $ marker_y = int(node_pos[1] * p_zoom)
 
                     if node_id in home_nodes:
-                        $ _is_active = globals().get("active_home")
-                        if _is_active and node_id != _is_active:
+                        if active_home and node_id != active_home:
                             pass
                         else:
-                            add cfg["home_marker"]:
-                                pos (marker_x, marker_y)
-                                anchor (0.5, 0.5)
-                                zoom 1.6
+                            if game_mode == "going_home" and node_id == active_home:
+                                add cfg["home_marker"] at blinking_highlight:
+                                    pos (marker_x, marker_y)
+                                    anchor (0.5, 0.5)
+                                    zoom 1.6
+                            else:
+                                add cfg["home_marker"]:
+                                    pos (marker_x, marker_y)
+                                    anchor (0.5, 0.5)
+                                    zoom 1.6
                     elif node_id == "start_point":
-                        add cfg["school_marker"]:
-                            pos (marker_x, marker_y)
-                            anchor (0.5, 0.6)  # 少し上にずらす
-                            zoom 1.4           # 1.6 -> 1.4 に縮小
+                        if game_mode == "going_school":
+                            add cfg["school_marker"] at blinking_highlight:
+                                pos (marker_x, marker_y)
+                                anchor (0.5, 0.6)  # 少し上にずらす
+                                zoom 1.4           # 1.6 -> 1.4 に縮小
+                        else:
+                            add cfg["school_marker"]:
+                                pos (marker_x, marker_y)
+                                anchor (0.5, 0.6)  # 少し上にずらす
+                                zoom 1.4           # 1.6 -> 1.4 に縮小
                     elif _nav_color_map and node_id in _nav_color_map:
                         # 行き先ノード → カラーマーカー画像に差し替え
                         $ nav_color, nav_img = _nav_color_map[node_id]
@@ -1281,9 +1310,9 @@ screen link_editor():
             python:
                 if _in_map:
                     if state["mode"] == "move_node_confirm":
-                         _click_action = Function(link_editor_set_move_coord, _orig_x, _orig_y)
+                        _click_action = Function(link_editor_set_move_coord, _orig_x, _orig_y)
                     else:
-                         _click_action = Function(create_node_set_coord, _orig_x, _orig_y)
+                        _click_action = Function(create_node_set_coord, _orig_x, _orig_y)
                 else:
                     _click_action = NullAction()
             
@@ -1412,18 +1441,18 @@ screen link_editor():
             # 移動モードのオーバーレイ
             $ m_node = state["selected_node"]
             frame:
-                 xalign 0.5 yalign 0.0
-                 yoffset 10
-                 padding (20, 10)
-                 background "#000000CC"
+                xalign 0.5 yalign 0.0
+                yoffset 10
+                padding (20, 10)
+                background "#000000CC"
                  
-                 vbox:
-                     spacing 5
-                     text "【ノード移動モード】: [m_node]" color "#ffff00" size 24
-                     if _in_map:
-                         text "新座標: ([_orig_x], [_orig_y])" color "#00ffff" size 20
-                     else:
-                         text "新しい位置をクリックしてください" color "#aaaaaa" size 16
+                vbox:
+                    spacing 5
+                    text "【ノード移動モード】: [m_node]" color "#ffff00" size 24
+                    if _in_map:
+                        text "新座標: ([_orig_x], [_orig_y])" color "#00ffff" size 20
+                    else:
+                        text "新しい位置をクリックしてください" color "#aaaaaa" size 16
             
             frame:
                 xalign 0.5 yalign 1.0
@@ -1431,9 +1460,9 @@ screen link_editor():
                 padding (20, 10)
                 background "#000000CC"
                 textbutton "【キャンセル】":
-                     text_size 20
-                     text_color "#ff8888"
-                     action Function(link_editor_cancel_move)
+                    text_size 20
+                    text_color "#ff8888"
+                    action Function(link_editor_cancel_move)
     
     else:
         # 通常モード（既存のhbox UI）

@@ -41,10 +41,16 @@ label encounter_e_safe_person:
             else:
                 woman "？"
     
-    if _safe_is_teacher:
-        teacher "がっこうの かえり？きを つけてね。"
+    if game_mode == "going_home":
+        if _safe_is_teacher:
+            teacher "がっこうの かえり？きを つけてね。"
+        else:
+            woman "がっこうの かえり？きを つけてね。"
     else:
-        woman "がっこうの かえり？きを つけてね。"
+        if _safe_is_teacher:
+            teacher "がっこうに いくの？きを つけてね。"
+        else:
+            woman "がっこうに いくの？きを つけてね。"
     
     "（そう いって、その ひとは さっていこうとした。）"
 
