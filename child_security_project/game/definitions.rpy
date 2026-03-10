@@ -71,9 +71,6 @@ image parent = Transform("images/actor/woman3.png", fit="contain", ysize=900)
 image woman = Transform("images/actor/woman.png", fit="contain", ysize=900)
 image officer = Transform("images/actor/officer.png", fit="contain", ysize=900)
 
-# 学校周辺のノードリスト
-define NEAR_SCHOOL_NODES = ["start_point", "school_park", "bunki_1", "d", "e", "street_1"]
-
 init python:
     def get_helper_data():
         """現在地に基づいて助けに来る人（キャラ画像名、名前）を返す"""
@@ -181,10 +178,10 @@ init python:
         # 履歴に追加
         # reasonがない場合は自動的に補完するか、Noneのままにして表示側で処理
         if reason:
-             score_history.append((amount, reason))
+            score_history.append((amount, reason))
         else:
-             # 理由がない場合のデフォルト表記（必要なら）
-             pass
+            # 理由がない場合のデフォルト表記（必要なら）
+            pass
 
         # ポップアップ演出を表示（引数で増減値を渡す）
         renpy.show_screen("score_popup", amount=amount)
@@ -256,16 +253,15 @@ init python:
         if persistent.controller_layout == "nintendo":
             # Aボタン（XboxのB位置）で決定
             config.pad_bindings["pad_b_press"] = [ "dismiss", "button_select", "bar_activate", "bar_deactivate", "chosen" ]
-            # Bボタン（XboxのA位置）でおおごえミニゲームキャンセル等はスクリプト側でやるが、メニューを開かないように
-            # "game_menu" を削除し "hide_windows" のみにする
-            config.pad_bindings["pad_a_press"] = [ "hide_windows" ]
+            # Bボタン（XboxのA位置）でメニューを開く
+            config.pad_bindings["pad_a_press"] = [ "game_menu" ]
             
         # Standardレイアウト（A決定=下、B戻る=右）
         else:
             # Aボタン（XboxのA位置）で決定
             config.pad_bindings["pad_a_press"] = [ "dismiss", "button_select", "bar_activate", "bar_deactivate", "chosen" ]
-            # Bボタン（XboxのB位置）でキャンセル
-            config.pad_bindings["pad_b_press"] = [ "hide_windows" ]
+            # Bボタン（XboxのB位置）でキャンセル・メニュー
+            config.pad_bindings["pad_b_press"] = [ "game_menu" ]
 
     # 初期化時に適用
     update_controller_bindings()

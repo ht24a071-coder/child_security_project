@@ -10,14 +10,19 @@ init -10 python:
         try:
             with renpy.file("mapdata.json") as f:
                 data = json.load(f)
-            return data["world_map"], data["event_pools"]
+            return (
+                data["world_map"],
+                data["event_pools"],
+                data.get("home_nodes", []),
+                data.get("near_school_nodes", []),
+                data.get("map_image", "images/gui/minimap_bg.png")
+            )
         except Exception as e:
             # 読み込み失敗時のエラーハンドリング
-            # 開発中はここにエラー内容を表示させると便利です
             raise Exception("Failed to load mapdata.json: {}".format(e))
 
     # JSONからデータを取得
-    world_map, event_pools = load_map_data()
+    world_map, event_pools, home_nodes, NEAR_SCHOOL_NODES, map_bg_image = load_map_data()
 
     # 例：特定地点のミニマップ座標を取得するヘルパー関数
     def get_minimap_pos(node_id):

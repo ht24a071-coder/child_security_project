@@ -1,4 +1,7 @@
 {
+  "map_image": "images/gui/minimap_bg.png",
+  "home_nodes": ["home_nw", "home_se", "home_sw", "home_w"],
+  "near_school_nodes": ["start_point", "school_park", "bunki_1", "d", "e", "street_1"],
   "world_map": {
     "start_point": {
       "bg": "back_school",

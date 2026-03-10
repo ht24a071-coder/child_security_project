@@ -14,7 +14,10 @@ label suspi_e_car:
     $ _v = get_stranger_voice("001")
     if _v:
         voice _v
-    stranger "ねえ、きみ、がっこうの かえり？"
+    if game_mode == "going_home":
+        stranger "ねえ、きみ、がっこうの かえり？"
+    else:
+        stranger "ねえ、きみ、がっこうに いくの？"
     
     # まず挨拶への反応
     menu:
@@ -29,7 +32,10 @@ label suspi_e_car:
     $ _v = get_stranger_voice("002")
     if _v:
         voice _v
-    stranger "おうちまで おくってあげようか？"
+    if game_mode == "going_home":
+        stranger "おうちまで おくってあげようか？"
+    else:
+        stranger "がっこうまで おくってあげようか？"
     stranger "くるまの ほうが はやいよ？"
 
     menu:
@@ -118,19 +124,19 @@ label .forceful_shout:
         $ is_officer = renpy.random.choice([True, False])
         
         if is_officer:
-             show officer with dissolve
-             officer "どうしたの！？ だいじょうぶ！？"
-             pc "くるまに のせられそうに...！"
-             officer "こわかったね！よく おおごえを だせたね！"
-             officer "すぐ パトロールに いってくるよ。"
-             hide officer with dissolve
+            show officer with dissolve
+            officer "どうしたの！？ だいじょうぶ！？"
+            pc "くるまに のせられそうに...！"
+            officer "こわかったね！よく おおごえを だせたね！"
+            officer "すぐ パトロールに いってくるよ。"
+            hide officer with dissolve
         else:
-             show teacher with dissolve
-             teacher "どうしたの！？ だいじょうぶ！？"
-             pc "くるまに のせられそうに...！"
-             teacher "こわかったわね！よく おおごえを だせたわね！"
-             teacher "先生から おまわりさんに れんらくしておくわね。"
-             hide teacher with dissolve
+            show teacher with dissolve
+            teacher "どうしたの！？ だいじょうぶ！？"
+            pc "くるまに のせられそうに...！"
+            teacher "こわかったわね！よく おおごえを だせたわね！"
+            teacher "先生から おまわりさんに れんらくしておくわね。"
+            hide teacher with dissolve
         
         call show_feedback("shout_success") from _call_fb_car_2
         return
@@ -194,17 +200,17 @@ label .car_repelled_buzzer:
     $ is_officer = renpy.random.choice([True, False])
     
     if is_officer:
-         show officer with dissolve
-         officer "どうしたの！？ だいじょうぶ！？"
-         pc "くるまに のせられそうに...！"
-         officer "こわかったね！よく ブザーを ならせたね！"
-         hide officer with dissolve
+        show officer with dissolve
+        officer "どうしたの！？ だいじょうぶ！？"
+        pc "くるまに のせられそうに...！"
+        officer "こわかったね！よく ブザーを ならせたね！"
+        hide officer with dissolve
     else:
-         show teacher with dissolve
-         teacher "どうしたの！？ だいじょうぶ！？"
-         pc "くるまに のせられそうに...！"
-         teacher "こわかったわね！よく ブザーを ならせたわね！"
-         hide teacher with dissolve
+        show teacher with dissolve
+        teacher "どうしたの！？ だいじょうぶ！？"
+        pc "くるまに のせられそうに...！"
+        teacher "こわかったわね！よく ブザーを ならせたわね！"
+        hide teacher with dissolve
 
     return
 
@@ -260,14 +266,22 @@ label .buzzer_car:
     "ピピピピピ！！"
     stranger "な、なんだ！？"
     
-    "くるまは あわてて はしりさった！"
-    hide stranger with dissolve
-        
-    show woman with dissolve
-    woman "どうしたの！？"
-    pc "くるまの ひとに こえを かけられて..."
-    woman "よくできたね！あやしいと おもったら すぐ ブザーだね！"
-    hide woman with dissolve
+    python:
+        h_tag, h_name = get_helper_data()
+        _is_teacher = (h_tag == "teacher")
+
+    if _is_teacher:
+        show teacher with dissolve
+        teacher "どうしたの！？"
+        pc "くるまの ひとに こえを かけられて..."
+        teacher "よくできたね！あやしいと おもったら すぐ ブザーだね！"
+        hide teacher with dissolve
+    else:
+        show officer with dissolve
+        officer "どうしたの！？"
+        pc "くるまの ひとに こえを かけられて..."
+        officer "よくできたね！あやしいと おもったら すぐ ブザーだね！"
+        hide officer with dissolve
     
     call show_feedback("buzzer_success_car") from _call_fb_car_6
     return

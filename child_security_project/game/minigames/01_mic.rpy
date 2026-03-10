@@ -544,9 +544,9 @@ screen shout_minigame(game):
                     ysize 400
                     xsize 400
                     
-                    # 不審者の画像（簡易表示、実際は立ち絵があればそれを使う）
-                    # ここではShake演出用に位置をずらす
-                    add "images/actor/stranger.png":
+                    # 不審者の画像（現在遭遇している不審者を表示）
+                    $ st_img_path = "images/actor/stranger2.png" if getattr(store, "stranger_type", "stranger") == "stranger2" else "images/actor/stranger.png"
+                    add st_img_path:
                         xalign 0.5
                         yalign 1.0
                         zoom 0.6

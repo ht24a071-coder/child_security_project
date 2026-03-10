@@ -11,9 +11,6 @@ default StepCount = 0 # 内部歩数
 default MaxStep = 25 # 最大歩数
 default active_home = None # 選択された家
 
-# 全ホームノードのリスト
-define home_nodes = ["home_nw", "home_se", "home_sw", "home_w"]
-
 # =============================================================================
 # 共通初期化処理
 # =============================================================================
@@ -61,6 +58,9 @@ label going_school_start:
     $ game_mode = "going_school"
     call initialize_game from _call_initialize_game
 
+    # BGM再生（プレースホルダー：実装時はコメントアウトを外してファイル名を指定）
+    # play music "audio/bgm_school.mp3" fadein 1.0
+
     # どの家から出発するか選ぶ
     # "どこの いえから はじめますか？"
     call screen home_select_map()
@@ -70,6 +70,8 @@ label going_school_start:
     show screen image_overlay("images/Tutorial.png", "チュートリアル")
 
     scene start with fade
+    # お母さんの見送りボイス（プレースホルダー）
+    # voice "audio/voice_mother_itterasshai.mp3"
     pc "さあ、がっこうに いこう！"
     
     jump travel_loop
@@ -81,6 +83,9 @@ label going_home_start:
     $ game_mode = "going_home"
     call initialize_game from _call_initialize_game_1
     
+    # BGM再生（プレースホルダー：実装時はコメントアウトを外してファイル名を指定）
+    # play music "audio/bgm_home.mp3" fadein 1.0
+
     scene start with fade
 
     # "どの いえに かえりますか？"
@@ -110,10 +115,16 @@ label travel_loop:
         jump arrival_school
 
     # 歩数での強制終了
-    if StepCount == (MaxStep/2):
-        call Event_Warning_Stop from _call_Event_Warning_Stop
-    elif StepCount >= MaxStep:
-        call Event_Force_Stop from _call_Event_Force_Stop
+    if game_mode == "going_home":
+        if StepCount == (MaxStep/2):
+            call Event_Warning_Stop from _call_Event_Warning_Stop
+        elif StepCount >= MaxStep:
+            call Event_Force_Stop from _call_Event_Force_Stop
+    else:
+        if StepCount == (MaxStep/2):
+            call Event_Warning_School_Stop from _call_Event_Warning_School_Stop
+        elif StepCount >= MaxStep:
+            call Event_Force_School_Stop from _call_Event_Force_School_Stop
         
     call trigger_node_event(node_data) from _call_trigger_node_event
 
@@ -243,6 +254,9 @@ label arrival_home:
     hide screen minimap
     "ようやく いえの まえに ついた……。"
     
+    # お母さんの出迎えボイス（プレースホルダー）
+    # voice "audio/voice_mother_okaeri.mp3"
+    
     # ミニゲームを入れる場所
     call recall_minigame from _call_recall_minigame
 
@@ -300,15 +314,15 @@ label game_clear:
 
         # 2. スコアに基づくフィードバック
         if total_score >= 50:
-             feedback_message = "すばらしい！あんぜん いしきが とても たかいね！"
-             feedback_tips.append("これからも そのちょうしで きをつけよう！")
+            feedback_message = "すばらしい！あんぜん いしきが とても たかいね！"
+            feedback_tips.append("これからも そのちょうしで きをつけよう！")
         elif total_score >= 30:
-             feedback_message = "よくできました！"
-             if not has_stranger and not has_acquaintance:
-                 feedback_tips.append("つぎは あいさつも もっと げんきよく してみよう！")
+            feedback_message = "よくできました！"
+            if not has_stranger and not has_acquaintance:
+                feedback_tips.append("つぎは あいさつも もっと げんきよく してみよう！")
         else:
-             feedback_message = "もう すこし きを つけよう！"
-             feedback_tips.append("「いかのおすし」を もういちど かくにんしよう！")
+            feedback_message = "もう すこし きを つけよう！"
+            feedback_tips.append("「いかのおすし」を もういちど かくにんしよう！")
     
     hide screen score_hud
     hide screen minimap
