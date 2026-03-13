@@ -197,32 +197,100 @@ init python:
         global stranger_type
         stranger_type = renpy.random.choice(["stranger", "stranger2"])
         
-        # 遭遇リストに追加（重複しないように）
-        # (type, event_name) のタプルで保存
-        found = False
-        for s_type, e_name in encountered_events:
-            if e_name == event_name:
-                found = True
-                break
+        # 特徴をランダムに決定
+        trait = renpy.random.choice(stranger_traits)
         
-        if not found:
-            encountered_events.append((stranger_type, event_name))
+        # 遭遇リストに追加
+        record_detailed_encounter(stranger_type, event_name, trait=trait, is_stranger=True)
+
+    def record_detailed_encounter(char_type, event_name, trait=None, is_stranger=False):
+        """遭遇イベントを詳細に記録する"""
+        # 重複チェック（同じイベント名は一度だけ記録）
+        for e in encountered_events:
+            if isinstance(e, dict) and e.get("event_name") == event_name:
+                return
+            elif isinstance(e, tuple) and e[1] == event_name: # 互換性
+                return
+
+        # スプライト(画像パス)の決定
+        sprite_map = {
+            "stranger": "images/actor/stranger.png",
+            "stranger2": "images/actor/stranger2.png",
+            "officer": "images/actor/officer.png",
+            "woman": "images/actor/woman.png",
+            "teacher": "images/actor/teacher.png",
+            "parent": "images/actor/woman3.png"
+        }
+        sprite = sprite_map.get(char_type, "")
+
+        # 記録
+        data = {
+            "char_type": char_type,
+            "event_name": event_name,
+            "sprite": sprite,
+            "trait": trait,
+            "is_stranger": is_stranger
+        }
+        encountered_events.append(data)
 
     def record_encounter(char_type, event_name):
-        """遭遇イベントを記録（不審者以外用）"""
-        # 重複チェック
-        found = False
-        for c_type, e_name in encountered_events:
-            if e_name == event_name:
-                found = True
-                break
-        
-        if not found:
-            encountered_events.append((char_type, event_name))
+        """遭遇イベントを記録（後方互換性用）"""
+        record_detailed_encounter(char_type, event_name)
 
-    def get_stranger_voice(line_id):
-        """現在のstranger_typeに対応するボイスファイルパスを返す"""
+    def get_stranger_voice(line_id=None):
+        """
+        現在のstranger_typeに対応するボイスファイルパスを返す
+        line_idがNone、または 'auto' の場合は、game_modeに合わせて 001(下校) か 002(登校) を選ぶ
+        """
+        if line_id is None or line_id == "auto":
+            # game_mode が going_home なら 001(kaeri)、それ以外なら 002(okuru)
+            line_id = "001" if getattr(renpy.store, "game_mode", "going_home") == "going_home" else "002"
+            
         return stranger_voice_map.get(stranger_type, {}).get(line_id, None)
+
+    def play_voice(line_id="auto"):
+        """不審者のボイスを自動判別して再生する"""
+        v = get_stranger_voice(line_id)
+        if v:
+            renpy.voice(v)
+
+    def play_commute_bgm(fadein=1.0):
+        """モードに合わせてBGMを再生する"""
+        mode = getattr(renpy.store, "game_mode", "going_home")
+        if mode == "going_home":
+            # 下校用のBGM（既存のファイルを指定するか、適宜変更してください）
+            renpy.music.play("audio/train.mp3", fadein=fadein, loop=True)
+        else:
+            # 登校用のBGM
+            renpy.music.play("audio/humikiri.mp3", fadein=fadein, loop=True)
+
+    def get_npc_dialogue(npc_tag, dialogue_type="Greeting"):
+        """
+        NPCのセリフリストをモードに合わせて取得する
+        npc_tag: 'Officer', 'Woman' など
+        dialogue_type: 'Greeting', 'MissGreeting' など
+        例: get_npc_dialogue('Officer', 'Greeting') -> OfficerGreeting_Home or School のリスト
+        """
+        mode_suffix = "_Home" if getattr(renpy.store, "game_mode", "going_home") == "going_home" else "_School"
+        list_name = npc_tag + dialogue_type + mode_suffix
+        
+        # globals() からリストを取得
+        dialogue_list = globals().get(list_name, [])
+        if not dialogue_list:
+            # フォールバック: モード指定なしの名前を試す
+            dialogue_list = globals().get(npc_tag + dialogue_type, ["..."])
+            
+        return renpy.random.choice(dialogue_list)
+
+    def get_commute_text(home_text, school_text):
+        """
+        game_mode に基づいてテキストを返す
+        home_text: 下校時のテキスト
+        school_text: 登校時のテキスト
+        """
+        if getattr(renpy.store, "game_mode", "going_home") == "going_home":
+            return home_text
+        return school_text
 
     # -----------------------------------------------------------
 # コントローラー設定

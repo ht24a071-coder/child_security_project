@@ -4,7 +4,13 @@
 label suspi_e_test_1:
     $ setup_stranger()
     show stranger with dissolve
-    stranger "{rb}君{/rb}{rt}きみ{/rt}{rb}学校{/rb}{rt}がっこう{/rt}{rb}帰{/rb}{rt}かえ{/rt}り？おいしいケーキがあるんだけど{rb}来{/rb}{rt}こ{/rt}ない？"
+    
+    # 特徴を表示
+    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'suspicious_event_1'), "")
+    if current_trait:
+        "（[current_trait] ひとのようだ。）"
+    $ s_text = get_commute_text("{rb}学校{/rb}{rt}がっこう{/rt}{rb}帰{/rb}{rt}かえ{/rt}り？", "{rb}学校{/rb}{rt}がっこう{/rt}に いくの？")
+    stranger "{rb}君{/rb}{rt}きみ{/rt} [s_text] おいしいケーキがあるんだけど{rb}来{/rb}{rt}こ{/rt}ない？"
 
     menu:
         "いくー！":
@@ -16,7 +22,8 @@ label suspi_e_test_1:
             
             jump game_over
 
-        "ごめんなさい。まっすぐ{rb}帰{/rb}{rt}かえ{/rt}らないといけないんです":
+        "ごめんなさい。まっすぐ [player_destination]ないといけないんです":
+            $ player_destination = get_commute_text("{rb}帰{/rb}{rt}かえ{/rt}ら", "{rb}行{/rb}{rt}か{/rt}")
             $ update_score(15, "はっきりと ことわった")
             
             pc "いりません！"
@@ -107,17 +114,17 @@ label .cake_rescued:
     $ is_officer = renpy.random.choice([True, False])
     
     if is_officer:
-         show officer with dissolve
-         officer "どうしたの！？"
-         pc "しらない ひとに つれていかれそうに..."
-         officer "こわかったね！よく がんばったね！"
-         hide officer with dissolve
+        show officer with dissolve
+        officer "どうしたの！？"
+        pc "しらない ひとに つれていかれそうに..."
+        officer "こわかったね！よく がんばったね！"
+        hide officer with dissolve
     else:
-         show teacher with dissolve
-         teacher "どうしたの！？"
-         pc "しらない ひとに つれていかれそうに..."
-         teacher "こわかったわね！よく がんばったわね！"
-         hide teacher with dissolve
+        show teacher with dissolve
+        teacher "どうしたの！？"
+        pc "しらない ひとに つれていかれそうに..."
+        teacher "こわかったわね！よく がんばったわね！"
+        hide teacher with dissolve
     
     call show_feedback("no_follow") from _call_fb_s1_2
     return

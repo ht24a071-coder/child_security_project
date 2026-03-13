@@ -11,12 +11,16 @@ label suspi_e_car:
     
     show stranger with dissolve
     
-    $ _v = get_stranger_voice("001")
-    if _v:
-        voice _v
+    # 特徴を表示
+    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'car_abduction'), "")
+    if current_trait:
+        "（[current_trait] ひとのようだ。）"
+    
     if game_mode == "going_home":
+        $ play_voice("001")
         stranger "ねえ、きみ、がっこうの かえり？"
     else:
+        $ play_voice("003")
         stranger "ねえ、きみ、がっこうに いくの？"
     
     # まず挨拶への反応
@@ -29,20 +33,16 @@ label suspi_e_car:
             pc "..."
             stranger "ねえ、きいてる？"
 
-    $ _v = get_stranger_voice("002")
-    if _v:
-        voice _v
-    if game_mode == "going_home":
-        stranger "おうちまで おくってあげようか？"
-    else:
-        stranger "がっこうまで おくってあげようか？"
+    $ play_voice("002")
+    $ s_text = get_commute_text("おうちまで おくってあげようか？", "がっこうまで おくってあげようか？")
+    stranger "[s_text]"
     stranger "くるまの ほうが はやいよ？"
 
     menu:
         "のります！":
             jump .get_in_car
 
-        "だいじょうぶです、じぶんで かえれます":
+        "だいじょうぶです、[player_destination]れます":
             jump .refuse_car
         
         "（にげる）":
@@ -69,9 +69,8 @@ label .get_in_car:
 # 断るルート（強引に乗せようとしてくる場合あり）
 # -----------------------------------------------------------------------------
 label .refuse_car:
-    $ update_score(10, "はっきりと ことわった")
-    
-    pc "だいじょうぶです。じぶんで かえれますから。"
+    $ player_destination = get_commute_text("かえれ", "いけ")
+    pc "だいじょうぶです。じぶんで [player_destination]ますから。"
     
     # かならず強引な手段に出る
     jump .forceful_attempt

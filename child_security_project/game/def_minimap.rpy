@@ -183,15 +183,16 @@ screen minimap():
         xalign 1.0 yalign 0.0
         xoffset -cfg["margin_x"]
         yoffset cfg["margin_y"]
-        padding (5, 5)
-        background "#00000080"
+        padding (10, 10)
+        background "#000000AA"
         
-        fixed:
-            fit_first True
-            
-            # マップ画像
-            add cfg["image"]:
-                zoom zoom
+        vbox:
+            spacing 5
+            # --- ミニマップ本体 ---
+            fixed:
+                fit_first True
+                add cfg["image"]:
+                    zoom zoom
             
             # 全ノードにマーカーを表示（行き先ノードは色付きマーカーに差し替え）
             for node_id, node_pos in map_coordinates.items():
@@ -254,6 +255,27 @@ screen minimap():
                     pos (pin_x, pin_y)
                     anchor (0.5, 1.0)
                     zoom pin_scale
+
+            # --- 凡例 (Legend) ---
+            null height 10
+            vbox:
+                spacing 4
+                hbox:
+                    spacing 8
+                    add Transform(cfg["home_marker"], zoom=0.8) yalign 0.5
+                    text "いえ" size 18 color "#fff" yalign 0.5
+                hbox:
+                    spacing 8
+                    add Transform(cfg["school_marker"], zoom=0.8) yalign 0.5
+                    text "がっこう" size 18 color "#fff" yalign 0.5
+                hbox:
+                    spacing 8
+                    add Transform(cfg["pin_image"], zoom=pin_scale*0.8) yalign 0.5
+                    text "いまの ばしょ" size 18 color "#fff" yalign 0.5
+                hbox:
+                    spacing 8
+                    add Transform(cfg["node_marker"], zoom=0.8) yalign 0.5
+                    text "いける ばしょ" size 18 color "#fff" yalign 0.5
 
     # ミニマップの下にマップ表示ボタン（コントローラーⒾボタンでも開ける）
     textbutton "🗺 マップ {size=22}{color=#FFE66D}Ⓨ{/color}{/size}":
