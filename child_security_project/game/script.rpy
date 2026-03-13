@@ -58,8 +58,7 @@ label going_school_start:
     $ game_mode = "going_school"
     call initialize_game from _call_initialize_game
 
-    # BGM再生（プレースホルダー：実装時はコメントアウトを外してファイル名を指定）
-    # play music "audio/bgm_school.mp3" fadein 1.0
+    $ play_commute_bgm()
 
     # どの家から出発するか選ぶ
     # "どこの いえから はじめますか？"
@@ -83,8 +82,7 @@ label going_home_start:
     $ game_mode = "going_home"
     call initialize_game from _call_initialize_game_1
     
-    # BGM再生（プレースホルダー：実装時はコメントアウトを外してファイル名を指定）
-    # play music "audio/bgm_home.mp3" fadein 1.0
+    $ play_commute_bgm()
 
     scene start with fade
 

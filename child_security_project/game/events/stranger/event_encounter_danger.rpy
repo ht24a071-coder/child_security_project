@@ -6,10 +6,13 @@ label encounter_e_stranger:
     "だれかが ちかづいてきた。"
     
     call show_stranger_wrapper from _call_show_stranger_wrapper_danger
+
+    # 特徴を表示
+    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'encounter_danger'), "")
+    if current_trait:
+        "（[current_trait] ひとのようだ。）"
     
-    $ _v = get_stranger_voice("003")
-    if _v:
-        voice _v
+    $ play_voice("003")
     stranger "こんにちは～"
     
     # まず挨拶への反応

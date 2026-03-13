@@ -22,17 +22,13 @@ label encounter_e_safe_person:
         "こんにちは！":
             $ update_score(5, "あいさつ")
             pc "こんにちは！"
-            if _safe_is_teacher:
-                teacher "げんきな あいさつだね！"
-            else:
-                woman "げんきな あいさつだね！"
+            $ npc_greet = get_npc_dialogue("Teacher" if _safe_is_teacher else "Woman", "Greeting")
+            "[npc_greet]"
         
         "...（むしする）":
             pc "..."
-            if _safe_is_teacher:
-                teacher "あら、はずかしがりやさんね。"
-            else:
-                woman "あら、はずかしがりやさんね。"
+            $ npc_miss = get_npc_dialogue("Teacher" if _safe_is_teacher else "Woman", "MissGreeting")
+            "[npc_miss]"
         
         "（ぼうはんブザーを にぎる）":
             pc "（ねんのため...）"
@@ -41,16 +37,11 @@ label encounter_e_safe_person:
             else:
                 woman "？"
     
-    if game_mode == "going_home":
-        if _safe_is_teacher:
-            teacher "がっこうの かえり？きを つけてね。"
-        else:
-            woman "がっこうの かえり？きを つけてね。"
+    $ s_text = get_commute_text("がっこうの かえり？", "がっこうに いくの？")
+    if _safe_is_teacher:
+        teacher "[s_text]きを つけてね。"
     else:
-        if _safe_is_teacher:
-            teacher "がっこうに いくの？きを つけてね。"
-        else:
-            woman "がっこうに いくの？きを つけてね。"
+        woman "[s_text]きを つけてね。"
     
     "（そう いって、その ひとは さっていこうとした。）"
 

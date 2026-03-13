@@ -4,7 +4,13 @@
 label suspi_e_test_2:
     $ setup_stranger()
     show stranger with dissolve
-    stranger "ねえ、{rb}道{/rb}{rt}みち{/rt}に{rb}迷{/rb}{rt}まよ{/rt}っちゃったんだ。{rb}車{/rb}{rt}くるま{/rt}で{rb}送{/rb}{rt}おく{/rt}ってあげようか？"
+    
+    # 特徴を表示
+    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'suspicious_event_2'), "")
+    if current_trait:
+        "（[current_trait] ひとのようだ。）"
+    $ s_text = get_commute_text("帰", "行")
+    stranger "ねえ、{rb}道{/rb}{rt}みち{/rt}に{rb}迷{/rb}{rt}まよ{/rt}っちゃったんだ。{rb}車{/rb}{rt}くるま{/rt}で{rb}送{/rb}{rt}おく{/rt}ってあげようか？ がっこうに [s_text]く のかな？"
 
     menu:
         "{rb}乗{/rb}{rt}の{/rt}ります！":
@@ -16,7 +22,8 @@ label suspi_e_test_2:
             
             jump game_over
 
-        "{rb}大丈夫{/rb}{rt}だいじょうぶ{/rt}です。{rb}自分{/rb}{rt}じぶん{/rt}で{rb}帰{/rb}{rt}かえ{/rt}れます":
+        "{rb}大丈夫{/rb}{rt}だいじょうぶ{/rt}です。{rb}自分{/rb}{rt}じぶん{/rt}で [player_destination]れます":
+            $ player_destination = get_commute_text("帰", "行け")
             $ update_score(15, "はっきりと ことわった")
             
             stranger "いいから のりなよ！"
@@ -103,17 +110,17 @@ label .car_2_rescued:
         h_tag, _unused = get_helper_data()
     
     if h_tag == "officer":
-         show officer with dissolve
-         officer "どうしたの！？"
-         pc "くるまに のせられそうに..."
-         officer "こわかったね！よく がんばったね！"
-         hide officer with dissolve
+        show officer with dissolve
+        officer "どうしたの！？"
+        pc "くるまに のせられそうに..."
+        officer "こわかったね！よく がんばったね！"
+        hide officer with dissolve
     else:
-         show teacher with dissolve
-         teacher "どうしたの！？"
-         pc "くるまに のせられそうに..."
-         teacher "こわかったわね！よく がんばったわね！"
-         hide teacher with dissolve
+        show teacher with dissolve
+        teacher "どうしたの！？"
+        pc "くるまに のせられそうに..."
+        teacher "こわかったわね！よく がんばったわね！"
+        hide teacher with dissolve
     
     call show_feedback("no_follow") from _call_fb_s2_2
     return

@@ -7,15 +7,21 @@ label suspi_e_acquaintance:
 
     call show_stranger_wrapper from _call_show_stranger_wrapper_acquaintance
 
-    
-    $ _v = get_stranger_voice("003") 
-    if _v:
-        voice _v
-    stranger "おーい、[player_name]ちゃん！"
-    stranger "{rb}学校{/rb}{rt}がっこう{/rt}おわりかい？ えらいねえ。"
+    # 特徴を表示
+    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'acquaintance'), "")
+    if current_trait:
+        "（[current_trait] ひとのようだ。）"
 
-    pc "あ、こんばんは。"
-    pc "（{rb}優{/rb}{rt}やさ{/rt}しそうな おじさんだ。{rb}知{/rb}{rt}し{/rt}ってる{rb}人{/rb}{rt}ひと{/rt}だし{rb}安心{/rb}{rt}あんしん{/rt}かな？）"
+    
+    $ play_voice("003")
+    stranger "おーい、[player_name]ちゃん！"
+    $ s_text = get_commute_text("{rb}学校{/rb}{rt}がっこう{/rt}おわりかい？", "{rb}学校{/rb}{rt}がっこう{/rt}に いくのかい？")
+    stranger "[s_text] えらいねえ。"
+
+    $ pc_greeting = get_commute_text("こんばんは。", "おはよう。")
+    pc "あ、[pc_greeting]"
+    $ pc_inner = get_commute_text("こんばんは", "おはよう")
+    pc "（優しそうなおじさんだ。知ってる人だし安心かな？）"
 
     stranger "お{rb}母{/rb}{rt}かあ{/rt}さんは {rb}元気{/rb}{rt}げんき{/rt}にしてるかい？"
     pc "うん、{rb}元気{/rb}{rt}げんき{/rt}だよ。"
