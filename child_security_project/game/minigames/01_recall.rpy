@@ -1,5 +1,5 @@
 # =============================================================================
-# 振り返りミニゲーム（不審者当てクイズ）
+# 振り返りミニゲーム（ふしんしゃ当てクイズ）
 # =============================================================================
 
 init python:
@@ -15,9 +15,9 @@ init python:
             
             import random
             
-            # 遭遇した全ての人に対してクイズを生成
+            # 遭遇した全てのひとに対してクイズを生成
             for encounter in encountered_events:
-                # 1. 見た目クイズ（画像選択）
+                # 1. 見ためクイズ（画像せんたく）
                 target_type = encounter["char_type"]
                 options = [target_type]
                 dummies = ["stranger", "stranger2", "officer", "woman", "teacher", "parent"]
@@ -40,9 +40,9 @@ init python:
                     }
                 })
 
-                # 不審者の場合のみ追加の質問
+                # ふしんしゃの場合のみ追加の質問
                 if encounter.get("is_stranger"):
-                    # 2. 特徴クイズ（テキスト選択）
+                    # 2. 特徴クイズ（テキストせんたく）
                     target_trait = encounter["trait"]
                     t_options = [target_trait]
                     t_dummies = [t for t in stranger_traits if t != target_trait]
@@ -56,7 +56,7 @@ init python:
                         "correct_index": t_options.index(target_trait)
                     })
 
-                    # 3. 行動クイズ（テキスト選択）
+                    # 3. 行動クイズ（テキストせんたく）
                     event_name = encounter["event_name"]
                     target_action = event_action_map.get(event_name, "なにかをされた")
                     a_options = [target_action]
@@ -122,10 +122,11 @@ screen recall_minigame_screen(game):
     $ current_q = game.get_current_question()
     
     if current_q:
+        $ q_text = current_q.get("text", "")
         vbox:
             align (0.5, 0.1)
             spacing 20
-            text "[current_q[text]]" size 50 xalign 0.5 color "#fff" outlines [(3, "#000", 0, 0)]
+            text "[q_text]" size 50 xalign 0.5 color "#fff" outlines [(3, "#000", 0, 0)]
             text "第 [game.current_q_index + 1] 問 / 全 [len(game.questions)] 問" size 24 xalign 0.5 color "#aaa"
 
         if current_q["type"] == "image":
@@ -145,7 +146,7 @@ screen recall_minigame_screen(game):
                         else:
                             text "?" size 100 align (0.5, 0.5)
         else:
-            # テキスト形式の選択肢（特徴や行動）
+            # テキストかたち式のせんたく肢（特徴や行動）
             vbox:
                 align (0.5, 0.5)
                 spacing 20
@@ -164,7 +165,7 @@ screen recall_minigame_screen(game):
 # -----------------------------------------------------------------------------
 label recall_minigame:
     
-    # 到着時の会話イベント
+    # とうちゃくじの会はなしイベント
     if game_mode == "going_school":
         show teacher at center with dissolve
         teacher "おはよう！　ぶじに　ついて　よかったわ。"
@@ -192,13 +193,13 @@ label recall_minigame:
         hide parent
         return
 
-    # 会話を挟む
+    # 会はなしを挟む
     if game_mode == "going_school":
         teacher "きょうは　だれかに　あったかな？　どんな　ひとだったか　おもいだしてみましょう。"
     else:
         parent "きょうは　だれかに　あった？　どんな　ひとだったか　おしえてくれる？"
 
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
     hide teacher

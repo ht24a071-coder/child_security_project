@@ -1,15 +1,15 @@
 # =============================================================================
 # メインスクリプト
-# 登校・下校両方に対応した設計
+# とうこう・げこう両かたに対応した設計
 # =============================================================================
 
 default game_mode = "going_home"
 default _nav_color_map = {}
-default show_quick_menu = False  # クイックメニューの初期表示状態（非表示）
-default minimap_hover_node = None  # 選択肢ホバー時の仮の行き先ノードID
-default StepCount = 0 # 内部歩数
-default MaxStep = 25 # 最大歩数
-default active_home = None # 選択された家
+default show_quick_menu = False  # クイックめにゅーの初期表示状態（非表示）
+default minimap_hover_node = None  # せんたく肢ホバーじの仮の行き先ノードID
+default StepCount = 0 # 内部ほすう
+default MaxStep = 25 # さいだいのほすう
+default active_home = None # せんたくされたいえ
 
 # =============================================================================
 # 共通初期化処理
@@ -17,27 +17,27 @@ default active_home = None # 選択された家
 label initialize_game:
     # 変数初期化
     if game_mode == "going_home":
-        # 下校モードの初期現在地は学校
+        # げこうモードの初期いまここはがっこう
         $ current_node = "start_point"
     else:
-        # 登校モードは選択した家が初期現在地になる（後で設定）
+        # とうこうモードはせんたくしたいえが初期いまここになる（うしろでせってい）
         $ current_node = "home_se" 
         
-    $ target_home = None # 下校時の目標地点（登校時はNone）
-    $ active_home = None # 選択された家（両モード共通）
+    $ target_home = None # げこうじのゴール地点（とうこうじはNone）
+    $ active_home = None # せんたくされたいえ（両モード共通）
     
     $ visited_nodes = []
     $ total_score = 0  # スコア初期化
     
-    # 立ち絵などリセット
+    # 立ちえなどリセット
     $ previous_node = None
         
-    # 重要: used_eventsは文字列のセットとして管理
+    # だいじ: used_eventsは文字列のセットとして管理
     $ used_events = set()
 
     $ flag_know_110 = False
     $ has_encountered_suspicious = False
-    $ encountered_events = [] # 遭遇イベント履歴リセット
+    $ encountered_events = [] # 遭遇イベントりれきリセット
     $ total_score = 0
     $ score_history = []
     hide screen score_hud
@@ -52,7 +52,7 @@ label initialize_game:
     return
 
 # =============================================================================
-# 登校モード開始
+# とうこうモードかいし
 # =============================================================================
 label going_school_start:
     $ game_mode = "going_school"
@@ -60,7 +60,7 @@ label going_school_start:
 
     $ play_commute_bgm()
 
-    # どの家から出発するか選ぶ
+    # どのいえからしゅっぱつするか選ぶ
     # "どこの いえから はじめますか？"
     call screen home_select_map()
     $ current_node = _return
@@ -69,14 +69,14 @@ label going_school_start:
     show screen image_overlay("images/Tutorial.png", "チュートリアル")
 
     scene start with fade
-    # お母さんの見送りボイス（プレースホルダー）
+    # おかあさんの見送りボイス（プレースホルダー）
     # voice "audio/voice_mother_itterasshai.mp3"
     pc "さあ、がっこうに いこう！"
     
     jump travel_loop
 
 # =============================================================================
-# 下校モード開始
+# げこうモードかいし
 # =============================================================================
 label going_home_start:
     $ game_mode = "going_home"
@@ -112,7 +112,7 @@ label travel_loop:
     elif game_mode == "going_school" and current_node == "start_point":
         jump arrival_school
 
-    # 歩数での強制終了
+    # ほすうでの強制しゅうりょう
     if game_mode == "going_home":
         if StepCount == (MaxStep/2):
             call Event_Warning_Stop from _call_Event_Warning_Stop
@@ -125,11 +125,12 @@ label travel_loop:
             call Event_Force_School_Stop from _call_Event_Force_School_Stop
         
     call trigger_node_event(node_data) from _call_trigger_node_event
+    $ play_commute_bgm()
 
     window hide
 
     python:
-        # 行き先ノードに色＋マーカー画像を割り当て（ミニマップと選択肢で共有）
+        # 行き先ノードにいろ＋マーカー画像を割り当て（ミニマップとせんたく肢で共有）
         _nav_color_map = {}
         _nav_markers = [
             ("#FF0000", "images/gui/nav_marker_red.png"),
@@ -139,26 +140,49 @@ label travel_loop:
         ]
         menu_items = []
         for idx, (label_text, target_id) in enumerate(node_data["links"].items()):
-            # 【下校モード】ターゲット以外の家へのリンクは表示しない
+            # 【げこうモード】ターゲットいがいのいえへのリンクは表示しない
             if game_mode == "going_home" and target_home:
                 # リンク先がhome_nodesに含まれるかチェック
                 is_home = (target_id in home_nodes)
-                # target_home以外ならスキップ
+                # target_homeいがいならスキップ
                 if is_home and target_id != target_home:
                     continue
 
             color, marker_img = _nav_markers[idx % len(_nav_markers)]
             _nav_color_map[target_id] = (color, marker_img)
-            # 色丸＋テキスト全体を行き先の色に変更（マップの色と対応）
+            # いろ丸＋テキスト全からだを行き先のいろに変更（マップのいろと対応）
             colored_text = "{color=" + color + "}\u25cf " + label_text + "{/color}"
             menu_items.append((colored_text, target_id))
         next_location = renpy.display_menu(menu_items)
         _nav_color_map = {}
 
+    # 寄りみち判定（いちばんちかいきょりが縮まったかチェック）
+    python:
+        # ゴールノードリスト作成
+        if game_mode == "going_home":
+            target_list = [target_home]
+        else:
+            target_list = ["start_point"]
+        
+        d_before = get_shortest_dist(current_node, target_list)
+        d_after = get_shortest_dist(next_location, target_list)
+        
+        # きょりが縮まっていなければペナルティ
+        if d_after >= d_before:
+            update_score(-2, "よりみちをした")
+
     $ previous_node = current_node
     $ current_node = next_location
 
+    python:
+        if current_node not in visited_nodes:
+            visited_nodes.append(current_node)
+    
     $ StepCount += 1
+    
+    # ミニマップのいまここをリセットして表示し直す
+    hide screen minimap
+    show screen minimap
 
     jump travel_loop
 
@@ -181,7 +205,7 @@ label trigger_node_event(data):
         # event_poolsをstoreから明示的に取得
         pools = event_pools
         
-        # 確率判定とプール存在確認
+        # 確率判定とプール存在かくにん
         if renpy.random.randint(1, 100) <= chance and group_name in pools:
             available = []
             for e in pools[group_name]:
@@ -194,18 +218,18 @@ label trigger_node_event(data):
                 selected = renpy.random.choice(available)
                 used_events.add(str(selected))
 
-                # --- 修正箇所: 型チェックを「名前判定」に変更して強制突破する ---
-                # type(selected) が <class 'list'> と出るなら、名前は 'list' になるはずです
+                # --- 修正箇所: 型チェックを「なまえ判定」に変更して強制突破する ---
+                # type(selected) が <class 'list'> とでるなら、なまえは 'list' になるはずです
                 obj_type_name = type(selected).__name__
                 
-                # リストまたはタプルの「名前」を持っている、あるいは従来の判定がTrueなら通す
+                # リストまたはタプルの「なまえ」を持っている、あるいは従来の判定がTrueなら通す
                 if (obj_type_name in ('list', 'tuple', 'RevertableList', 'RevertableTuple') 
                     or isinstance(selected, (list, tuple))) and len(selected) >= 2:
                     
                     target_event = selected[0]
                     raw_args = selected[1]
 
-                    # 引数部分も同様に名前判定でリスト化チェック
+                    # 引数部ふんも同様になまえ判定でリスト化チェック
                     args_type_name = type(raw_args).__name__
                     if args_type_name not in ('list', 'tuple', 'RevertableList', 'RevertableTuple') and not isinstance(raw_args, (list, tuple)):
                         event_args = [raw_args]
@@ -217,9 +241,9 @@ label trigger_node_event(data):
                     target_event = selected
                     event_args = None
                 
-                # それ以外（単一要素のリストなど）
+                # それいがい（単一要素のリストなど）
                 else:
-                    # リストっぽいが長さが足りない場合など
+                    # リストっぽいが長さがあしりない場合など
                     if obj_type_name in ('list', 'tuple', 'RevertableList'):
                         if len(selected) >= 1:
                             target_event = selected[0]
@@ -230,7 +254,7 @@ label trigger_node_event(data):
                         target_event = selected
                         event_args = None
         
-        # 文字列チェック（安全策）
+        # 文字列チェック（あんぜん策）
         if target_event and not isinstance(target_event, str):
             target_event = None
 
@@ -246,34 +270,36 @@ label trigger_node_event(data):
     return
 
 # =============================================================================
-# 到着処理
+# とうちゃく処理
 # =============================================================================
 label arrival_home:
     hide screen minimap
+    stop music fadeout 1.0
     "ようやく いえの まえに ついた……。"
     
-    # お母さんの出迎えボイス（プレースホルダー）
+    # おかあさんの出迎えボイス（プレースホルダー）
     # voice "audio/voice_mother_okaeri.mp3"
     
-    # ミニゲームを入れる場所
+    # ミニゲームを入れるばしょ
     call recall_minigame from _call_recall_minigame
 
     jump game_clear
 
 # =============================================================================
-# 登校時の到着処理
+# とうこうじのとうちゃく処理
 # =============================================================================
 label arrival_school:
     hide screen minimap
+    stop music fadeout 1.0
     "がっこうに ついた！"
     
-    # ミニゲームを入れる場所
+    # ミニゲームを入れるばしょ
     call recall_minigame from _call_recall_minigame_1
     
     jump game_clear
 
 # =============================================================================
-# ゲームクリア
+# ゲームくりあ
 # =============================================================================
 label game_clear:
     $ feedback_is_clear = True
@@ -290,7 +316,7 @@ label game_clear:
         has_officer = any(e[1] in ["officer", "teacher"] for e in encountered_events)
         has_safe_person = any(e[1] == "safe_person" for e in encountered_events)
         
-        # 誰も会わなかった場合
+        # だれも会わなかった場合
         if not encountered_events:
             feedback_tips.append("よりみちを せずに、まっすぐ かえれたね！")
             feedback_tips.append("だれにも あわないのが いちばん あんぜんだよ。")
@@ -325,12 +351,16 @@ label game_clear:
     hide screen score_hud
     hide screen minimap
     
+    # くりあBGM再生
+    stop music fadeout 1.5
+    play audio "audio/おひろめふぁんふぁーれ.mp3"
+    
     call screen game_feedback
     call game_end_processing from _call_game_end_processing
     return
 
 # =============================================================================
-# ゲームオーバー
+# げーむおーばー
 # =============================================================================
 label game_over(set_message="つれさられてしまった..."):
     $ feedback_is_clear = False
@@ -349,29 +379,33 @@ label game_over(set_message="つれさられてしまった..."):
     hide screen score_hud
     hide screen minimap
     
+    # しっぱいBGM再生
+    stop music fadeout 1.5
+    play audio "audio/しっぱい、げーむおーばー.mp3"
+    
     call screen game_feedback
     $ renpy.full_restart()
 
 # =============================================================================
-# おおごえテスト用ラベル
+# おおごえてすと用ラベル
 # =============================================================================
 label test_mic_minigame:
     scene black with fade
     
-    "おおごえの テストを はじめます！"
+    "おおごえの てすとを はじめます！"
     
-    # 設定画面を表示
+    # せってい画面を表示
     call screen mic_settings
     
     menu:
-        "テストを開始する":
+        "てすとをかいしする":
             pass
-        "タイトルに戻る":
+        "タイトルにもどる":
             return
     
     python:
         shout_game = ShoutMinigame(
-            threshold=0.25,    # 音量閾値（少し下げて反応しやすく）
+            threshold=0.25,    # おと量閾値（すこししたげて反応しやすく）
             duration=5.0
         )
     
@@ -384,5 +418,5 @@ label test_mic_minigame:
     else:
         "もう すこし がんばろう！"
     
-    "テストを おわります。"
+    "てすとを おわります。"
     return

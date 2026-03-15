@@ -3,7 +3,7 @@ label Event_Force_Stop:
     scene Night with pixellate
     window show dissolve
 
-    "{i}{rb}暗{/rb}{rt}くら{/rt}くなってしまった。{rb}寄{/rb}{rt}よ{/rt}り{rb}道{/rb}{rt}みち{/rt}せず、{rb}明{/rb}{rt}あか{/rt}るいうちに{rb}帰{/rb}{rt}かえ{/rt}ろう。{/i}"
+    "{i}くらくなってしまった。よりみちせず、あかるいうちにかえろう。{/i}"
 
     window hide dissolve
 
@@ -27,7 +27,7 @@ label Event_Warning_Stop:
     scene Sunset with pixellate
     window show dissolve
 
-    "{i}{rb}暗{/rb}{rt}くら{/rt}くなってきた。{rb}早{/rb}{rt}はや{/rt}く{rb}帰{/rb}{rt}かえ{/rt}ろう。{/i}"
+    "{i}くらくなってきた。はやくかえろう。{/i}"
 
     window hide dissolve
 
@@ -47,15 +47,15 @@ screen full_image_show(img_path):
     # 他のUIを触らせない
     modal True
 
-    # 画面全体に画像を表示
+    # 画面全からだに画像を表示
     add img_path:
-        xsize 1.0  # 横幅いっぱい
+        xsize 1.0  # よこ幅いっぱい
         ysize 1.0  # 縦幅いっぱい
-        fit "contain" # 画像比率を維持して最大表示（隙間なくなら "cover"）
+        fit "contain" # 画像比率を維持してさいだい表示（隙間なくなら "cover"）
         xalign 0.5 yalign 0.5
 
-    # 画面全体を覆う「何もしないボタン」に Return() を持たせる
-    # これにより、画面のどこをクリックしても画像が消えてシナリオに戻る
+    # 画面全からだを覆う「なにもしないボタン」に Return() を持たせる
+    # これにより、画面のどこをクリックしても画像が消えてシナリオにもどる
     button:
         action Return()
         xfill True

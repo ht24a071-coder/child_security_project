@@ -6,7 +6,7 @@
     "start_point": {
       "bg": "back_school",
       "links": {
-        "{rb}外{/rb}{rt}そと{/rt}に{rb}出{/rb}{rt}で{/rt}る": "school_park"
+        "そとにでる": "school_park"
       },
       "group": "safe",
       "chance": 0,
@@ -18,8 +18,8 @@
     "school_park": {
       "bg": "back_school_park",
       "links": {
-        "{rb}学校{/rb}{rt}がっこう{/rt}に{rb}入{/rb}{rt}はい{/rt}る": "start_point",
-        "{rb}学校{/rb}{rt}がっこう{/rt}から{rb}左{/rb}{rt}ひだり{/rt}に{rb}進{/rb}{rt}すす{/rt}む": "bunki_1"
+        "がっこうにはいる": "start_point",
+        "がっこうからひだりにすすむ": "bunki_1"
       },
       "group": "safe",
       "chance": 40,
@@ -31,8 +31,8 @@
     "street_1": {
       "bg": "back_street_0",
       "links": {
-        "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
-        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_1"
+        "かわのほうへすすむ": "street_2",
+        "がっこうのほうへすすむ": "bunki_1"
       },
       "group": "suspicious",
       "chance": 30,
@@ -44,8 +44,8 @@
     "street_2": {
       "bg": "back_street_1",
       "links": {
-        "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_2",
-        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_1"
+        "かわのほうへすすむ": "bunki_2",
+        "がっこうのほうへすすむ": "street_1"
       },
       "group": "suspicious",
       "chance": 50,
@@ -57,8 +57,8 @@
     "public_hall": {
       "bg": "L_area_1",
       "links": {
-        "{rb}小道{/rb}{rt}こみち{/rt}を{rb}進{/rb}{rt}すす{/rt}む": "road_center",
-        "{rb}自治会館{/rb}{rt}じちかいかん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari002"
+        "こみちをすすむ": "road_center",
+        "じちかいかんのほうへすすむ": "Kari002"
       },
       "group": "safe",
       "chance": 50,
@@ -70,7 +70,7 @@
     "home_nw": {
       "bg": "back_home",
       "links": {
-        "{rb}出発{/rb}{rt}しゅっぱつ{/rt}する": "Kari003"
+        "しゅっぱつする": "Kari003"
       },
       "group": "none",
       "chance": 0,
@@ -82,7 +82,7 @@
     "home_se": {
       "bg": "back_home",
       "links": {
-        "{rb}出発{/rb}{rt}しゅっぱつ{/rt}する": "Kari006"
+        "しゅっぱつする": "Kari006"
       },
       "group": "none",
       "chance": 0,
@@ -94,9 +94,9 @@
     "bunki_1": {
       "bg": "back_street_a",
       "links": {
-        "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_1",
-        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "school_park",
-        "{rb}自治会館{/rb}{rt}じちかいかん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_3"
+        "かわのほうへすすむ": "street_1",
+        "がっこうのほうへすすむ": "school_park",
+        "じちかいかんのほうへすすむ": "street_3"
       },
       "group": "suspicious",
       "chance": 50,
@@ -108,8 +108,8 @@
     "street_3": {
       "bg": "back_street_b",
       "links": {
-        "{rb}自治会館{/rb}{rt}じちかいかん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari002",
-        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_1"
+        "じちかいかんのほうへすすむ": "Kari002",
+        "がっこうのほうへすすむ": "bunki_1"
       },
       "group": "suspicious",
       "chance": 50,
@@ -121,9 +121,9 @@
     "bunki_2": {
       "bg": "back_bunki",
       "links": {
-        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_2",
-        "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "hasi1",
-        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "c"
+        "がっこうのほうへすすむ": "street_2",
+        "せんろのほうへすすむ": "hasi1",
+        "ねやがわのほうへすすむ": "c"
       },
       "group": "suspicious",
       "chance": 60,
@@ -135,7 +135,7 @@
     "home_sw": {
       "bg": "back_home",
       "links": {
-        "{rb}出発{/rb}{rt}しゅっぱつ{/rt}する": "k"
+        "しゅっぱつする": "k"
       },
       "group": "safe",
       "chance": 0,
@@ -147,7 +147,7 @@
     "home_w": {
       "bg": "back_home",
       "links": {
-        "{rb}出発{/rb}{rt}しゅっぱつ{/rt}する": "a"
+        "しゅっぱつする": "a"
       },
       "group": "safe",
       "chance": 0,
@@ -159,8 +159,8 @@
     "Kari002": {
       "bg": "L_area_0",
       "links": {
-        "{rb}小道{/rb}{rt}こみち{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "public_hall",
-        "{rb}学校{/rb}{rt}がっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "street_3"
+        "こみちのほうへすすむ": "public_hall",
+        "がっこうのほうへすすむ": "street_3"
       },
       "group": "suspicious",
       "chance": 70,
@@ -172,8 +172,8 @@
     "Kari003": {
       "bg": "Fkonobasi",
       "links": {
-        "{rb}中学校{/rb}{rt}ちゅうがっこう{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari005",
-        "{rb}深北緑地{/rb}{rt}ふかきたりょくち{/rt}の{rb}方{/rb}{rt}ほう{/rt}へ{rb}進{/rb}{rt}すす{/rt}む": "home_nw"
+        "ちゅうがっこうのほうへすすむ": "Kari005",
+        "ふかきたりょくちのほうへすすむ": "home_nw"
       },
       "group": "suspicious",
       "chance": 80,
@@ -185,8 +185,8 @@
     "Kari005": {
       "bg": "fukono_2",
       "links": {
-        "{rb}深野橋{/rb}{rt}ふこのばし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari003",
-        "{rb}小道{/rb}{rt}こみち{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "road"
+        "ふこのばしのほうへすすむ": "Kari003",
+        "こみちのほうへすすむ": "road"
       },
       "group": "suspicious",
       "chance": 60,
@@ -198,8 +198,8 @@
     "road": {
       "bg": "fukono_3",
       "links": {
-        "{rb}深野橋{/rb}{rt}ふこのばし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "Kari005",
-        "{rb}小道{/rb}{rt}こみち{/rt}を{rb}進{/rb}{rt}すす{/rt}む": "road_center"
+        "ふこのばしのほうへすすむ": "Kari005",
+        "こみちをすすむ": "road_center"
       },
       "group": "suspicious",
       "chance": 80,
@@ -211,8 +211,8 @@
     "road_center": {
       "bg": "back_dark",
       "links": {
-        "{rb}深野橋{/rb}{rt}ふこのばし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "road",
-        "{rb}自治会館{/rb}{rt}じちかいかん{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "public_hall"
+        "ふこのばしのほうへすすむ": "road",
+        "じちかいかんのほうへすすむ": "public_hall"
       },
       "group": "suspicious",
       "chance": 80,
@@ -224,8 +224,8 @@
     "a": {
       "bg": "L_area_0",
       "links": {
-        "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "b",
-        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "home_w"
+        "せんろのほうへすすむ": "b",
+        "ねやがわのほうへすすむ": "home_w"
       },
       "group": "suspicious",
       "chance": 50,
@@ -237,9 +237,9 @@
     "b": {
       "bg": "back_b",
       "links": {
-        "{rb}橋{/rb}{rt}はし{/rt}を{rb}渡{/rb}{rt}わた{/rt}る": "i",
-        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "a",
-        "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "c"
+        "はしをわたる": "i",
+        "ねやがわのほうへすすむ": "a",
+        "せんろのほうへすすむ": "c"
       },
       "group": "suspicious",
       "chance": 90,
@@ -251,8 +251,8 @@
     "c": {
       "bg": "back_river_1",
       "links": {
-        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "b",
-        "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_2"
+        "ねやがわのほうへすすむ": "b",
+        "せんろのほうへすすむ": "bunki_2"
       },
       "group": "suspicious",
       "chance": 90,
@@ -264,8 +264,8 @@
     "g": {
       "bg": "back_g",
       "links": {
-        "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "hasi2",
-        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "hasi1"
+        "せんろのほうへすすむ": "hasi2",
+        "ねやがわのほうへすすむ": "hasi1"
       },
       "group": "suspicious",
       "chance": 60,
@@ -277,8 +277,8 @@
     "hasi1": {
       "bg": "back_hasi1",
       "links": {
-        "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "g",
-        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "bunki_2"
+        "せんろのほうへすすむ": "g",
+        "ねやがわのほうへすすむ": "bunki_2"
       },
       "group": "suspicious",
       "chance": 80,
@@ -290,8 +290,8 @@
     "hasi2": {
       "bg": "back_hasi2",
       "links": {
-        "{rb}橋{/rb}{rt}はし{/rt}を{rb}渡{/rb}{rt}わた{/rt}る": "h",
-        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "g"
+        "はしをわたる": "h",
+        "ねやがわのほうへすすむ": "g"
       },
       "group": "suspicious",
       "chance": 70,
@@ -303,8 +303,8 @@
     "h": {
       "bg": "back_h",
       "links": {
-        "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "tunnel",
-        "{rb}橋{/rb}{rt}はし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "hasi2"
+        "せんろのほうへすすむ": "tunnel",
+        "はしのほうへすすむ": "hasi2"
       },
       "group": "suspicious",
       "chance": 70,
@@ -316,8 +316,8 @@
     "tunnel": {
       "bg": "back_tunnel",
       "links": {
-        "{rb}小道{/rb}{rt}こみち{/rt}を{rb}進{/rb}{rt}すす{/rt}む": "Kari006",
-        "{rb}橋{/rb}{rt}はし{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "h"
+        "こみちをすすむ": "Kari006",
+        "はしのほうへすすむ": "h"
       },
       "group": "suspicious",
       "chance": 70,
@@ -329,8 +329,8 @@
     "i": {
       "bg": "L_area_0",
       "links": {
-        "{rb}線路{/rb}{rt}せんろ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "j",
-        "{rb}橋{/rb}{rt}はし{/rt}を{rb}渡{/rb}{rt}わた{/rt}る": "b"
+        "せんろのほうへすすむ": "j",
+        "はしをわたる": "b"
       },
       "group": "suspicious",
       "chance": 80,
@@ -342,8 +342,8 @@
     "j": {
       "bg": "back_j",
       "links": {
-        "{rb}寝屋川{/rb}{rt}ねやがわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "i",
-        "{rb}緑{/rb}{rt}みどり{/rt}が{rb}丘第{/rb}{rt}おかだい{/rt}2{rb}地域広場{/rb}{rt}ちいきひろば{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "k"
+        "ねやがわのほうへすすむ": "i",
+        "みどりがおかだい2ちいきひろばのほうへすすむ": "k"
       },
       "group": "suspicious",
       "chance": 70,
@@ -355,8 +355,8 @@
     "k": {
       "bg": "back_k",
       "links": {
-        "{rb}家{/rb}{rt}いえ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "home_sw",
-        "{rb}川{/rb}{rt}かわ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "j"
+        "いえのほうへすすむ": "home_sw",
+        "かわのほうへすすむ": "j"
       },
       "group": "suspicious",
       "chance": 70,
@@ -368,8 +368,8 @@
     "Kari006": {
       "bg": "IMG20260214103954",
       "links": {
-        "{rb}家{/rb}{rt}いえ{/rt}のほうへ{rb}進{/rb}{rt}すす{/rt}む": "home_se",
-        "{rb}小道{/rb}{rt}こみち{/rt}を{rb}進{/rb}{rt}すす{/rt}む": "tunnel"
+        "いえのほうへすすむ": "home_se",
+        "こみちをすすむ": "tunnel"
       },
       "group": "suspicious",
       "chance": 70,

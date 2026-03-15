@@ -20,7 +20,7 @@ init -2 python:
         "decide"          : ("audio/se_ui_decide.mp3",        0.8),
         "cancel"          : ("audio/se_ui_cancel.mp3",        0.7),
         "good"            : ("audio/se_good.mp3",             1.0),
-        "bad"             : ("audio/se_bad.mp3",              1.0),
+        "bad"             : ("audio/ブブー、不正解.mp3",       1.0),
         "buzzer"          : ("audio/buzzer.mp3",              1.0),
         "minigame_start"  : ("audio/se_ui_decide.mp3",        0.9),
         "minigame_hit"    : ("audio/se_ui_decide.mp3",        0.6),

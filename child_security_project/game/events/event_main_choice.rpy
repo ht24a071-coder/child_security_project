@@ -1,5 +1,5 @@
 
-# 共通選択肢フレームワーク
+# 共通せんたく肢フレームワーク
 label event_main_choice(human_type):
 
     # officer player woman stranger
@@ -19,7 +19,7 @@ label event_main_choice(human_type):
             call expression greeting_is from _call_expression_2
 
         "（ぼうはんブザーを にぎる）":
-            "{i}{rb}防犯{/rb}{rt}ぼうはん{/rt}ブザーが{rb}激{/rb}{rt}はげ{/rt}しく{rb}鳴{/rb}{rt}な{/rt}る！{/i}"
+            "{i}ぼうはんブザーがはげしくなる！{/i}"
             $ buzzer_eve = "Buzzer_" + human_type
             call expression buzzer_eve from _call_expression_3
 

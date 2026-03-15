@@ -1,10 +1,11 @@
 # =============================================================================
-# 不審者イベント：車に乗せようとする（断っても強引なパターンあり）
+# ふしんしゃイベント：くるまに乗せようとする（断っても強引なパターンあり）
 # =============================================================================
 
 label suspi_e_car:
 
     $ setup_stranger()
+    # play music "audio/Pinch!!.mp3" fadein 1.0  # 削除：ここではまだ流さない
     "くるまが ゆっくり ちかづいてきた。"
     
     "まどが あいて、なかから ひとが こえを かけてきた。"
@@ -17,16 +18,17 @@ label suspi_e_car:
         "（[current_trait] ひとのようだ。）"
     
     if game_mode == "going_home":
-        $ play_voice("001")
+        $ play_voice("kaeri")
         stranger "ねえ、きみ、がっこうの かえり？"
     else:
-        $ play_voice("003")
+        $ play_voice("okuru")
         stranger "ねえ、きみ、がっこうに いくの？"
     
     # まず挨拶への反応
     menu:
-        "はい、そうです":
-            pc "はい..."
+        "はい、なんですか？":
+            $ play_se("decide")
+            pc "はい、なんですか？"
             stranger "そうか、そうか。"
         
         "...（むしする）":
@@ -36,6 +38,7 @@ label suspi_e_car:
     $ play_voice("002")
     $ s_text = get_commute_text("おうちまで おくってあげようか？", "がっこうまで おくってあげようか？")
     stranger "[s_text]"
+    $ player_destination = get_commute_text("かえれ", "いけ")
     stranger "くるまの ほうが はやいよ？"
 
     menu:
@@ -46,6 +49,7 @@ label suspi_e_car:
             jump .refuse_car
         
         "（にげる）":
+            $ play_se("decide")
             jump .run_away_car
         
         "ぼうはんブザーを ならす":
@@ -72,14 +76,15 @@ label .refuse_car:
     $ player_destination = get_commute_text("かえれ", "いけ")
     pc "だいじょうぶです。じぶんで [player_destination]ますから。"
     
-    # かならず強引な手段に出る
+    # かならずごういんなてだんにでる
     jump .forceful_attempt
 
 # -----------------------------------------------------------------------------
 # 強引に乗せようとしてくるパターン
 # -----------------------------------------------------------------------------
 label .forceful_attempt:
-    stranger "えー、いいから いいから！"
+    play music "audio/Pinch!!.mp3" fadein 1.0 # ここで流す！
+    stranger "いいから のりなよ！"
     stranger "ちょっとだけだから！"
     
     "ふしんしゃが くるまから おりてきた！"
@@ -93,13 +98,13 @@ label .forceful_attempt:
         "にげる":
             jump .forceful_run
 
-# 大声を出す
+# おおごえを出す
 label .forceful_shout:
     pc "「たすけてーーー！！」"
     
     "（ほんとうに おおきな こえを だそう！）"
     
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
 
@@ -119,7 +124,7 @@ label .forceful_shout:
         "ふしんしゃは くるまに のって にげていった！"
         hide stranger with dissolve
         
-        # 助けに来る人をランダム決定
+        # 助けに来るひとをランダムけってい
         $ is_officer = renpy.random.choice([True, False])
         
         if is_officer:
@@ -134,13 +139,13 @@ label .forceful_shout:
             teacher "どうしたの！？ だいじょうぶ！？"
             pc "くるまに のせられそうに...！"
             teacher "こわかったわね！よく おおごえを だせたわね！"
-            teacher "先生から おまわりさんに れんらくしておくわね。"
+            teacher "せんせいから おまわりさんに れんらくしておくわね。"
             hide teacher with dissolve
         
         call show_feedback("shout_success") from _call_fb_car_2
         return
     else:
-        # 失敗 -> ブザーチャンス
+        # しっぱい -> ブザーチャンス
         call fallback_buzzer_sequence from _call_fallback_buzzer_sequence
         if _return == "success":
             $ update_score(15)
@@ -148,11 +153,11 @@ label .forceful_shout:
         else:
             jump .car_gameover
 
-# 逃げる
+# にげる
 label .forceful_run:
     pc "（にげなきゃ！）"
     
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
 
@@ -183,7 +188,7 @@ label .forceful_run:
         call show_feedback("run_success_car") from _call_fb_car_3
         return
     else:
-        # 失敗 -> ブザーチャンス
+        # しっぱい -> ブザーチャンス
         call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_1
         if _return == "success":
             $ update_score(15)
@@ -195,22 +200,22 @@ label .car_repelled_buzzer:
     "ふしんしゃは ブザーの おとに おどろいて にげていった！"
     hide stranger with dissolve
     
-    # 助けに来る人をランダム決定
+    # 助けに来るひとをランダムけってい
     $ is_officer = renpy.random.choice([True, False])
     
     if is_officer:
         show officer with dissolve
         officer "どうしたの！？ だいじょうぶ！？"
         pc "くるまに のせられそうに...！"
-        officer "こわかったね！よく ブザーを ならせたね！"
+        officer "こわかったね！よく ブザーを ならせて えらかったね！"
         hide officer with dissolve
     else:
         show teacher with dissolve
         teacher "どうしたの！？ だいじょうぶ！？"
         pc "くるまに のせられそうに...！"
-        teacher "こわかったわね！よく ブザーを ならせたわね！"
+        teacher "こわかったわね！よく ブザーを ならせわね！"
         hide teacher with dissolve
-
+    
     return
 
 label .car_gameover:
@@ -223,14 +228,14 @@ label .car_gameover:
 
 
 # -----------------------------------------------------------------------------
-# 逃げるルート
+# にげるルート
 # -----------------------------------------------------------------------------
 label .run_away_car:
     pc "（にげよう！）"
     
     $ update_score(15)
     
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
 
@@ -255,7 +260,7 @@ label .run_away_car:
     return
 
 # -----------------------------------------------------------------------------
-# 防犯ブザールート
+# ぼうはんブザールート
 # -----------------------------------------------------------------------------
 label .buzzer_car:
     play audio "audio/buzzer.mp3"

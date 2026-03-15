@@ -1,5 +1,5 @@
 init -1 python:
-    # バーが左右に動くタイプ（タイミング・脱出）の共通ロジック
+    # バーがひだりみぎに動くタイプ（タイミング・脱出）の共通ロジック
     class MovingBarMinigame(BaseMinigame):
         def __init__(self, speed=2.0, target_range=30, width=600, height=100, bar_width=20, **kwargs):
             super(MovingBarMinigame, self).__init__(**kwargs)
@@ -60,11 +60,11 @@ screen timing_minigame(game):
     if not game.started:
         use minigame_intro_overlay(game)
     else:
-        # ゲーム本編
+        # ゲームほん編
         add Solid("#000000AA")
 
         # ---------------------------------------------------------------
-        # 背景アニメーション（集中・リズム感 / 青・紫系）
+        # 背景アニメーション（集なか・リズム感 / 青・紫系）
         # ---------------------------------------------------------------
         # 背景に浮かぶ大きな円（パルス）
         add Solid("#1a0066", xsize=500, ysize=500):
@@ -74,7 +74,7 @@ screen timing_minigame(game):
             align (0.5, 0.5)
             at mg_bg_pulse(delay=0.5, lo=0.9, hi=1.05, period=2.4)
 
-        # 上部・下部を流れる光の帯
+        # うえ部・した部を流れるひかりの帯
         add Solid("#3300ff", xsize=1280, ysize=4) alpha 0.25:
             align (0.5, 0.15)
             at mg_bg_drift(delay=0.0, dist=60, period=3.5)
@@ -88,7 +88,7 @@ screen timing_minigame(game):
             align (0.5, 0.85)
             at mg_bg_drift(delay=1.8, dist=-50, period=3.2)
 
-        # 左右に浮遊する菱形（装飾）
+        # ひだりみぎに浮遊する菱かたち（装飾）
         add Solid("#220066", xsize=60, ysize=60) rotate 45 alpha 0.3:
             align (0.1, 0.3)
             at mg_bg_float(delay=0.0, amp=20)

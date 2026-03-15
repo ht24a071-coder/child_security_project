@@ -5,7 +5,7 @@ screen ranking_menu():
     add "images/title.png":
         xysize (config.screen_width, config.screen_height)
     
-    # 画面全体を暗くする
+    # 画面全からだを暗くする
     add Solid("#00000080")
 
     # メインウィンドウ
@@ -15,7 +15,7 @@ screen ranking_menu():
         padding (40, 40)
         background Solid("#ffffffcc")
 
-        # --- コンテンツエリア（上部） ---
+        # --- コンテンツエリア（うえ部） ---
         vbox:
             spacing 20
             xfill True
@@ -29,7 +29,7 @@ screen ranking_menu():
                 outlines [(3, "#fff", 0, 0)]
 
             # リスト表示エリア
-            # ★高さを350にして、下のボタンと被らないようにしています
+            # ★高さを350にして、したのボタンと被らないようにしています
             viewport:
                 scrollbars "vertical"
                 mousewheel True
@@ -54,7 +54,7 @@ screen ranking_menu():
                         for i, record in enumerate(persistent.ranking_list):
                             $ rank = i + 1
                             
-                            # 順位ごとの色分け
+                            # 順位ごとのいろふんけ
                             if rank == 1:
                                 $ rank_color = "#FFD700"
                             elif rank == 2:
@@ -88,7 +88,7 @@ screen ranking_menu():
                                             yalign 0.5
                                             zoom 0.5
 
-                                    # 名前と二つ名
+                                    # なまえと二つ名
                                     vbox:
                                         yalign 0.5
                                         text record['name']:
@@ -96,7 +96,7 @@ screen ranking_menu():
                                             color "#333"
                                             bold True
 
-                                    # 右寄せスペース
+                                    # みぎ寄せスペース
                                     null width 1.0
 
                                     # スコア
@@ -107,11 +107,11 @@ screen ranking_menu():
                                         yalign 0.5
                                         text_align 1.0
 
-        # --- ボタンエリア（vboxの外に出して固定配置） ---
+        # --- ボタンエリア（vboxのそとに出して固定配置） ---
         
-        # 戻るボタン（中央下）
-        # align (0.5, 1.0) で、フレームの一番下に固定されます
-        textbutton "戻る":
+        # もどるボタン（なか央した）
+        # align (0.5, 1.0) で、フレームのいちばんしたに固定されます
+        textbutton "もどる":
             action Return()
             align (0.5, 1.0)
             text_size 40

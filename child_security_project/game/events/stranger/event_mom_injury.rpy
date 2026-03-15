@@ -1,5 +1,5 @@
 # =============================================================================
-# 不審者イベント：お母さんが怪我したから来て
+# ふしんしゃイベント：おかあさんが怪我したから来て
 # =============================================================================
 
 label suspi_e_mom_injury:
@@ -11,7 +11,7 @@ label suspi_e_mom_injury:
     if current_trait:
         "（[current_trait] ひとのようだ。）"
     
-    $ play_voice("003")
+    $ play_voice() # おかあさんの怪我という緊急性はセリフで表現し、ボイスは標準的なものを使用
     stranger "ねえ、キミ！たいへんだよ！"
     stranger "キミの おかあさんが けがをして びょういんに はこばれたんだ！"
 
@@ -20,23 +20,27 @@ label suspi_e_mom_injury:
     stranger "そうなんだ！いまから くるまで びょういんに つれていってあげるよ！"
     stranger "さあ、はやく のって！"
     
-    # 選択肢
+    # せんたく肢
     menu:
         "くるまに のる":
+            $ play_se("decide")
             jump .get_in_car_mom
         
         "のらない":
+            $ play_se("decide")
             jump .refuse_car_mom
         
         "ぼうはんブザーを ならす":
+            $ play_se("decide")
             jump .buzzer_car_mom
             
         "むしして にげる":
+            $ play_se("decide")
             $ update_score(20, "むしして にげた")
-            jump .forceful_run_mom
+            jump .forceful_run_mom_dash
             
 # -----------------------------------------------------------------------------
-# 車に乗る（GAME OVER）
+# くるまに乗る（GAME OVER）
 # -----------------------------------------------------------------------------
 label .get_in_car_mom:
     pc "ママが しんぱいだ...！"
@@ -52,7 +56,7 @@ label .get_in_car_mom:
     jump game_over
 
 # -----------------------------------------------------------------------------
-# のらない（正しい判断）
+# のらない（ただしい判断）
 # -----------------------------------------------------------------------------
 label .refuse_car_mom:
     $ update_score(15, "はっきりと ことわった")
@@ -64,24 +68,27 @@ label .refuse_car_mom:
     pc "せんせいや パパに れんらくしますから！"
     
     # --- ここから執拗な勧誘 ---
+    play music "audio/Pinch!!.mp3" fadein 1.0 # ここで流す！
     stranger "いいから こいよ！"
     "ふしんしゃは うでを つかもうとしてきた！"
     
     menu:
         "おおごえを だす":
-            jump .forceful_mom_shout 
+            $ play_se("decide")
+            jump .forceful_run_mom_shout 
         
         "にげる":
-            jump .forceful_mom_run
+            $ play_se("decide")
+            jump .forceful_run_mom_dash
 
-label .forceful_mom_shout:
-    # 大声ミニゲーム
+label .forceful_run_mom_shout:
+    # おおごえミニゲーム
     window hide
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
     
-    # 難易度調整: 閾値0.6, 制限時間8秒
+    # 難易度調整: 閾値0.6, 制限じかん8びょう
     $ shout_game = ShoutMinigame(threshold=0.6, duration=8.0)
     call screen shout_minigame(shout_game)
     hide screen shout_minigame
@@ -100,19 +107,19 @@ label .forceful_mom_shout:
         else:
                 jump .escape_fail_mom
 
-label .forceful_mom_run:
-    # 連打ミニゲーム
+label .forceful_run_mom_dash:
+    # れんだミニゲーム
     window hide
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
     
-    # 難易度調整: 15回/5秒
+    # 難易度調整: 15回/5びょう
     $ game = MashingMinigame(
         target_count=15, 
         time_limit=5.0, 
         title="にげろ", 
-        text="ボタンを連打して\nダッシュしろ！"
+        text="ボタンをれんだして\nダッシュしろ！"
     )
     call screen mashing_minigame(game)
     
@@ -124,14 +131,14 @@ label .forceful_mom_run:
     if _return == "perfect" or _return == "good":
         jump .escape_success_mom_run
     else:
-                call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_12
-                if _return == "success":
-                     jump .escape_success_mom_buzzer
-                else:
-                     jump .escape_fail_mom
+        call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_12
+        if _return == "success":
+            jump .escape_success_mom_buzzer
+        else:
+            jump .escape_fail_mom
 
 label .escape_success_mom_shout:
-    # 大声成功
+    # おおごえせいこう
     $ update_score(25, "おおごえで げきたい")
     pc "やめてー！！"
     "ふしんしゃの てを ふりほどいて にげだした！"
@@ -142,64 +149,63 @@ label .escape_success_mom_shout:
     jump .escape_rescued_mom
 
 label .escape_success_mom_run:
-    # 逃走成功
+    # 逃走せいこう
     $ update_score(15, "なんとか にげきった")
     "なんとか にげきった！"
     
     stranger "チッ...！"
     "ふしんしゃは にげていった。"
     call hide_stranger_wrapper(dissolve) from _call_hide_stranger_wrapper_run
-    jump .escape_rescued_mom
-
 label .escape_rescued_mom:
+    hide stranger with dissolve
     
-    # 助けに来る人をランダム決定
+    # 助けに来るひとをランダムけってい
     $ is_officer = renpy.random.choice([True, False])
     
     if is_officer:
-         show officer with dissolve
-         officer "どうしたの！？"
-         pc "しらない ひとに つれていかれそうに..."
-         officer "こわかったね！よく がんばったね！"
-         hide officer with dissolve
+        show officer with dissolve
+        officer "どうしたの！？"
+        pc "しらない ひとに つれていかれそうに..."
+        officer "こわかったね！よく がんばったね！"
+        hide officer with dissolve
     else:
-         show teacher with dissolve
-         teacher "どうしたの！？"
-         pc "しらない ひとに つれていかれそうに..."
-         teacher "こわかったわね！よく がんばったわね！"
-         hide teacher with dissolve
+        show teacher with dissolve
+        teacher "どうしたの！？"
+        pc "しらない ひとに つれていかれそうに..."
+        teacher "こわかったわね！よく がんばったわね！"
+        hide teacher with dissolve
     
     call show_feedback("escape_success_mom") from _call_fb_mom_2
     return
 
 label .escape_success_mom_buzzer:
-    # ブザー成功時
+    # ブザーせいこうじ
     $ update_score(15, "ぼうはんブザーで げきたい")
     "ピピピピピ！！"
     stranger "うわっ、なんだ！！"
     "ふしんしゃは あわてて にげだした！"
     hide stranger with dissolve
     
-    # 助けに来る人をランダム決定
+    # 助けに来るひとをランダムけってい
     $ is_officer = renpy.random.choice([True, False])
     
     if is_officer:
-         show officer with dissolve
-         officer "だいじょうぶ！？"
-         pc "しらないひとに つれていかれそうになって..."
-         officer "ブザーを ならせて えらかったね！"
-         hide officer with dissolve
+        show officer with dissolve
+        officer "だいじょうぶ！？"
+        pc "しらないひとに つれていかれそうになって..."
+        officer "ブザーを ならせて えらかったね！"
+        hide officer with dissolve
     else:
-         show teacher with dissolve
-         teacher "だいじょうぶ！？"
-         pc "しらないひとに つれていかれそうになって..."
-         teacher "ブザーを ならせて えらかったわね！"
-         hide teacher with dissolve
+        show teacher with dissolve
+        teacher "だいだいじょうぶ！？"
+        pc "しらないひとに つれていかれそうになって..."
+        teacher "ブザーを ならせて えらかったわね！"
+        hide teacher with dissolve
 
     return
 
 label .escape_fail_mom:
-    # 逃走失敗 -> 連れ去り
+    # 逃走しっぱい -> 連れ去り
     pc "はなしてよー！"
     stranger "うるさい！ くるまに のるんだ！"
     
@@ -208,7 +214,7 @@ label .escape_fail_mom:
     jump game_over
 
 # -----------------------------------------------------------------------------
-# 防犯ブザー（大正解）
+# ぼうはんブザー（大正解）
 # -----------------------------------------------------------------------------
 label .buzzer_car_mom:
     play audio "audio/buzzer.mp3"
@@ -230,7 +236,7 @@ label .buzzer_car_mom:
         pc "おかあさんが けがをしたって..."
         teacher "それは うそかもしれないよ。おうちのひとに でんわしてみようか？"
         
-        "（かくにんしたら、ママは 元気でした）"
+        "（かくにんしたら、ママは げんきでした）"
         
         teacher "よかったね！あやしいと おもったら すぐ ブザーだね！"
         hide teacher with dissolve
@@ -240,7 +246,7 @@ label .buzzer_car_mom:
         pc "おかあさんが けがをしたって..."
         officer "それは うそかもしれないよ。おうちのひとに でんわしてみようか？"
         
-        "（かくにんしたら、ママは 元気でした）"
+        "（かくにんしたら、ママは げんきでした）"
         
         officer "よかったね！あやしいと おもったら すぐ ブザーだね！"
         hide officer with dissolve

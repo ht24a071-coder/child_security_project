@@ -83,11 +83,11 @@ style frame:
 ################################################################################
 
 
-## Say（発話）スクリーン ################################################################
+## Say（発はなし）スクリーン ################################################################
 ##
 ## Say スクリーンはプレイヤーにダイアローグ（台詞）を表示するのに使います。
-## who、what の二つのパラメーターをとり、who は発話しているキャラクターの名前、
-## what は表示されるテキストを意味します。（キャラクターの名前がない場合 who は
+## who、what の二つのパラメーターをとり、who は発はなししているキャラクターのなまえ、
+## what は表示されるテキストを意味します。（キャラクターのなまえがない場合 who は
 ## None になります）
 ##
 ## このスクリーンは、テキストを表示するために "what" のＩＤを持つ text
@@ -102,9 +102,9 @@ screen say(who, what):
     button:
         id "window"
         action Return() # クリックで読み進める
-        key_events True # キー入力を受け付ける（誤操作防止）
+        key_events True # キー入ちからを受け付ける（誤操作防止）
         
-        # ホバー状態の監視（CTCアイコンの色変更用）
+        # ホバー状態の監視（CTCアイコンのいろ変更用）
         hovered SetVariable("is_window_hovered", True)
         unhovered SetVariable("is_window_hovered", False)
 
@@ -119,15 +119,15 @@ screen say(who, what):
         text what id "what"
 
 
-    ## サイドイメージ（テキストボックス横に表示するイメージ）があれば、テキス
-    ## トの上に表示します。ただし variant（画面のタイプ）が phone の場合は、スペ
-    ## ースが足りないので表示しません。
+    ## サイドイメージ（テキストボックスよこに表示するイメージ）があれば、テキス
+    ## トのうえに表示します。ただし variant（画面のタイプ）が phone の場合は、スペ
+    ## ースがあしりないので表示しません。
     if not renpy.variant("small"):
-        # アイコンを少し内側・上側に移動してUI内に収める
+        # アイコンをすこし内側・うえ側に移動してUI内に収める
         add SideImage() xalign 0.0 yalign 1.0 xoffset 120 yoffset -120
 
 
-## namebox を Character オブジェクトから使えるスタイルの接頭辞として追加しま
+## namebox を Character オブジェクトから使えるスタイルの接あたま辞として追加しま
 ## す。（例：namebox_background)
 init python:
     config.character_id_prefixes.append('namebox')
@@ -158,7 +158,7 @@ style window:
     # 背景画像にホバー演出（明るくなる）を適用
     background At(Image("gui/textbox.png", xalign=0.5, yalign=1.0), window_hover_brighten)
     
-    # マウスカーソルをボタン（指）に変える
+    # マウスカーソルをボタン（ゆび）に変える
     hover_mouse "button"
 
 style namebox:
@@ -185,10 +185,10 @@ style say_dialogue:
 
     adjust_spacing False
 
-## Input（入力）スクリーン ##############################################################
+## Input（入ちから）スクリーン ##############################################################
 ##
 ## renpy.input を表示するのに使うスクリーンです。prompt のパラメーターは、プロ
-## ンプト（入力ボックスの隣に表示されるテキスト）を表示するのに使います。
+## ンプト（入ちからボックスの隣に表示されるテキスト）を表示するのに使います。
 ##
 ## このスクリーンは input のパラメーター を受け付けるために "input" をＩＤに持
 ## つ input displayable を作成する必要があります。
@@ -220,10 +220,10 @@ style input:
     xmaximum gui.dialogue_width
 
 
-## Choice（選択）スクリーン #############################################################
+## Choice（せんたく）スクリーン #############################################################
 ##
-## このスクリーンは、ゲーム内の選択肢を表示する menu ステートメントに使います。
-## items のパラメーターは caption（選択肢のテキスト）と action（クリック時の実
+## このスクリーンは、ゲーム内のせんたく肢を表示する menu ステートメントに使います。
+## items のパラメーターは caption（せんたく肢のテキスト）と action（クリックじの実
 ## 行内容）を要素に持つオブジェクトのリスト（配列）です。
 ##
 ## https://ja.renpy.org/doc/html/screen_special.html#choice
@@ -255,27 +255,27 @@ style choice_button is default:
 
 style choice_button_text is default:
     properties gui.text_properties("choice_button")
-    # ルビを含むテキスト全体にアウトラインを追加
+    # ルビを含むテキスト全からだにアウトラインを追加
     outlines [(1, "#000000", 0, 0)]
 
 
-## Quick Menu（クイックメニュー）スクリーン ###################################################
+## Quick Menu（クイックめにゅー）スクリーン ###################################################
 ##
-## クイックメニューはゲーム中に常時表示されるスクリーンで、ゲーム外の機能に素
+## クイックめにゅーはゲームなかに常じ表示されるスクリーンで、ゲームそとの機能に素
 ## 早くアクセスすることができます。
 
 screen quick_menu():
 
-    ## 他のスクリーンの上に表示する。
+    ## 他のスクリーンのうえに表示する。
     zorder 100
 
-    # クイックメニューの表示切り替え
+    # クイックめにゅーの表示切り替え
     # key "pad_left_shoulder" action ToggleVariable("show_quick_menu") # L1は無効化（誤操作防止）
     # key "pad_y_press" action ToggleVariable("show_quick_menu") # Yボタンはマップ呼び出し（def_minimap.rpy）に譲る
     key "K_TAB" action ToggleVariable("show_quick_menu")
     
-    # 誤操作防止のため、LRボタンでのロールバック/スキップを無効化したい場合はここで上書き
-    # ただしグローバルなkeymap変更の方が確実ですが、スクリーン表示中だけでも効果あり
+    # 誤操作防止のため、LRボタンでのロールバック/スキップを無効化したい場合はここでうえ書き
+    # ただしグローバルなkeymap変更のかたが確実ですが、スクリーン表示なかだけでも効果あり
     key "pad_left_shoulder" action NullAction()
     key "pad_right_shoulder" action NullAction()
 
@@ -292,11 +292,11 @@ screen quick_menu():
             textbutton _("セーブ") action [SoundAction("decide"), ShowMenu('save')] hovered SoundAction("hover")
             textbutton _("Q.セーブ") action [SoundAction("decide"), QuickSave()] hovered SoundAction("hover")
             textbutton _("Q.ロード") action [SoundAction("decide"), QuickLoad()] hovered SoundAction("hover")
-            textbutton _("設定") action [SoundAction("decide"), ShowMenu('preferences')] hovered SoundAction("hover")
+            textbutton _("せってい") action [SoundAction("decide"), ShowMenu('preferences')] hovered SoundAction("hover")
 
 
 ## 次のコードは、プレイヤーが明示的にインターフェースを隠さない限り quick_menu
-## スクリーンが常にゲーム中に表示されるようにしています。
+## スクリーンが常にゲームなかに表示されるようにしています。
 init python:
     config.overlay_screens.append("quick_menu")
 
@@ -304,7 +304,7 @@ init python:
 ################################################################################
 ## コントローラーボタンガイド
 ################################################################################
-## コントローラー接続時に画面下部にボタン操作ガイドを表示します。
+## コントローラー接続じに画面した部にボタン操作ガイドを表示します。
 
 screen controller_guide():
     zorder 101
@@ -320,7 +320,7 @@ screen controller_guide():
                     hbox:
                         spacing 5
                         text "Ⓐ" size 26 color "#4FC3F7" yoffset 3 font gui.interface_text_font
-                        text "決定/送る" size 22 color "#ddd"
+                        text "けってい/送る" size 22 color "#ddd"
 
                     hbox:
                         spacing 5
@@ -330,7 +330,7 @@ screen controller_guide():
                     hbox:
                         spacing 5
                         text "Ⓐ" size 26 color "#4FC3F7" yoffset 3 font gui.interface_text_font
-                        text "決定/送る" size 22 color "#ddd"
+                        text "けってい/送る" size 22 color "#ddd"
 
                     hbox:
                         spacing 5
@@ -343,7 +343,7 @@ screen controller_guide():
                     text "移動" size 22 color "#ddd"
 
 init python:
-    # コントローラーの誤操作防止設定
+    # コントローラーの誤操作防止せってい
     # ロールバックとスキップをL/Rから削除
     if "pad_left_shoulder" in config.keymap["rollback"]:
         config.keymap["rollback"].remove("pad_left_shoulder")
@@ -354,12 +354,12 @@ init python:
     if "pad_b_press" in config.keymap["hide_windows"]:
         config.keymap["hide_windows"].remove("pad_b_press")
 
-    # Bボタンを "game_menu"（メニューを開く・戻る）に割り当てる
+    # Bボタンを "game_menu"（めにゅーを開く・もどる）に割り当てる
     if "pad_b_press" not in config.keymap["game_menu"]:
         config.keymap["game_menu"].append("pad_b_press")
 
     # テキスト送りのフォーカス問題対策
-    # マウス操作時にウィンドウ外クリックでも進むようにする
+    # マウス操作じにウィンドウそとクリックでもすすむようにする
     config.disable_input = False
 
 
@@ -393,12 +393,12 @@ style quick_button_text:
 
 
 ################################################################################
-## メインメニュースクリーンとゲームメニュースクリーン
+## メインめにゅースクリーンとゲームめにゅースクリーン
 ################################################################################
 
 ## Navigation（ナビゲーション）スクリーン ####################################################
 ##
-## このスクリーンはメインメニューとゲームメニューに表示され、各メニュー間を移
+## このスクリーンはメインめにゅーとゲームめにゅーに表示され、各めにゅー間を移
 ## 動したり、ゲームをスタートしたりする機能を提供しています。
 
 screen navigation():
@@ -423,15 +423,15 @@ screen navigation():
 
         textbutton _("ロード") action [SoundAction("decide"), ShowMenu("load")] hovered SoundAction("hover")
 
-        textbutton _("環境設定") action [SoundAction("decide"), ShowMenu("preferences")] hovered SoundAction("hover")
+        textbutton _("環境せってい") action [SoundAction("decide"), ShowMenu("preferences")] hovered SoundAction("hover")
 
         if _in_replay:
 
-            textbutton _("リプレイ終了") action [SoundAction("cancel"), EndReplay(confirm=True)] hovered SoundAction("hover")
+            textbutton _("リプレイしゅうりょう") action [SoundAction("cancel"), EndReplay(confirm=True)] hovered SoundAction("hover")
 
         elif not main_menu:
 
-            textbutton _("メインメニュー") action [SoundAction("cancel"), MainMenu()] hovered SoundAction("hover")
+            textbutton _("メインめにゅー") action [SoundAction("cancel"), MainMenu()] hovered SoundAction("hover")
 
         textbutton _("バージョン情報") action [SoundAction("decide"), ShowMenu("about")] hovered SoundAction("hover")
 
@@ -442,9 +442,9 @@ screen navigation():
 
         if renpy.variant("pc"):
 
-            ## 終了ボタンはiOSでは使用できません。また、AndroidやWebでは必要あ
+            ## しゅうりょうボタンはiOSでは使用できません。また、AndroidやWebでは必要あ
             ## りません。
-            textbutton _("終了") action [SoundAction("cancel"), Quit(confirm=not main_menu)] hovered SoundAction("hover")
+            textbutton _("しゅうりょう") action [SoundAction("cancel"), Quit(confirm=not main_menu)] hovered SoundAction("hover")
 
 
 style navigation_button is gui_button
@@ -459,24 +459,24 @@ style navigation_button_text:
     properties gui.text_properties("navigation_button")
 
 
-## Main Menu（メインメニュー）スクリーン #####################################################
+## Main Menu（メインめにゅー）スクリーン #####################################################
 ##
-## Ren'Py が起動した時に表示されるメインメニューを表示するスクリーンです。
+## Ren'Py が起動したじに表示されるメインめにゅーを表示するスクリーンです。
 ##
 ## https://ja.renpy.org/doc/html/screen_special.html#main-menu
 
 ################################################################################
-## 【準備】丸いボタンの素材（サイズをボタン本体に合わせました：180px）
+## 【じゅんび】丸いボタンの素材（サイズをボタンほんからだに合わせました：180px）
 ################################################################################
-# ピンクのボタン（開始）
+# ピンクのボタン（かいし）
 image bg_circle_pink_idle = Text("●", size=180, color="#FFAB91")
 image bg_circle_pink_hover = Text("●", size=180, color="#FFCCBC")
 
-# 水色のボタン（ランキング）
+# みずいろのボタン（ランキング）
 image bg_circle_blue_idle = Text("●", size=180, color="#81D4FA")
 image bg_circle_blue_hover = Text("●", size=180, color="#B3E5FC")
 
-## コントローラー操作時のフォーカス視認性向上用Transform
+## コントローラー操作じのフォーカス視認性向うえ用Transform
 transform button_hover_pop:
     on hover:
         easein 0.1 zoom 1.15
@@ -500,7 +500,7 @@ screen main_menu():
         align (0.5, 0.75)
         spacing 60
 
-        # --- 登校ボタン ---
+        # --- とうこうボタン ---
         button:
             at button_hover_pop
             action [SoundAction("decide"), Start("going_school_start")]
@@ -516,9 +516,9 @@ screen main_menu():
                 align (0.5, 0.5)
                 spacing 0
                 text "🎒" size 70 xalign 0.5 color "#fff" 
-                text "{rb}登校{/rb}{rt}とうこう{/rt}する" size 24 xalign 0.5 color "#fff" bold True outlines [(2, "#FF7043", 0, 0)]
+                text "とうこうする" size 24 xalign 0.5 color "#fff" bold True outlines [(2, "#FF7043", 0, 0)]
 
-        # --- 下校ボタン ---
+        # --- げこうボタン ---
         button:
             at button_hover_pop
             action [SoundAction("decide"), Start("going_home_start")]
@@ -534,7 +534,7 @@ screen main_menu():
                 align (0.5, 0.5)
                 spacing 0
                 text "🏠" size 70 xalign 0.5 color "#fff" 
-                text "{rb}下校{/rb}{rt}げこう{/rt}する" size 24 xalign 0.5 color "#fff" bold True outlines [(2, "#FF7043", 0, 0)]
+                text "げこうする" size 24 xalign 0.5 color "#fff" bold True outlines [(2, "#FF7043", 0, 0)]
 
         # --- ランキングボタン ---
         button:
@@ -554,7 +554,7 @@ screen main_menu():
                 text "👑" size 70 xalign 0.5 color "#fff"
                 text "ランキング" size 24 xalign 0.5 color "#fff" bold True outlines [(2, "#4FC3F7", 0, 0)]
 
-        # --- おおごえテストボタン ---
+        # --- おおごえてすとボタン ---
         button:
             at button_hover_pop
             action [SoundAction("decide"), Start("test_mic_minigame")]
@@ -572,7 +572,7 @@ screen main_menu():
                 text "📢" size 70 xalign 0.5 color "#fff"
                 text "おおごえ" size 22 xalign 0.5 color "#fff" bold True outlines [(2, "#4FC3F7", 0, 0)]
 
-        # --- デバッグボタン (右下) ---
+        # --- デバッグボタン (みぎした) ---
         textbutton "🐞" action [SoundAction("decide"), ShowMenu("debug_event_menu")]:
             xalign 1.0
             yalign 1.0
@@ -608,14 +608,14 @@ style main_menu_version:
     properties gui.text_properties("version")
 
 
-## Game Menu（ゲームメニュー）スクリーン #####################################################
+## Game Menu（ゲームめにゅー）スクリーン #####################################################
 ##
-## このスクリーンは、様々なゲームメニューの基本的な共通構造をレイアウトしま
-## す。各ゲームメニュースクリーンによって呼び出され、背景・現在のスクリーンタイ
+## このスクリーンは、様々なゲームめにゅーの基ほん的な共通構造をレイアウトしま
+## す。各ゲームめにゅースクリーンによって呼び出され、背景・いまのスクリーンタイ
 ## トル・ナビゲーションを表示します。
 ##
 ## scroll パラメーターは None 、"viewport" 、"vpgrid" のいずれかをとります。呼
-## び出し親のスクリーンのコンテンツは、このスクリーンの中の transclude の部分に
+## び出し親のスクリーンのコンテンツは、このスクリーンのなかの transclude の部ふんに
 ## 配置されます。
 
 screen game_menu(title, scroll=None, yinitial=0.0, spacing=0):
@@ -632,7 +632,7 @@ screen game_menu(title, scroll=None, yinitial=0.0, spacing=0):
 
         hbox:
 
-            ## 次のフレームはナビゲーションを表示するスペースを空けています。
+            ## 次のフレームはナビゲーションを表示するスペースをそらけています。
             frame:
                 style "game_menu_navigation_frame"
 
@@ -678,7 +678,7 @@ screen game_menu(title, scroll=None, yinitial=0.0, spacing=0):
 
     use navigation
 
-    textbutton _("戻る"):
+    textbutton _("もどる"):
         style "return_button"
         hovered SoundAction("hover")
         action [SoundAction("cancel"), Return()]
@@ -743,7 +743,7 @@ style return_button:
 
 ## About（バージョン情報）スクリーン #########################################################
 ##
-## このスクリーンは、本ゲームと Ren'Py に関するコピーライトとクレジットを表示
+## このスクリーンは、ほんゲームと Ren'Py に関するコピーライトとクレジットを表示
 ## します。
 ##
 ## このスクリーンは特別なことをしていません。そのためカスタムスクリーン作成の
@@ -753,9 +753,9 @@ screen about():
 
     tag menu
 
-    ## 次の use ステートメントは game_menu（ゲームメニュー）スクリーンをこのス
-    ## クリーンの内に表示しています。use 文の子（内包されたオブジェクト）の vbox
-    ## は game_menu スクリーンの中の viewport に配置されます。
+    ## 次の use ステートメントは game_menu（ゲームめにゅー）スクリーンをこのス
+    ## クリーンの内に表示しています。use 文のこ（内包されたオブジェクト）の vbox
+    ## は game_menu スクリーンのなかの viewport に配置されます。
     use game_menu(_("バージョン情報"), scroll="viewport"):
 
         style_prefix "about"
@@ -765,7 +765,7 @@ screen about():
             label "[config.name!t]"
             text _("バージョン [config.version!t]\n")
 
-            ## gui.about は、通常 options.rpy で設定します。
+            ## gui.about は、通常 options.rpy でせっていします。
             if gui.about:
                 text "[gui.about!t]\n"
 
@@ -782,7 +782,7 @@ style about_label_text:
 
 ## Load and Save（セーブ・ロード）スクリーン #################################################
 ##
-## 以下のスクリーンは、プレイヤーがゲームデータをセーブ・ロードできるようにし
+## 以したのスクリーンは、プレイヤーがゲームデータをセーブ・ロードできるようにし
 ## ます。どちらも構造はほとんど等しいため、第三の file_slots（ファイルスロット）
 ## スクリーンで実装しています。
 ##
@@ -811,7 +811,7 @@ screen file_slots(title):
 
         fixed:
 
-            ## 次の文は、ページ名の input のイベントがより後に定義したボタンよ
+            ## 次の文は、ページ名の input のイベントがよりうしろに定義したボタンよ
             ## りも優先されるように、重なり順を反転しています。
             order_reverse True
 
@@ -848,7 +848,7 @@ screen file_slots(title):
 
                         add FileScreenshot(slot) xalign 0.5
 
-                        text FileTime(slot, format=_("{#file_time}%Y年%m月%d日(%a) %H時%M分"), empty=_("空のスロット")):
+                        text FileTime(slot, format=_("{#file_time}%Yとし%mつき%dひ(%a) %Hじ%Mふん"), empty=_("そらのスロット")):
                             style "slot_time_text"
 
                         text FileSaveName(slot):
@@ -877,7 +877,7 @@ screen file_slots(title):
                     if config.has_quicksave:
                         textbutton _("{#quick_page}Q") action FilePage("quick")
 
-                    ## range(1, 10) は１から９までの数字を生成します。
+                    ## range(1, 10) は１から９までのすうじを生成します。
                     for page in range(1, 10):
                         textbutton "[page]" action FilePage(page)
 
@@ -928,9 +928,9 @@ style slot_button_text:
     properties gui.text_properties("slot_button")
 
 
-## Preferences（環境設定）スクリーン ######################################################
+## Preferences（環境せってい）スクリーン ######################################################
 ##
-## Preferences スクリーンは、各プレイヤーがゲームを自分に合う環境にカスタマイ
+## Preferences スクリーンは、各プレイヤーがゲームを自ふんに合う環境にカスタマイ
 ## ズできるようにします。
 ##
 ## https://ja.renpy.org/doc/html/screen_special.html#preferences
@@ -939,7 +939,7 @@ screen preferences():
 
     tag menu
 
-    use game_menu(_("環境設定"), scroll="viewport"):
+    use game_menu(_("環境せってい"), scroll="viewport"):
 
         vbox:
 
@@ -958,15 +958,15 @@ screen preferences():
                     style_prefix "check"
                     label _("スキップ")
                     textbutton _("未読テキスト") action Preference("skip", "toggle")
-                    textbutton _("選択肢後") action Preference("after choices", "toggle")
+                    textbutton _("せんたく肢うしろ") action Preference("after choices", "toggle")
                     textbutton _("トランジション") action InvertSelected(Preference("transitions", "toggle"))
 
-                ## この場所に "radio_pref" または "check_pref" をスタイルに持つ
-                ## vbox を追加して、開発者が定義した環境設定を増やすことができ
+                ## このばしょに "radio_pref" または "check_pref" をスタイルに持つ
+                ## vbox を追加して、開発者が定義した環境せっていを増やすことができ
                 ## ます。
                 vbox:
                     style_prefix "radio"
-                    label _("コントローラー設定")
+                    label _("コントローラーせってい")
                     textbutton _("Standard (Xbox/PS)") action [SetField(persistent, "controller_layout", "standard"), Function(update_controller_bindings)]
                     textbutton _("Nintendo (Switch)") action [SetField(persistent, "controller_layout", "nintendo"), Function(update_controller_bindings)]
 
@@ -982,37 +982,37 @@ screen preferences():
 
                     bar value Preference("text speed")
 
-                    label _("オート待ち時間")
+                    label _("オート待ちじかん")
 
                     bar value Preference("auto-forward time")
 
                 vbox:
 
                     if config.has_music:
-                        label _("音楽の音量")
+                        label _("おんがくのおと量")
 
                         hbox:
                             bar value Preference("music volume")
 
                     if config.has_sound:
 
-                        label _("効果音の音量")
+                        label _("効果おとのおと量")
 
                         hbox:
                             bar value Preference("sound volume")
 
                             if config.sample_sound:
-                                textbutton _("テスト") action Play("sound", config.sample_sound)
+                                textbutton _("てすと") action Play("sound", config.sample_sound)
 
 
                     if config.has_voice:
-                        label _("ボイスの音量")
+                        label _("ボイスのおと量")
 
                         hbox:
                             bar value Preference("voice volume")
 
                             if config.sample_voice:
-                                textbutton _("テスト") action Play("voice", config.sample_voice)
+                                textbutton _("てすと") action Play("voice", config.sample_voice)
 
                     if config.has_music or config.has_sound or config.has_voice:
                         null height gui.pref_spacing
@@ -1093,9 +1093,9 @@ style slider_vbox:
     xsize 675
 
 
-## History（履歴）スクリーン ############################################################
+## History（りれき）スクリーン ############################################################
 ##
-## このスクリーンは、ダイアローグヒストリー（台詞の履歴）を表示します。このス
+## このスクリーンは、ダイアローグヒストリー（台詞のりれき）を表示します。このス
 ## クリーンに特別なものはありませんが、_history_list に保存されたダイアローグヒ
 ## ストリーにアクセスする必要があります。
 ##
@@ -1128,8 +1128,8 @@ screen history():
                         style "history_name"
                         substitute False
 
-                        ## キャラクター名のカラーが設定されている場合、その情
-                        ## 報を獲得して色付けします。
+                        ## キャラクター名のカラーがせっていされている場合、その情
+                        ## 報を獲得していろ付けします。
                         if "color" in h.who_args:
                             text_color h.who_args["color"]
 
@@ -1141,7 +1141,7 @@ screen history():
             label _("ヒストリーはありません。")
 
 
-## 履歴画面に表示できるタグを決定します。
+## りれき画面に表示できるタグをけっていします。
 
 define gui.history_allow_tags = { "alt", "noalt", "rt", "rb", "art" }
 
@@ -1223,19 +1223,19 @@ screen keyboard_help():
 
     hbox:
         label _("エンター")
-        text _("台詞を読み進める。またはボタンを選択する。")
+        text _("台詞を読み進める。またはボタンをせんたくする。")
 
     hbox:
         label _("スペース")
-        text _("台詞を読み進める。ただしボタンは選択しない。")
+        text _("台詞を読み進める。ただしボタンはせんたくしない。")
 
     hbox:
-        label _("方向キー")
+        label _("かた向キー")
         text _("インターフェースを移動する。")
 
     hbox:
         label _("ESC")
-        text _("ゲームメニューを開く。")
+        text _("ゲームめにゅーを開く。")
 
     hbox:
         label _("Ctrl")
@@ -1247,11 +1247,11 @@ screen keyboard_help():
 
     hbox:
         label _("Page Up")
-        text _("前の台詞に戻る。")
+        text _("まえの台詞にもどる。")
 
     hbox:
         label _("Page Down")
-        text _("ロールバック中、次の台詞に進む。")
+        text _("ロールバックなか、次の台詞にすすむ。")
 
     hbox:
         label "H"
@@ -1267,56 +1267,56 @@ screen keyboard_help():
 
     hbox:
         label "Shift+A"
-        text _("アクセシビリティーメニューを開きます。")
+        text _("アクセシビリティーめにゅーを開きます。")
 
 
 screen mouse_help():
 
     hbox:
-        label _("左クリック")
-        text _("台詞を読み進める。またはボタンを選択する。")
+        label _("ひだりクリック")
+        text _("台詞を読み進める。またはボタンをせんたくする。")
 
     hbox:
-        label _("中クリック")
+        label _("なかクリック")
         text _("インターフェースを隠す。")
 
     hbox:
-        label _("右クリック")
-        text _("ゲームメニューを開く。")
+        label _("みぎクリック")
+        text _("ゲームめにゅーを開く。")
 
     hbox:
-        label _("マウスホイール上回転")
-        text _("前の台詞に戻る。")
+        label _("マウスホイールうえ回転")
+        text _("まえの台詞にもどる。")
 
     hbox:
-        label _("マウスホイール下回転")
-        text _("ロールバック中、次の台詞に進む。")
+        label _("マウスホイールした回転")
+        text _("ロールバックなか、次の台詞にすすむ。")
 
 
 screen gamepad_help():
 
     hbox:
-        label _("Ｒトリガー\nＡ／下ボタン")
-        text _("台詞を読み進める。またはボタンを選択する。")
+        label _("Ｒトリガー\nＡ／したボタン")
+        text _("台詞を読み進める。またはボタンをせんたくする。")
 
     hbox:
         label _("Ｌトリガー\nＬボタン")
-        text _("前の台詞に戻る。")
+        text _("まえの台詞にもどる。")
 
     hbox:
         label _("Ｒボタン")
-        text _("ロールバック中、次の台詞に進む。")
+        text _("ロールバックなか、次の台詞にすすむ。")
 
     hbox:
-        label _("方向パッド\n左右スティック")
+        label _("かた向パッド\nひだりみぎスティック")
         text _("インターフェースを移動する。")
 
     hbox:
         label _("スタート、ガイド、 B / Right ボタン")
-        text _("ゲームメニューを開く。")
+        text _("ゲームめにゅーを開く。")
 
     hbox:
-        label _("Ｙ／上ボタン")
+        label _("Ｙ／うえボタン")
         text _("インターフェースを隠す。")
 
     textbutton _("キャリブレート") action GamepadCalibrate()
@@ -1351,16 +1351,16 @@ style help_label_text:
 ################################################################################
 
 
-## Confirm（確認）スクリーン ############################################################
+## Confirm（かくにん）スクリーン ############################################################
 ##
 ## Confirm スクリーンは、 Ren'Py がプレイヤーに「はい・いいえ」で答える質問を
-## する時に使います。
+## するじに使います。
 ##
 ## https://ja.renpy.org/doc/html/screen_special.html#confirm
 
 screen confirm(message, yes_action, no_action):
 
-    ## 次の文は、このスクリーンが表示されている間、他のスクリーンの反応を無視
+    ## 次の文は、このスクリーンが表示されている間、他のスクリーンの反応をむし
     ## するようにしています。
     modal True
 
@@ -1388,7 +1388,7 @@ screen confirm(message, yes_action, no_action):
                 textbutton _("はい") action yes_action
                 textbutton _("いいえ") action no_action
 
-    ## 右クリックで「いいえ」と答える。
+    ## みぎクリックで「いいえ」と答える。
     key "game_menu" action no_action
 
 
@@ -1417,7 +1417,7 @@ style confirm_button_text:
 
 ## Skip indicator（スキップ表示）スクリーン #################################################
 ##
-## Skip_indicator スクリーンは、スキップ中であることを表示するスクリーンです。
+## Skip_indicator スクリーンは、スキップなかであることを表示するスクリーンです。
 ##
 ## https://ja.renpy.org/doc/html/screen_special.html#skip-indicator
 
@@ -1431,14 +1431,14 @@ screen skip_indicator():
         hbox:
             spacing 9
 
-            text _("スキップ中")
+            text _("スキップなか")
 
             text "▸" at delayed_blink(0.0, 1.0) style "skip_triangle"
             text "▸" at delayed_blink(0.2, 1.0) style "skip_triangle"
             text "▸" at delayed_blink(0.4, 1.0) style "skip_triangle"
 
 
-## 矢印を次から次へと点滅させる transform（変換）。
+## 矢印を次からつぎへと点滅させる transform（変換）。
 transform delayed_blink(delay, cycle):
     alpha .5
 
@@ -1465,14 +1465,14 @@ style skip_text:
     size gui.notify_text_size
 
 style skip_triangle:
-    ## 小さな黒い矢印型のグリフが入ったフォントが必要になります。
+    ## 小さなくろい矢印型のグリフが入ったフォントが必要になります。
     font "DejaVuSans.ttf"
 
 
 ## Notify（通知）スクリーン #############################################################
 ##
-## Notify スクリーンは、プレイヤーに短いメッセージを表示するのに使います。（例
-## えばクイックセーブをしたり、スクリーンショットを撮った時。）
+## Notify スクリーンは、プレイヤーにみじかいメッセージを表示するのに使います。（例
+## えばクイックセーブをしたり、スクリーンショットを撮ったじ。）
 ##
 ## https://ja.renpy.org/doc/html/screen_special.html#notify-screen
 
@@ -1510,7 +1510,7 @@ style notify_text:
 
 ## NVL（ノベル）スクリーン ###############################################################
 ##
-## このスクリーンは NVL モード（全画面方式）の台詞と選択肢を表示します。
+## このスクリーンは NVL モード（全画面かた式）の台詞とせんたく肢を表示します。
 ##
 ## https://ja.renpy.org/doc/html/screen_special.html#nvl
 
@@ -1523,7 +1523,7 @@ screen nvl(dialogue, items=None):
         has vbox:
             spacing gui.nvl_spacing
 
-        ## gui.nvl_height が設定されていれば vpgrid で等間隔に表示、そうでなけ
+        ## gui.nvl_height がせっていされていれば vpgrid で等間隔に表示、そうでなけ
         ## れば vbox で可変的に表示します。
         if gui.nvl_height:
 
@@ -1537,7 +1537,7 @@ screen nvl(dialogue, items=None):
 
             use nvl_dialogue(dialogue)
 
-        ## 指定されれば選択肢を表示します。config.narrator_menuがTrueだと、メ
+        ## ゆび定されればせんたく肢を表示します。config.narrator_menuがTrueだと、メ
         ## ニューは正常に表示されないでしょう。
         for i in items:
 
@@ -1567,7 +1567,7 @@ screen nvl_dialogue(dialogue):
                     id d.what_id
 
 
-## 次の文は一度に表示される NVL モードのエントリー（１台詞）の最大数を制御しま
+## 次の文は一度に表示される NVL モードのエントリー（１台詞）のさいだい数を制御しま
 ## す。
 define config.nvl_list_length = gui.nvl_list_length
 
@@ -1722,14 +1722,14 @@ define bubble.expand_area = {
 
 
 ################################################################################
-## モバイル用の別設定
+## モバイル用の別せってい
 ################################################################################
 
 style pref_vbox:
     variant "medium"
     xsize 675
 
-## マウスが使用できないので、ボタンが大きくて数が少ないクイックメニューに置き
+## マウスが使用できないので、ボタンが大きくて数が少ないクイックめにゅーに置き
 ## 換えて、タッチしやすいようにしています。
 screen quick_menu():
     variant "touch"
@@ -1745,7 +1745,7 @@ screen quick_menu():
             textbutton _("ロールバック") action Rollback()
             textbutton _("スキップ") action Skip() alternate Skip(fast=True, confirm=True)
             textbutton _("オート") action Preference("auto-forward", "toggle")
-            textbutton _("メニュー") action ShowMenu()
+            textbutton _("めにゅー") action ShowMenu()
 
 
 style window:
@@ -1832,7 +1832,7 @@ style slider_slider:
     variant "small"
     xsize 900
 
-# スロットの現在地（何番目を選んでいるか）を管理する変数
+# スロットのいまここ（なに番めを選んでいるか）を管理する変数
 default part1_index = 0
 default part2_index = 0
 default part3_index = 0
@@ -1860,7 +1860,7 @@ init python:
 
 
 ################################################################################
-## プロフィール設定スクリーン（サイズ調整済み）
+## プロフィールせっていスクリーン（サイズ調整済み）
 ################################################################################
 screen profile_setup():
     modal True
@@ -1868,36 +1868,36 @@ screen profile_setup():
     # --- 背景 ---
     use adventure_bg_v2
 
-    # --- コンテンツ全体 ---
+    # --- コンテンツ全からだ ---
     vbox:
-        align (0.5, 0.5) # 画面中央
-        spacing 15       # 全体の要素間隔を少し詰める（25 -> 15）
+        align (0.5, 0.5) # 画面なか央
+        spacing 15       # 全からだの要素間隔をすこし詰める（25 -> 15）
 
         # 1. タイトル
-        # "設定" -> "せってい"
-        text "プロフィール{rb}設定{/rb}{rt}せってい{/rt}" size 35 xalign 0.5 color "#00c603" outlines [(2, "#000", 0, 0)]
+        # "せってい" -> "せってい"
+        text "プロフィールせってい" size 35 xalign 0.5 color "#00c603" outlines [(2, "#000", 0, 0)]
 
         # 2. 二つ名スロット
         # タイトルのルビも「一括」にしてきれいにしました
-        text "{rb}名前{/rb}{rt}なまえ{/rt}（{rb}二つ名{/rb}{rt}ふたつな{/rt}）を{rb}決{/rb}{rt}き{/rt}めてください" size 26 color "#aaa" xalign 0.5
+        text "なまえ（ふたつな）をきめてください" size 26 color "#aaa" xalign 0.5
         
         hbox:
             spacing 15
             xalign 0.5
             
-            # --- 左スロット ---
+            # --- ひだりスロット ---
             vbox:
                 textbutton "▲" action Function(change_slot, 1, -1) xalign 0.5 text_size 40 text_color "#888" text_hover_color "#fff"
                 frame:
                     background Solid("#333")
                     xsize 320 ysize 80 
                     
-                    # ★ここに追加！ (yoffset 4 で少し下に下げる)
+                    # ★ここに追加！ (yoffset 4 ですこししたにしたげる)
                     text list_part1[part1_index] xalign 0.5 yalign 0.5 size 34 yoffset 4
 
                 textbutton "▼" action Function(change_slot, 1, 1) xalign 0.5 text_size 40 text_color "#888" text_hover_color "#fff"
             
-            # --- 中スロット ---
+            # --- なかスロット ---
             vbox:
                 textbutton "▲" action Function(change_slot, 2, -1) xalign 0.5 text_size 40 text_color "#888" text_hover_color "#fff"
                 frame:
@@ -1909,7 +1909,7 @@ screen profile_setup():
 
                 textbutton "▼" action Function(change_slot, 2, 1) xalign 0.5 text_size 40 text_color "#888" text_hover_color "#fff"
             
-            # --- 右スロット ---
+            # --- みぎスロット ---
             vbox:
                 textbutton "▲" action Function(change_slot, 3, -1) xalign 0.5 text_size 40 text_color "#888" text_hover_color "#fff"
                 frame:
@@ -1927,7 +1927,7 @@ screen profile_setup():
             xalign 0.5
             
             # "回" -> "まわ"
-            textbutton "🎲 ランダムで{rb}回{/rb}{rt}まわ{/rt}す":
+            textbutton "🎲 ランダムでまわす":
                 xalign 0.5
                 text_size 24
                 text_color "#4db6ac"
@@ -1937,19 +1937,19 @@ screen profile_setup():
 
         null height 10
 
-        # 3. アバター選択
-        # "選択" -> "せんたく"
-        text "アバターアイコンを{rb}選択{/rb}{rt}せんたく{/rt}" size 26 color "#aaa" xalign 0.5
+        # 3. アバターせんたく
+        # "せんたく" -> "せんたく"
+        text "アバターアイコンをせんたく" size 26 color "#aaa" xalign 0.5
         
         frame:
             xalign 0.5
-            # 横幅をさらに広げて、縦幅を減らす作戦
+            # よこ幅をさらに広げて、縦幅を減らす作戦
             xsize 1025  
-            ysize 260   # ここを減らすのが重要（350 -> 260）
+            ysize 260   # ここを減らすのがだいじ（350 -> 260）
             background Solid("#00000044")
 
             vpgrid:
-                cols 10         # 横に10個並べる（これで縦の行数が減ります）
+                cols 10         # よこに10個並べる（これで縦の行数が減ります）
                 spacing 10
                 draggable True
                 mousewheel True
@@ -1965,7 +1965,7 @@ screen profile_setup():
                         selected_background Solid("#FFD54F20")
                         selected_foreground Frame(Solid("#FFD54F90"), 3, 3)
                         
-                        xysize (90, 90) # アイコンサイズを少しだけ小さく調整
+                        xysize (90, 90) # アイコンサイズをすこしだけ小さく調整
                         
                         add icon_path:
                             align (0.5, 0.5)
@@ -1973,9 +1973,9 @@ screen profile_setup():
 
         null height 20
 
-        # 4. 決定ボタン
-        # ★修正: 漢字とルビを全部つなげました。これでバランス良く配置されます。
-        textbutton "{rb}設定完了{/rb}{rt}せっていかんりょう{/rt}":
+        # 4. けっていボタン
+        # ★修正: かんじとルビを全部つなげました。これでバランス良く配置されます。
+        textbutton "せっていかんりょう":
             xalign 0.5
             yoffset -30
             text_yoffset 8
@@ -1994,12 +1994,12 @@ screen profile_setup():
     #timer 600.0 action Quit(confirm=False)
 
 screen image_overlay(display_img, title_text="詳細情報"):
-    # 他のUIより前面に表示 (100以上を推奨)
+    # 他のUIよりまえ面に表示 (100以うえを推奨)
     zorder 150
-    # 表示中、背後のボタンなどをクリック不可にする
+    # 表示なか、背うしろのボタンなどをクリック不可にする
     modal True
 
-    # 1. 背後を少し暗くする演出 (イベントや背景は透けて見える)
+    # 1. 背うしろをすこし暗くする演出 (イベントや背景は透けて見える)
     add Solid("#000000CC")
 
     # 2. タイトル（任意）
@@ -2013,7 +2013,7 @@ screen image_overlay(display_img, title_text="詳細情報"):
     frame:
         xalign 0.5 yalign 0.5
         padding (10, 10)
-        background "#333333AA" # 枠の色（不要なら None）
+        background "#333333AA" # 枠のいろ（不要なら None）
 
         # 表示したい画像
         add display_img:
@@ -2021,15 +2021,15 @@ screen image_overlay(display_img, title_text="詳細情報"):
             # zoom 0.8 
             align (0.5, 0.5)
 
-    # 4. 閉じるボタン
-    textbutton "× 閉じる":
+    # 4. とじるボタン
+    textbutton "× とじる":
         xalign 0.5 yalign 0.95
         text_size 26
-        text_color "#ffffff"        # 通常時の文字色
-        text_hover_color "#ffaaaa"  # マウスを乗せた時の文字色 (ここを修正)
+        text_color "#ffffff"        # 通常じの文字いろ
+        text_hover_color "#ffaaaa"  # マウスを乗せたじの文字いろ (ここを修正)
         
         action Hide("image_overlay")
 
-    # キーボードの「ESC」や「右クリック」でも閉じられるように設定
+    # キーボードの「ESC」や「みぎクリック」でも閉じられるようにせってい
     key "game_menu" action Hide("image_overlay")
 

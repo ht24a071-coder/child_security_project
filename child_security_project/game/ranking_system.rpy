@@ -20,7 +20,7 @@ label game_end_processing:
         duplicate_index = -1
         
         for i, record in enumerate(persistent.ranking_list):
-            # 名前・アイコン・二つ名がすべて完全に一致するか？
+            # なまえ・アイコン・二つ名がすべて完全に一致するか？
             if (record['name'] == player_name and 
                 record['icon'] == player_icon and 
                 record['title'] == current_title):
@@ -28,7 +28,7 @@ label game_end_processing:
                 duplicate_index = i
                 break
 
-    # 重複が見つかった場合（duplicate_index が -1 じゃない時）
+    # 重複が見つかった場合（duplicate_index が -1 じゃないとき）
     if duplicate_index != -1:
         jump ask_overwrite_confirmation
     
@@ -37,11 +37,11 @@ label game_end_processing:
         jump save_new_record
 
 
-# --- 重複があったときの確認画面 ---
+# --- 重複があったときのかくにん画面 ---
 label ask_overwrite_confirmation:
     
     # ここで博士などを表示してもOK
-    "ランキングに おなじ なまえと アイコンの 人が いるよ！"
+    "ランキングに おなじ なまえと アイコンの ひとが いるよ！"
     "「[current_title] [player_name]」は、きみのこと？"
 
     menu:
@@ -49,7 +49,7 @@ label ask_overwrite_confirmation:
             python:
                 old_score = persistent.ranking_list[duplicate_index]['score']
                 
-                # 今回の方が点数が高い場合だけ上書き
+                # いま回のかたが点数がたかい場合だけうえ書き
                 if total_score > old_score:
                     persistent.ranking_list[duplicate_index]['score'] = total_score
                     is_updated = True
@@ -57,16 +57,16 @@ label ask_overwrite_confirmation:
                     is_updated = False
             
             if is_updated:
-                "記録（きろく）を 更新（こうしん）したよ！やったね！"
+                "きろく（きろく）を 更新（こうしん）したよ！やったね！"
             else:
-                "前の 記録のほうが 点数が高かったから、そのままにしておくね！"
+                "まえの きろくのほうが 点数が高かったから、そのままにしておくね！"
             
-            # 保存して終了へ
+            # 保存してしゅうりょうへ
             jump save_and_sort
 
-        "ちがう人だよ！（新しく 保存）":
-            "わかった！ 別の人として 新しく 保存するね。"
-            # そのまま下（save_new_record）に進む
+        "ちがうひとだよ！（新しく 保存）":
+            "わかった！ 別のひととして 新しく 保存するね。"
+            # そのまました（save_new_record）に進む
 
 
 # --- 新規保存の処理 ---
@@ -84,13 +84,13 @@ label save_new_record:
     jump save_and_sort
 
 
-# --- 最後の並び替えと保存 ---
+# --- 最うしろの並び替えと保存 ---
 label save_and_sort:
     python:
-        # スコアが高い順に並び替え
+        # スコアがたかい順に並び替え
         persistent.ranking_list.sort(key=lambda x: x['score'], reverse=True)
         
-        # 上位10件のみ保持
+        # うえ位10件のみ保持
         if len(persistent.ranking_list) > 10:
             persistent.ranking_list = persistent.ranking_list[:10]
 

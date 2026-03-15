@@ -2,18 +2,18 @@
 # イベント共通フレームワーク
 # =============================================================================
 
-# 立ち絵表示などの共通処理をここに定義します。
+# 立ちえ表示などの共通処理をここに定義します。
 # 各イベントファイルから `call show_stranger_wrapper` のように呼び出して使います。
 
 # -----------------------------------------------------------------------------
-# 不審者（Stranger）用ラッパー
+# ふしんしゃ（Stranger）用ラッパー
 # -----------------------------------------------------------------------------
 label show_stranger_wrapper(transition=dissolve):
-    # 不審者の見た目をランダム設定など（既存のsetup_strangerを呼ぶ）
+    # ふしんしゃの見ためをランダムせっていなど（既存のsetup_strangerを呼ぶ）
     # 引数なしで呼ぶとランダム、引数ありなら固定など、setup_strangerの実装に依存
     $ setup_stranger()
     
-    # 立ち絵表示
+    # 立ちえ表示
     show stranger with transition
     return
 
@@ -22,7 +22,7 @@ label hide_stranger_wrapper(transition=dissolve):
     return
 
 # -----------------------------------------------------------------------------
-# 警察官（Officer）用ラッパー
+# けいさつかん（Officer）用ラッパー
 # -----------------------------------------------------------------------------
 label show_officer_wrapper(transition=dissolve):
     show officer with transition
@@ -33,7 +33,7 @@ label hide_officer_wrapper(transition=dissolve):
     return
 
 # -----------------------------------------------------------------------------
-# お姉さん・先生（Woman）用ラッパー
+# おねえさん・せんせい（Woman）用ラッパー
 # -----------------------------------------------------------------------------
 label show_woman_wrapper(transition=dissolve):
     show woman with transition
