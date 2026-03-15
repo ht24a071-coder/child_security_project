@@ -1,9 +1,9 @@
 init -1 python:
-    # 2. 連打ミニゲーム (統合版)
+    # 2. れんだミニゲーム (統合版)
     # Logic based on minigame_mash.rpy (better visuals), Structure based on BaseMinigame
     class MashingMinigame(BaseMinigame):
         def __init__(self, target_count=10, time_limit=8.0, **kwargs):
-            # デフォルトタイトル・テキストを設定（引数で上書き可能）
+            # デフォルトタイトル・テキストをせってい（引数でうえ書き可能）
             if "title" not in kwargs: kwargs["title"] = "れんだミニゲーム"
             if "text" not in kwargs: kwargs["text"] = "スペースキーを れんだしろ！"
             
@@ -19,7 +19,7 @@ init -1 python:
             self.shake_offset = (0, 0)
 
         def get_remaining(self):
-            # まだ始まってない、あるいは開始時刻が決まってないなら制限時間をそのまま返す
+            # まだ始まってない、あるいはかいしじ刻が決まってないなら制限じかんをそのまま返す
             if not self.started or self._real_start_time is None: 
                 return self.time_limit
             
@@ -28,14 +28,14 @@ init -1 python:
 
         def update(self, st, at):
             if not self.started:
-                # 始まってない時は空の更新を返す
+                # 始まってないじはそらの更新を返す
                 return Solid("#00000000", xsize=1, ysize=40), 0.1
 
-            # 開始直後に現在時刻を記録
+            # かいし直うしろにいまじ刻をきろく
             if self._real_start_time is None: 
                 self._real_start_time = renpy.get_game_runtime()
 
-            # 時間切れ判定
+            # じかん切れ判定
             if not self.show_result and self.get_remaining() <= 0:
                 self.result, self.show_result, self.finished = "miss", True, True
             
@@ -46,7 +46,7 @@ init -1 python:
             # ゲージ表示更新
             progress = min(1.0, float(self.current_count) / self.target_count)
             
-            # 色の変化 (from minigame_mash.rpy)
+            # いろの変化 (from minigame_mash.rpy)
             bar_color = "#ff0000" if progress < 0.3 else "#ffff00" if progress < 0.7 else "#00ff00"
             
             return Solid(bar_color, xsize=max(1, int(400 * progress)), ysize=40), 0.05
@@ -61,6 +61,11 @@ init -1 python:
             import random
             self.shake_offset = (random.randint(-5, 5), random.randint(-5, 5))
             
+            # SE追加
+            setup_globals = globals()
+            if "play_se" in setup_globals:
+                setup_globals["play_se"]("minigame_hit")
+            
             if self.current_count >= self.target_count:
                 rem = self.get_remaining()
                 self.result = "perfect" if rem > self.time_limit * 0.5 else "good"
@@ -68,11 +73,11 @@ init -1 python:
             
     class EscapeMinigame(MashingMinigame):
         def __init__(self, difficulty="normal", **kwargs):
-            # 難易度に応じた設定
+            # 難易度に応じたせってい
             settings = {
                 "easy":   {"target_count": 10, "time_limit": 5.0},
                 "normal": {"target_count": 15, "time_limit": 5.0},
-                "hard":   {"target_count": 25, "time_limit": 5.0} # 5秒で25回=連打力5/s
+                "hard":   {"target_count": 25, "time_limit": 5.0} # 5びょうで25回=れんだちから5/s
             }
             params = settings.get(difficulty, settings["normal"])
             
@@ -89,7 +94,7 @@ init -1 python:
 
 
 # -----------------------------------------------------------------------------
-# 連打ミニゲーム画面
+# れんだミニゲーム画面
 # -----------------------------------------------------------------------------
 screen mashing_minigame(game):
     modal True
@@ -98,15 +103,15 @@ screen mashing_minigame(game):
     if not game.started:
         use minigame_intro_overlay(game)
     else:
-        # ゲーム本編
+        # ゲームほん編
         if not game.finished:
             timer 0.05 repeat True action Function(renpy.restart_interaction)
         add Solid("#000000CC")
 
         # ---------------------------------------------------------------
-        # 背景アニメーション（ゲーム中演出）
+        # 背景アニメーション（ゲームなか演出）
         # ---------------------------------------------------------------
-        # 左右から流れ込む斜め帯（赤・オレンジ系）
+        # ひだりみぎから流れ込む斜め帯（赤・オレンジ系）
         add Solid("#ff2200", xsize=800, ysize=60) rotate -20 alpha 0.08:
             align (0.5, 0.2)
             at mg_bg_drift(delay=0.0, dist=80, period=3.0)
@@ -117,7 +122,7 @@ screen mashing_minigame(game):
             align (0.5, 0.8)
             at mg_bg_drift(delay=1.6, dist=60, period=2.8)
 
-        # 上昇するパーティクル（左・中・右）
+        # うえ昇するパーティクル（ひだり・なか・みぎ）
         add Solid("#ff4400", xsize=8, ysize=8) alpha 0.5:
             align (0.2, 1.0)
             at mg_particle_rise(delay=0.0, rise=700, period=2.5)
@@ -134,7 +139,7 @@ screen mashing_minigame(game):
             align (0.88, 1.0)
             at mg_particle_rise(delay=1.3, rise=700, period=3.3)
 
-        # 連打ヒット時のフラッシュ（shake_offset が非ゼロのとき光る）
+        # れんだヒットじのフラッシュ（shake_offset が非ゼロのときひかりる）
         if game.shake_offset != (0, 0):
             add Solid("#ff4400", xsize=1920, ysize=1080) alpha 0.1:
                 at mg_flash_in
@@ -152,7 +157,7 @@ screen mashing_minigame(game):
                 spacing 30
                 xalign 0.5
                 
-                # タイトルや説明はIntroで出たので、ここではゲーム進行に集中
+                # タイトルや説明はIntroで出たので、ここではゲーム進行に集なか
                 text "れんだしろ！" size 40 xalign 0.5 color "#ff0000" bold True outlines [(2, "#fff", 0, 0)]
                 
                 text "のこり: [game.get_remaining():.1f] びょう" size 28 xalign 0.5 color "#ffff00"
@@ -168,7 +173,7 @@ screen mashing_minigame(game):
                     $ res_clr = {"perfect": "#ff0", "good": "#0f0", "miss": "#888"}.get(game.result)
                     text res_txt size 50 xalign 0.5 color res_clr bold True outlines [(3, "#000", 0, 0)]
                 else:
-                     # ボタン案内
+                     # ボタンあんない
                     text "\u24B6" size 80 color "#00ffff" bold True outlines [(3, "#000", 0, 0)] xalign 0.5 font gui.interface_text_font
 
         if not game.show_result:

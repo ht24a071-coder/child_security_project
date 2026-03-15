@@ -1,19 +1,23 @@
-# 不審者イベント2：車に乗せようとする不審者
+# ふしんしゃイベント2：くるまに乗せようとするふしんしゃ
 # イベント登録は def_mapdat.rpy の event_pools で管理
 
 label suspi_e_test_2:
     $ setup_stranger()
+    # play music "audio/Pinch!!.mp3" fadein 1.0  # 削除：ここではまだ流さない
     show stranger with dissolve
     
     # 特徴を表示
     $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'suspicious_event_2'), "")
     if current_trait:
         "（[current_trait] ひとのようだ。）"
-    $ s_text = get_commute_text("帰", "行")
-    stranger "ねえ、{rb}道{/rb}{rt}みち{/rt}に{rb}迷{/rb}{rt}まよ{/rt}っちゃったんだ。{rb}車{/rb}{rt}くるま{/rt}で{rb}送{/rb}{rt}おく{/rt}ってあげようか？ がっこうに [s_text]く のかな？"
+    $ s_text = get_commute_text("かえっ", "い")
+    $ player_destination = get_commute_text("かえ", "いけ")
+    $ play_voice()
+    stranger "ねえ、みちにまよっちゃったんだ。くるまでおくってあげようか？ がっこうに [s_text]く のかな？"
 
     menu:
-        "{rb}乗{/rb}{rt}の{/rt}ります！":
+        "のります！":
+            $ play_se("decide")
             stranger "よかった、じゃあこっちに..."
             hide stranger
             scene black with fade
@@ -22,23 +26,26 @@ label suspi_e_test_2:
             
             jump game_over
 
-        "{rb}大丈夫{/rb}{rt}だいじょうぶ{/rt}です。{rb}自分{/rb}{rt}じぶん{/rt}で [player_destination]れます":
-            $ player_destination = get_commute_text("帰", "行け")
+        "いりません！":
+            $ play_se("decide")
             $ update_score(15, "はっきりと ことわった")
             
+            play music "audio/Pinch!!.mp3" fadein 1.0 # ここで流す！
             stranger "いいから のりなよ！"
             "ふしんしゃは うでを つかもうとしてきた！"
             
             menu:
                 "おおごえを だす":
+                    $ play_se("decide")
                     jump .shout_car_2
                 
                 "にげる":
+                    $ play_se("decide")
                     jump .run_car_2
 
 label .shout_car_2:
     window hide
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
     
@@ -61,11 +68,11 @@ label .shout_car_2:
 
 label .run_car_2:
     window hide
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
     
-    $ game = MashingMinigame(target_count=15, time_limit=8.0, title="にげろ", text="ボタンを連打して\nダッシュしろ！")
+    $ game = MashingMinigame(target_count=15, time_limit=8.0, title="にげろ", text="ボタンをれんだして\nダッシュしろ！")
     call screen mashing_minigame(game)
     
     # UI復帰
@@ -105,7 +112,10 @@ label .car_2_success_buzzer:
     jump .car_2_rescued
 
 label .car_2_rescued:
-    # 助けに来る人を場所で決定
+    # ふしんしゃを確実に消す
+    hide stranger with dissolve
+    
+    # 助けに来るひとをばしょでけってい
     python:
         h_tag, _unused = get_helper_data()
     

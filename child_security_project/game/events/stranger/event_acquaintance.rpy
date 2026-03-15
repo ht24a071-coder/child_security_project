@@ -1,5 +1,5 @@
 # =============================================================================
-# 不審者イベント：知り合い（顔見知り）の誘い
+# ふしんしゃイベント：知り合い（かお見知り）の誘い
 # =============================================================================
 
 label suspi_e_acquaintance:
@@ -13,26 +13,26 @@ label suspi_e_acquaintance:
         "（[current_trait] ひとのようだ。）"
 
     
-    $ play_voice("003")
+    $ play_voice("kaeri")
     stranger "おーい、[player_name]ちゃん！"
-    $ s_text = get_commute_text("{rb}学校{/rb}{rt}がっこう{/rt}おわりかい？", "{rb}学校{/rb}{rt}がっこう{/rt}に いくのかい？")
+    $ s_text = get_commute_text("がっこうおわりかい？", "がっこうに いくのかい？")
     stranger "[s_text] えらいねえ。"
 
     $ pc_greeting = get_commute_text("こんばんは。", "おはよう。")
     pc "あ、[pc_greeting]"
     $ pc_inner = get_commute_text("こんばんは", "おはよう")
-    pc "（優しそうなおじさんだ。知ってる人だし安心かな？）"
+    pc "（やさしそうなおじさんだ。しってるひとだしあんしんかな？）"
 
-    stranger "お{rb}母{/rb}{rt}かあ{/rt}さんは {rb}元気{/rb}{rt}げんき{/rt}にしてるかい？"
-    pc "うん、{rb}元気{/rb}{rt}げんき{/rt}だよ。"
+    stranger "おかあさんは げんきにしてるかい？"
+    pc "うん、げんきだよ。"
     
-    stranger "そうかそうか。{rb}実{/rb}{rt}じつ{/rt}はね、あっちに {rb}可愛{/rb}{rt}かわい{/rt}い{rb}子犬{/rb}{rt}こいぬ{/rt}がいるんだ。"
-    stranger "[player_name]ちゃん、{rb}犬{/rb}{rt}いぬ{/rt}{rb}好{/rb}{rt}す{/rt}きだよね？ ちょっと{rb}見{/rb}{rt}み{/rt}ていかない？"
+    stranger "そうかそうか。じつはね、あっちに かわいいこいぬがいるんだ。"
+    stranger "[player_name]ちゃん、いぬすきだよね？ ちょっとみていかない？"
 
-    pc "えっ、{rb}子犬{/rb}{rt}こいぬ{/rt}..."
-    pc "（{rb}見{/rb}{rt}み{/rt}たいな... {rb}知{/rb}{rt}し{/rt}ってる{rb}人{/rb}{rt}ひと{/rt}だし...）"
+    pc "えっ、こいぬ..."
+    pc "（みたいな... しってるひとだし...）"
     
-    # ここで選択肢
+    # ここでせんたく肢
     menu:
         "ついていく":
             jump .follow_acquaintance
@@ -51,7 +51,7 @@ label .follow_acquaintance:
     
     stranger "こっちだよ...もっと おくのほう..."
     
-    "おじさんは ひと{rb}気{/rb}{rt}け{/rt}のない ほうへ あるいていく。"
+    "おじさんは ひとけのない ほうへ あるいていく。"
     
     call hide_stranger_wrapper from _call_hide_stranger_wrapper
     scene black with fade
@@ -68,6 +68,7 @@ label .refuse_acquaintance:
     
     pc "ごめんなさい！いま いそいでるんです！"
     
+    play music "audio/Pinch!!.mp3" fadein 1.0
     stranger "えー、いいじゃないか。ちょっとだけだよ？"
     
     pc "（しつこいな...）"
@@ -75,14 +76,30 @@ label .refuse_acquaintance:
     
     "あわてて そのばを はなれた。"
     
-    call hide_stranger_wrapper(dissolve) from _call_hide_stranger_wrapper_1
+    hide stranger with dissolve
+    
+    # 助けに来るひとをばしょでけってい
+    python:
+        h_tag, _unused = get_helper_data()
+    
+    if h_tag == "officer":
+        show officer with dissolve
+        officer "どうしたの！？"
+    else:
+        show teacher with dissolve
+        teacher "どうしたの！？"
     
     call show_feedback("acquaintance_refuse") from _call_fb_acq_2
+    
+    if h_tag == "officer":
+        hide officer with dissolve
+    else:
+        hide teacher with dissolve
     
     return
 
 # -----------------------------------------------------------------------------
-# 防犯ブザー（大正解）
+# ぼうはんブザー（大正解）
 # -----------------------------------------------------------------------------
 label .buzzer_acquaintance:
     play audio "audio/buzzer.mp3"
@@ -93,7 +110,20 @@ label .buzzer_acquaintance:
     stranger "おいおい！なにをするんだ！"
     
     "おじさんは びっくりして いなくなった。"
-    call hide_stranger_wrapper(dissolve) from _call_hide_stranger_wrapper_2
+    hide stranger with dissolve
+    
+    # 助けに来るひとをばしょでけってい
+    python:
+        h_tag, _unused = get_helper_data()
+    
+    if h_tag == "officer":
+        show officer with dissolve
+        officer "どうしたの？ ブザーをならしたのね！"
+        hide officer with dissolve
+    else:
+        show teacher with dissolve
+        teacher "どうしたの？ ブザーをならしたのね！"
+        hide teacher with dissolve
     
     pc "（ちょっと こわかった...）"
     

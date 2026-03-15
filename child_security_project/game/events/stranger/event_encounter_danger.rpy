@@ -1,5 +1,5 @@
 # =============================================================================
-# 人物遭遇イベント：不審者（挨拶から始まる＋防犯ブザー選択肢追加）
+# ひと物遭遇イベント：ふしんしゃ（挨拶から始まる＋ぼうはんブザーせんたく肢追加）
 # =============================================================================
 
 label encounter_e_stranger:
@@ -12,7 +12,7 @@ label encounter_e_stranger:
     if current_trait:
         "（[current_trait] ひとのようだ。）"
     
-    $ play_voice("003")
+    $ play_voice("hello")
     stranger "こんにちは～"
     
     # まず挨拶への反応
@@ -37,17 +37,17 @@ label encounter_e_stranger:
     
     pc "（つかまる！）"
 
-    # Stage 1: 大声のみ（パニック状態）
+    # Stage 1: おおごえのみ（パニック状態）
     menu:
         "おおごえを だす":
             jump .shout_stranger
 
 # -----------------------------------------------------------------------------
-# 大声を出すルート
+# おおごえを出すルート
 # -----------------------------------------------------------------------------
 label .buzzer_stranger:
-    # 防犯ブザーを鳴らす
-    play audio "audio/防犯ブザー.mp3"
+    # ぼうはんブザーを鳴らす
+    play audio "audio/ぼうはんブザー.mp3"
     
     pc "えいっ！！"
     
@@ -80,7 +80,7 @@ label .buzzer_stranger:
     return
 
 # -----------------------------------------------------------------------------
-# ついていくルート（危険→逃げる選択肢）
+# ついていくルート（あぶない→にげるせんたく肢）
 # -----------------------------------------------------------------------------
 label .follow_stranger:
     pc "おかし……？ いく！"
@@ -113,7 +113,7 @@ label .follow_stranger:
         "ぼうはんブザーを ならす":
             jump .escape_buzzer
 
-# 防犯ブザーで逃げる（ついていった後）
+# ぼうはんブザーでにげる（ついていったうしろ）
 label .escape_buzzer:
     play audio "audio/buzzer.mp3"
     
@@ -143,7 +143,7 @@ label .escape_buzzer:
     call show_feedback("buzzer_success_but_no_follow") from _call_fb_ed_2
     return
 
-# 110番の家に逃げる（フラグあり→成功）
+# 110番のいえににげる（フラグあり→せいこう）
 label .escape_110:
     pc "（あそこに「110ばんの いえ」があった！）"
     pc "にげろーー！"
@@ -186,7 +186,7 @@ label .escape_110:
         call show_feedback("partial_escape") from _call_fb_ed_4
     return
 
-# 110番の家を知らない
+# 110番のいえを知らない
 label .escape_fail_no_110:
     pc "（110ばんの いえって どこ…？）"
     pc "にげなきゃ！"
@@ -196,8 +196,8 @@ label .escape_fail_no_110:
     $ game = MashingMinigame(
         target_count=15,
         time_limit=8.0,
-        title="全力疾走！", 
-        text="スペースキーを連打して\n駅までダッシュしろ！"
+        title="全ちから疾走！", 
+        text="スペースキーをれんだして\nえきまでダッシュしろ！"
     )
     call screen mashing_minigame(game)
     
@@ -219,7 +219,7 @@ label .escape_fail_no_110:
         call show_feedback("escape_110_fail") from _call_fb_ed_6
         jump game_over
 
-# 家に走るルート（とても難しい）
+# いえにはしるルート（とてもむずかしい）
 label .escape_home:
     pc "いえに にげよう！"
     
@@ -237,7 +237,7 @@ label .escape_home:
         "（いそいで かぎを あけなきゃ！）"
         
         python:
-            # 鍵を開けるゲームも連打に変更（焦って連打するイメージ）
+            # 鍵を開けるゲームもれんだに変更（焦ってれんだするイメージ）
             key_game = MashingMinigame(target_count=20, time_limit=5.0, title="かぎをあけろ！", text="ボタンをれんだして\nかぎをあけろ！")
         
         call screen mashing_minigame(key_game)
@@ -273,7 +273,7 @@ label .escape_home:
         call show_feedback("escape_failed_no_follow") from _call_fb_ed_9
         jump game_over
 
-# 大声を出して逃げる（マイク使用）
+# おおごえを出してにげる（マイク使用）
 label .escape_shout:
     pc "「たすけてーーー！！」"
     
@@ -323,7 +323,7 @@ label .escape_shout:
     return
 
 # -----------------------------------------------------------------------------
-# 逃げるルート
+# にげるルート
 # -----------------------------------------------------------------------------
 label .refuse_stranger:
     $ update_score(15, "はっきりと ことわった")
@@ -340,19 +340,19 @@ label .refuse_stranger:
     return
 
 # -----------------------------------------------------------------------------
-# 大声を出すルート（マイク使用）
+# おおごえを出すルート（マイク使用）
 # -----------------------------------------------------------------------------
 label .shout_stranger:
     pc "「たすけてーー！！」"
 
     "（ほんとうに おおきな こえを だそう！）"
 
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
 
     python:
-        # ステージ1：大声ゲーム (ShoutMinigame)
+        # ステージ1：おおごえゲーム (ShoutMinigame)
         # 固定ダメージロジック使用 (threshold=0.35, duration=3.0)
         shout_game = ShoutMinigame(threshold=0.35, duration=8.0)
 
@@ -363,10 +363,10 @@ label .shout_stranger:
     show screen score_hud
 
     if _return != "miss":
-        # 成功 -> 撃退
+        # せいこう -> 撃退
         jump .stranger_repelled
     else:
-        # 失敗 -> ステージ2へ（ここはブザーチャンスなし、つれていかれる途中）
+        # しっぱい -> ステージ2へ（ここはブザーチャンスなし、つれていかれる途なか）
         jump .stage2_choice
 
 label .stage2_choice:
@@ -383,10 +383,10 @@ label .stage2_choice:
             jump .stage2_run
 
 label .stage2_shout:
-    # ステージ2の大声（難易度アップ）
+    # ステージ2のおおごえ（難易度アップ）
     pc "「やめてーー！！」"
     
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
 
@@ -402,19 +402,19 @@ label .stage2_shout:
     if _return != "miss":
         jump .stranger_repelled
     else:
-        # 失敗 -> ステージ3へ
+        # しっぱい -> ステージ3へ
         jump .stage3_choice
 
 label .stage2_run:
     # ステージ2の逃走（Mashing）
     pc "（ふりほどいて にげる！）"
     
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
 
     python:
-        # 連打ゲーム
+        # れんだゲーム
         escape_game = MashingMinigame(target_count=15, time_limit=8.0)
 
     call screen mashing_minigame(escape_game)
@@ -445,7 +445,7 @@ label .stage3_choice:
             jump .buzzer_stranger
 
 label .stage3_shout:
-     # ステージ3の大声（最終）
+     # ステージ3のおおごえ（最終）
     pc "「だれかーー！！」"
     
     hide screen minimap
@@ -535,7 +535,7 @@ label .flee_stranger:
     else:
         jump .flee_fail
 
-# 110番の家を覚えている → 成功
+# 110番のいえを覚えている → せいこう
 label .flee_success:
     pc "（あそこに「110ばんの いえ」があった！）"
     pc "にげろーー！"
@@ -577,7 +577,7 @@ label .flee_success:
     call show_feedback("no_follow") from _call_fb_ed_15
     return
 
-# 110番の家を覚えていない → 失敗
+# 110番のいえを覚えていない → しっぱい
 label .flee_fail:
     pc "にげなきゃ！"
     "はしりだしたけど……"

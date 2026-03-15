@@ -1,31 +1,39 @@
 # =============================================================================
 # ミニマップ機能（画像ベース）
-# マップ画像の上にピンを表示
+# マップ画像のうえにピンを表示
 # =============================================================================
 
 init -5 python:
     # =========================================================================
-    # ミニマップ設定
+    # ミニマップせってい
     # =========================================================================
     minimap_config = {
         "image": "images/gui/minimap.jpg",
         "pin_image": "images/gui/pin.png",
         "node_marker": "images/gui/node_marker.png",  # ノードマーカー画像
-        "home_marker": "images/gui/icon_home.png",    # ★追加: お家のアイコン
-        "school_marker": "images/gui/icon_school.png", # 学校のアイコン
+        "home_marker": "images/gui/icon_home.png",    # ★追加: おいえのアイコン
+        "school_marker": "images/gui/icon_school.png", # がっこうのアイコン
         "nav_marker": "images/gui/nav_marker.png",    # 移動先マーカー画像（差し替え可能）
-        "nav_marker_scale": 0.6, # 移動先マーカーのサイズ倍率（30px*0.6=18px。元のノード(10px)より大きくして目立たせる）
-        "zoom": 0.45,           # 通常表示用
-        "pin_scale": 0.7,       # ピンのサイズ倍率
+        "nav_marker_scale": 0.6,
+        "zoom": 0.35,           # 0.45 -> 0.35 (すこし小さくする)
+        "pin_scale": 0.7,
         "marker_scale": 0.5,    # ノードマーカーのサイズ倍率
-        "margin_x": 20,         # 画面右端からの余白
-        "margin_y": 20,         # 画面上端からの余白
+        "margin_x": 20,
+        "margin_y": 20,
+        "legend_button_size": 30,
+        "path_dot_color": "#00FF88", # 点線のいろ（あんぜんそうな明るい緑）
+        "path_dot_size": 5,         # 点の大きさ（すこし大きくして視認性アップ）
+        "path_dot_interval": 15,    # 点の間隔
+        "passed_dot_color": "#888888", # とおり過ぎたみちの点線のいろ（灰いろ）
     }
 
+    # 凡例の表示フラグ
+    default_show_minimap_legend = False
+
     # =========================================================================
-    # 各ノードのマップ上の座標
-    # - 座標はオリジナル画像のピクセル位置で指定
-    # - mapdata.json の内容で更新されるため、初期値は空でOK
+    # 各ノードのマップうえの座標
+    # - 座標はオリジナル画像のピクセル位置でゆび定
+    # - mapdata.json の内容で更新されるため、初期値はそらでOK
     # =========================================================================
     map_coordinates = {}
 
@@ -35,9 +43,82 @@ init -5 python:
         for k, v in world_map.items():
             if "minimap" in v:
                 mx, my = v["minimap"]
-                # [0, 0] 以外なら上書き（有効な座標とみなす）
+                # [0, 0] いがいならうえ書き（有効な座標とみなす）
                 if mx != 0 or my != 0:
                     map_coordinates[k] = (mx, my)
+
+    # =========================================================================
+    # 経路探索・描画用ヘルパー関数
+    # =========================================================================
+    def find_path_to_destination(start_node):
+        """
+        もくてきちまでのいちばんちかい経路をBFSで探索する
+        """
+        import store
+        mode = getattr(store, "game_mode", "going_home")
+        target = None
+        if mode == "going_home":
+            # アクティブないえをめゆびす
+            target = getattr(store, "active_home", None)
+        else:
+            # がっこうをめゆびす
+            target = "start_point"
+            
+        if not start_node or not target or start_node == target:
+            return []
+            
+        # 探索用のキューと訪問済みセット
+        queue = [(start_node, [start_node])]
+        visited = {start_node}
+        
+        while queue:
+            (current, path) = queue.pop(0)
+            
+            # world_map のリンクを辿る
+            node_data = world_map.get(current, {})
+            links = node_data.get("links", {})
+            
+            for choice_text, next_node in links.items():
+                if next_node == target:
+                    return path + [next_node]
+                
+                if next_node not in visited:
+                    visited.add(next_node)
+                    queue.append((next_node, path + [next_node]))
+        
+        return []
+
+    def get_dotted_line_points(path, interval=15):
+        """
+        経路（ノード名のリスト）から点線用の座標リストを作成する
+        interval: 点の間隔（ピクセル）
+        """
+        if len(path) < 2:
+            return []
+            
+        points = []
+        for i in range(len(path) - 1):
+            n1 = path[i]
+            n2 = path[i+1]
+            p1 = map_coordinates.get(n1)
+            p2 = map_coordinates.get(n2)
+            
+            if p1 and p2:
+                x1, y1 = p1
+                x2, y2 = p2
+                
+                # 二点間のきょり
+                dist = ((x2 - x1)**2 + (y2 - y1)**2)**0.5
+                if dist < interval: continue
+                
+                # 等間隔で点を配置
+                steps = int(dist / interval)
+                for s in range(1, steps):
+                    t = float(s) / steps
+                    px = x1 + (x2 - x1) * t
+                    py = y1 + (y2 - y1) * t
+                    points.append((px, py))
+        return points
 
     # =========================================================================
     # リンクエディタ用ヘルパー関数 (Def Missing Functions Fix)
@@ -51,17 +132,17 @@ init -5 python:
             return
             
         if not new_name:
-            renpy.notify("名前を入力してください")
+            renpy.notify("なまえを入ちからしてください")
             return
         
         if new_name in world_map:
-            renpy.notify("その名前は既に使用されています")
+            renpy.notify("そのなまえは既に使用されています")
             return
             
         # 1. データをコピー
         world_map[new_name] = world_map[old_name]
         
-        # 2. 古いデータを削除
+        # 2. ふるいデータを削除
         del world_map[old_name]
         
         # 3. 座標マップ更新
@@ -69,7 +150,7 @@ init -5 python:
             map_coordinates[new_name] = map_coordinates[old_name]
             del map_coordinates[old_name]
             
-        # 4. 全ノードのリンク参照を更新 (重要)
+        # 4. 全ノードのリンク参照を更新 (だいじ)
         count = 0
         for node_id, node_data in world_map.items():
             links = node_data.get("links", {})
@@ -96,14 +177,14 @@ init -5 python:
         renpy.restart_interaction()
 
     def link_editor_start_rename():
-        """リネームモード開始"""
+        """リネームモードかいし"""
         _link_editor_state["mode"] = "rename_node"
         _link_editor_state["temp_input"] = ""
 
     def link_editor_start_move():
-        """移動モード開始"""
+        """移動モードかいし"""
         _link_editor_state["mode"] = "move_node_confirm"
-        renpy.notify("移動モード: 新しい位置をクリックしてください")
+        renpy.notify("移動モード: あたらしい位置をクリックしてください")
 
     def link_editor_set_move_coord(x, y):
         """移動先の座標をセットして保存"""
@@ -140,7 +221,7 @@ init -5 python:
         _link_editor_state["mode"] = "edit_links"
 
     def save_map_data():
-        """現在のマップデータを保存（互換性用ラッパー）"""
+        """いまのマップデータを保存（互換性用ラッパー）"""
         try:
             # def_map_editor.rpy の関数を利用
             # まだ定義されていない場合の対策
@@ -149,14 +230,14 @@ init -5 python:
                 return
 
             data = _load_mapdata()
-            # メモリ上で変更された world_map を反映
+            # メモリうえで変更された world_map を反映
             data["world_map"] = world_map
             _save_mapdata(data)
         except Exception as e:
-            renpy.notify("保存失敗: " + str(e))
+            renpy.notify("保存しっぱい: " + str(e))
             print("Save Error: " + str(e))
 
-# 目的地ハイライト用のアニメーション
+# もくてきちハイライト用のアニメーション
 transform blinking_highlight:
     alpha 1.0
     linear 0.8 alpha 0.4
@@ -169,16 +250,31 @@ transform blinking_highlight:
 screen minimap():
     zorder 98
     
-    # 設定値を取得
+    # せってい値を取得
     $ cfg = minimap_config
-    $ zoom = cfg["zoom"]
+    # 基ほん拡大表示 (1.0 = 等倍、オリジナルは 0.35)
+    $ zoom = 1.0
     $ pin_scale = cfg["pin_scale"]
     
-    # 現在地の座標を取得（ホバー時はその場所、なければ現在地）
+    # いまここの座標を取得
     $ _cur_node = globals().get("current_node", None)
     $ current_pos_node = minimap_hover_node if minimap_hover_node else _cur_node
     $ pos = map_coordinates.get(current_pos_node, None) if current_pos_node else None
     
+    # 凡例表示フラグの状態保持
+    default show_minimap_legend = default_show_minimap_legend
+
+    # 表示枠のサイズ
+    $ viewport_w = 400
+    $ viewport_h = 400
+
+    # プレイヤー位置をなか央に持ってくるためのオフセット計算
+    $ focus_x = 0
+    $ focus_y = 0
+    if pos:
+        $ focus_x = int(pos[0] * zoom) - (viewport_w // 2)
+        $ focus_y = int(pos[1] * zoom) - (viewport_h // 2)
+
     frame:
         xalign 1.0 yalign 0.0
         xoffset -cfg["margin_x"]
@@ -188,100 +284,140 @@ screen minimap():
         
         vbox:
             spacing 5
-            # --- ミニマップ本体 ---
-            fixed:
-                fit_first True
-                add cfg["image"]:
-                    zoom zoom
-            
-            # 全ノードにマーカーを表示（行き先ノードは色付きマーカーに差し替え）
-            for node_id, node_pos in map_coordinates.items():
-                if node_pos:
-                    # マーカーの中心(0.5, 0.5)を座標に合わせる
-                    $ marker_x = int(node_pos[0] * zoom)
-                    $ marker_y = int(node_pos[1] * zoom)
+            # --- ミニマップほんからだ (拡大表示) ---
+            button:
+                xsize viewport_w
+                ysize viewport_h
+                action Show("fullscreen_map")
+                hover_foreground Solid("#ffffff20")
+                
+                # viewport を使ってなかこころを合わせる (draggableにして移動可能に)
+                viewport:
+                    draggable True
+                    mousewheel True
+                    edgescroll (50, 500)
                     
-                    if node_id in home_nodes:
-                        if active_home and node_id != active_home:
-                            pass
-                        else:
-                            # お家アイコン
-                            if game_mode == "going_home" and node_id == active_home:
-                                add cfg["home_marker"] at blinking_highlight:
-                                    pos (marker_x, marker_y)
-                                    anchor (0.5, 0.5)
-                                    zoom 1.5
-                            else:
-                                add cfg["home_marker"]:
-                                    pos (marker_x, marker_y)
-                                    anchor (0.5, 0.5)
-                                    zoom 1.5
-                    elif node_id == "start_point":
-                        # 学校アイコン
-                        if game_mode == "going_school":
-                            add cfg["school_marker"] at blinking_highlight:
-                                pos (marker_x, marker_y)
-                                anchor (0.5, 0.6)  # 少し上にずらす(中心より下を基準点にする＝画像が上がる)
-                                zoom 1.3           # 1.5 -> 1.3 に縮小
-                        else:
-                            add cfg["school_marker"]:
-                                pos (marker_x, marker_y)
-                                anchor (0.5, 0.6)
-                                zoom 1.3
-                    elif _nav_color_map and node_id in _nav_color_map:
-                        # 行き先ノード → カラーマーカー画像に差し替え
-                        $ nav_color, nav_img = _nav_color_map[node_id]
-                        if renpy.loadable(nav_img):
-                            add nav_img:
-                                pos (marker_x, marker_y)
-                                anchor (0.30, 0.30)
-                                zoom cfg["nav_marker_scale"]
-                        else:
-                            add Text("\u25cf", size=28, color=nav_color, font=gui.text_font):
-                                pos (marker_x, marker_y)
-                                anchor (0.5, 0.5)
-                    else:
-                        # 通常の丸いマーカー
-                        add cfg["node_marker"]:
-                            pos (marker_x, marker_y)
-                            anchor (0.5, 0.5)
-                            zoom cfg["marker_scale"]
+                    xinitial focus_x
+                    yinitial focus_y
+                    
+                    fixed:
+                        # マップ全からだを表示（viewportで切りぬかれる）
+                        fit_first True
+                        add Transform(cfg["image"], zoom=zoom)
 
-            # 現在地（またはホバー先）にピン画像を表示
-            if pos:
-                $ pin_x = int(pos[0] * zoom)
-                $ pin_y = int(pos[1] * zoom)
-                add cfg["pin_image"]:
-                    pos (pin_x, pin_y)
-                    anchor (0.5, 1.0)
-                    zoom pin_scale
+                        # --- とおり過ぎたみち（灰いろ点線）を表示 ---
+                        $ passed_path = globals().get("visited_nodes", [])
+                        $ passed_points = get_dotted_line_points(passed_path, interval=cfg["path_dot_interval"])
+                        
+                        for px, py in passed_points:
+                            add Solid(cfg["passed_dot_color"]):
+                                xsize cfg["path_dot_size"]
+                                ysize cfg["path_dot_size"]
+                                pos (int(px * zoom), int(py * zoom))
+                                anchor (0.5, 0.5)
+
+                        # --- もくてきちへのガイドパス（点線）を表示 ---
+                        $ path_to_target = find_path_to_destination(_cur_node)
+                        $ path_points = get_dotted_line_points(path_to_target, interval=cfg["path_dot_interval"])
+                        
+                        for px, py in path_points:
+                            add Solid(cfg["path_dot_color"]):
+                                xsize cfg["path_dot_size"]
+                                ysize cfg["path_dot_size"]
+                                pos (int(px * zoom), int(py * zoom))
+                                anchor (0.5, 0.5)
+                        
+                        # 全ノードにマーカーを表示
+                        for node_id, node_pos in map_coordinates.items():
+                            if node_pos:
+                                $ marker_x = int(node_pos[0] * zoom)
+                                $ marker_y = int(node_pos[1] * zoom)
+                                
+                                if node_id in home_nodes:
+                                    if active_home and node_id != active_home:
+                                        pass
+                                    else:
+                                        if game_mode == "going_home" and node_id == active_home:
+                                            add cfg["home_marker"] at blinking_highlight:
+                                                pos (marker_x, marker_y)
+                                                anchor (0.5, 0.5)
+                                                zoom 1.5
+                                        else:
+                                            add Transform(cfg["home_marker"], zoom=1.5):
+                                                pos (marker_x, marker_y)
+                                                anchor (0.5, 0.5)
+                                elif node_id == "start_point":
+                                    if game_mode == "going_school":
+                                        add cfg["school_marker"] at blinking_highlight:
+                                            pos (marker_x, marker_y)
+                                            anchor (0.5, 0.6)
+                                            zoom 1.3
+                                    else:
+                                        add Transform(cfg["school_marker"], zoom=1.3):
+                                            pos (marker_x, marker_y)
+                                            anchor (0.5, 0.6)
+                                elif _nav_color_map and node_id in _nav_color_map:
+                                    $ nav_color, nav_img = _nav_color_map[node_id]
+                                    if renpy.loadable(nav_img):
+                                        add Transform(nav_img, zoom=cfg["nav_marker_scale"]):
+                                            pos (marker_x, marker_y)
+                                            anchor (0.30, 0.30)
+                                    else:
+                                        add Text("\u25cf", size=28, color=nav_color, font=gui.text_font):
+                                            pos (marker_x, marker_y)
+                                            anchor (0.5, 0.5)
+                                else:
+                                    add Transform(cfg["node_marker"], zoom=cfg["marker_scale"]):
+                                        pos (marker_x, marker_y)
+                                        anchor (0.5, 0.5)
+            
+                        # いまここピン
+                        if pos:
+                            $ pin_x = int(pos[0] * zoom)
+                            $ pin_y = int(pos[1] * zoom)
+                            add Transform(cfg["pin_image"], zoom=pin_scale):
+                                pos (pin_x, pin_y)
+                                anchor (0.5, 1.0)
+
+                # 凡例切り替えボタン
+                imagebutton:
+                    idle Text("❓", size=24)
+                    hover Text("❓", size=24, color="#FFE66D")
+                    align (1.0, 0.0)
+                    offset (-5, 5)
+                    action ToggleScreenVariable("show_minimap_legend")
+                    tooltip "はんれいを表示/非表示"
 
             # --- 凡例 (Legend) ---
-            null height 10
-            vbox:
-                spacing 4
-                hbox:
-                    spacing 8
-                    add Transform(cfg["home_marker"], zoom=0.8) yalign 0.5
-                    text "いえ" size 18 color "#fff" yalign 0.5
-                hbox:
-                    spacing 8
-                    add Transform(cfg["school_marker"], zoom=0.8) yalign 0.5
-                    text "がっこう" size 18 color "#fff" yalign 0.5
-                hbox:
-                    spacing 8
-                    add Transform(cfg["pin_image"], zoom=pin_scale*0.8) yalign 0.5
-                    text "いまの ばしょ" size 18 color "#fff" yalign 0.5
-                hbox:
-                    spacing 8
-                    add Transform(cfg["node_marker"], zoom=0.8) yalign 0.5
-                    text "いける ばしょ" size 18 color "#fff" yalign 0.5
+            if show_minimap_legend:
+                null height 5
+                frame:
+                    background "#000000AA"
+                    padding (8, 8)
+                    vbox:
+                        spacing 6
+                        hbox:
+                            spacing 8
+                            add Transform(cfg["home_marker"], zoom=0.7) yalign 0.5
+                            text "いえ" size 16 color "#fff" yalign 0.5
+                        hbox:
+                            spacing 8
+                            add Transform(cfg["school_marker"], zoom=0.7) yalign 0.5
+                            text "がっこう" size 16 color "#fff" yalign 0.5
+                        hbox:
+                            spacing 8
+                            add Transform(cfg["pin_image"], zoom=pin_scale*0.7) yalign 0.5
+                            text "いまの ばしょ" size 16 color "#fff" yalign 0.5
+                        hbox:
+                            spacing 8
+                            add Transform(cfg["node_marker"], zoom=0.7) yalign 0.5
+                            text "いける ばしょ" size 16 color "#fff" yalign 0.5
 
-    # ミニマップの下にマップ表示ボタン（コントローラーⒾボタンでも開ける）
+    # ミニマップのしたにマップ表示ボタン
     textbutton "🗺 マップ {size=22}{color=#FFE66D}Ⓨ{/color}{/size}":
         xalign 1.0 yalign 0.0
         xoffset -cfg["margin_x"]
-        yoffset cfg["margin_y"] + 450 # 345 -> 450 に変更して家のアイコンと重ならないように
+        yoffset cfg["margin_y"] + 450
         text_size 28
         text_color "#ffffff"
         background Solid("#00000080")
@@ -290,39 +426,39 @@ screen minimap():
         action Show("fullscreen_map")
 
     key "K_y" action Show("fullscreen_map")
-    key "pad_y_press" action Show("fullscreen_map") # Yボタンでも開けるように追加
+    key "pad_y_press" action Show("fullscreen_map")
 
 # =============================================================================
-# 家選択用マップ画面
-# 登校・下校の開始時に呼び出され、家の場所をクリックして選択する
+# いえせんたく用マップ画面
+# とうこう・げこうのかいしじに呼び出され、いえのばしょをクリックしてせんたくする
 # =============================================================================
 screen home_select_map():
     zorder 150
     modal True
 
-    # 設定値を取得
+    # せってい値を取得
     $ cfg = minimap_config
     $ p_zoom = 1.0 # フルスクリーンと同じ倍率
     
-    # 選択中の家の名前を保持する変数（画面内ローカル）
+    # せんたくなかのいえのなまえを保持する変数（画面内ローカル）
     default hovered_home_name = ""
 
     # 背景を暗く
     add Solid("#000000CC")
 
-    # タイトルと説明（位置調整: yalign 0.1 -> 0.05 に上げてマップとかぶらないように）
+    # タイトルと説明（位置調整: yalign 0.1 -> 0.05 にうえげてマップとかぶらないように）
     vbox:
         xalign 0.5 yalign 0.05
         spacing 10
-        text "{rb}家{/rb}{rt}いえ{/rt}を {rb}選{/rb}{rt}えら{/rt}ぼう！" xalign 0.5 size 42 color "#ffffff" bold True outlines [(2, "#000000", 0, 0)]
+        text "いえを えらぼう！" xalign 0.5 size 42 color "#ffffff" bold True outlines [(2, "#000000", 0, 0)]
         if game_mode == "going_school":
-            text "どこの {rb}家{/rb}{rt}いえ{/rt}から {rb}出発{/rb}{rt}しゅっぱつ{/rt}する？" xalign 0.5 size 28 color "#cccccc" outlines [(1, "#000000", 0, 0)]
+            text "どこの いえから しゅっぱつする？" xalign 0.5 size 28 color "#cccccc" outlines [(1, "#000000", 0, 0)]
         else:
-            text "どこの {rb}家{/rb}{rt}いえ{/rt}に かえる？" xalign 0.5 size 28 color "#cccccc" outlines [(1, "#000000", 0, 0)]
+            text "どこの いえに かえる？" xalign 0.5 size 28 color "#cccccc" outlines [(1, "#000000", 0, 0)]
 
-    # マップ表示（中央に大きく）
+    # マップ表示（なか央に大きく）
     frame:
-        xalign 0.5 yalign 0.8 # 少し下にずらす
+        xalign 0.5 yalign 0.8 # すこししたにずらす
         padding (8, 8)
         background "#222222DD"
         
@@ -333,26 +469,26 @@ screen home_select_map():
             add cfg["image"]:
                 zoom p_zoom
 
-            # 家ノードのみボタンとして表示
+            # いえノードのみボタンとして表示
             for node_id, node_pos in map_coordinates.items():
                 if node_pos and (node_pos[0] != 0 or node_pos[1] != 0):
                     $ marker_x = int(node_pos[0] * p_zoom)
                     $ marker_y = int(node_pos[1] * p_zoom)
 
                     if node_id in home_nodes:
-                        # 家の名前を決定（ユーザーフレンドリーな名前）
+                        # いえのなまえをけってい（ユーザーフレンドリーななまえ）
                         if node_id == "home_nw":
-                            $ home_label = "{rb}左上{/rb}{rt}ひだりうえ{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                            $ home_label = "ひだりうえのいえ"
                         elif node_id == "home_sw":
-                            $ home_label = "{rb}左下{/rb}{rt}ひだりした{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                            $ home_label = "ひだりしたのいえ"
                         elif node_id == "home_se":
-                            $ home_label = "{rb}右下{/rb}{rt}みぎした{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                            $ home_label = "みぎしたのいえ"
                         elif node_id == "home_w":
-                            $ home_label = "{rb}左{/rb}{rt}ひだり{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                            $ home_label = "ひだりのいえ"
                         else:
                             $ home_label = node_id
 
-                        # 家アイコンをボタン化
+                        # いえアイコンをボタン化
                         imagebutton:
                             # 拡大率アップ（1.5 -> 2.0）で強調
                             hover Transform(cfg["home_marker"], zoom=2.0) 
@@ -362,19 +498,19 @@ screen home_select_map():
                             anchor (0.5, 0.5)
                             action Return(node_id) # クリックしたらそのノードIDを返す
                             
-                            # ホバー時に名前を表示
+                            # ホバーじになまえを表示
                             hovered SetScreenVariable("hovered_home_name", home_label)
                             unhovered SetScreenVariable("hovered_home_name", "")
 
                     elif node_id == "start_point":
-                        # 学校アイコン（参照用、クリック不可）
+                        # がっこうアイコン（参照用、クリック不可）
                         add cfg["school_marker"]:
                             pos (marker_x, marker_y)
                             anchor (0.5, 0.6)
                             zoom 1.3
-                            alpha 0.5 # 少し薄くして「今は関係ない」感を出す
+                            alpha 0.5 # すこし薄くして「いまは関係ない」感を出す
 
-    # ホバーしている家の名前を大きく表示
+    # ホバーしているいえのなまえを大きく表示
     if hovered_home_name:
         frame:
             xalign 0.5 yalign 0.85
@@ -384,13 +520,13 @@ screen home_select_map():
 
 # =============================================================================
 # フルスクリーンマップ表示
-# ミニマップをタップすると大きいマップを表示
+# ミニマップをタップするとおおきいマップを表示
 # =============================================================================
 screen fullscreen_map():
     zorder 150
     modal True
 
-    # 設定値を取得
+    # せってい値を取得
     $ cfg = minimap_config
     $ fzoom = 0.85
     $ _cur_node = globals().get("current_node", None)
@@ -402,84 +538,118 @@ screen fullscreen_map():
     # タイトル
     text "🗺 マップ" xalign 0.5 yalign 0.02 size 28 color "#ffffff" bold True
 
-    # マップ表示（中央に大きく）
+    # マップ表示（なか央に大きく）
     frame:
         xalign 0.5 yalign 0.5
+        xsize 1200
+        ysize 800
         padding (8, 8)
         background "#222222DD"
 
-        fixed:
-            fit_first True
-            # マップ画像のサイズ * ズーム率
-            $ p_zoom = 1.0
+        # viewport を使ってスクロール/ドラッグ可能に
+        viewport:
+            id "map_vp"
+            draggable True
+            mousewheel True
+            edgescroll (100, 1000)
+            
+            # 初期位置をいまここに
+            xinitial (int(pos[0] * 1.0) - 600 if pos else 0)
+            yinitial (int(pos[1] * 1.0) - 400 if pos else 0)
 
-            # マップ画像
-            add cfg["image"]:
-                zoom p_zoom
+            fixed:
+                fit_first True
+                $ p_zoom = 1.0
 
-            # 全ノードにマーカーを表示
-            for node_id, node_pos in map_coordinates.items():
-                if node_pos and (node_pos[0] != 0 or node_pos[1] != 0):
-                    $ marker_x = int(node_pos[0] * p_zoom)
-                    $ marker_y = int(node_pos[1] * p_zoom)
+                # マップ画像
+                add Transform(cfg["image"], zoom=p_zoom)
 
-                    if node_id in home_nodes:
-                        if active_home and node_id != active_home:
-                            pass
-                        else:
-                            if game_mode == "going_home" and node_id == active_home:
-                                add cfg["home_marker"] at blinking_highlight:
-                                    pos (marker_x, marker_y)
-                                    anchor (0.5, 0.5)
-                                    zoom 1.6
+                # --- とおり過ぎたみち（灰いろ点線）を表示 ---
+                $ passed_path = globals().get("visited_nodes", [])
+                $ passed_points = get_dotted_line_points(passed_path, interval=cfg["path_dot_interval"])
+                
+                for px, py in passed_points:
+                    add Solid(cfg["passed_dot_color"]):
+                        xsize cfg["path_dot_size"] + 2
+                        ysize cfg["path_dot_size"] + 2
+                        pos (int(px * p_zoom), int(py * p_zoom))
+                        anchor (0.5, 0.5)
+
+                # --- もくてきちへのガイドパス（点線）を表示 ---
+                $ path_to_target = find_path_to_destination(_cur_node)
+                $ path_points = get_dotted_line_points(path_to_target, interval=cfg["path_dot_interval"])
+                
+                for px, py in path_points:
+                    add Solid(cfg["path_dot_color"]):
+                        xsize cfg["path_dot_size"] + 2 # 全からだマップではすこし太めに
+                        ysize cfg["path_dot_size"] + 2
+                        pos (int(px * p_zoom), int(py * p_zoom))
+                        anchor (0.5, 0.5)
+
+                # 全ノードにマーカーを表示
+                for node_id, node_pos in map_coordinates.items():
+                    if node_pos and (node_pos[0] != 0 or node_pos[1] != 0):
+                        $ marker_x = int(node_pos[0] * p_zoom)
+                        $ marker_y = int(node_pos[1] * p_zoom)
+
+                        if node_id in home_nodes:
+                            if active_home and node_id != active_home:
+                                pass
                             else:
-                                add cfg["home_marker"]:
+                                if game_mode == "going_home" and node_id == active_home:
+                                    add cfg["home_marker"] at blinking_highlight:
+                                        pos (marker_x, marker_y)
+                                        anchor (0.5, 0.5)
+                                        zoom 1.6
+                                else:
+                                    add Transform(cfg["home_marker"], zoom=1.6):
+                                        pos (marker_x, marker_y)
+                                        anchor (0.5, 0.5)
+                        elif node_id == "start_point":
+                            if game_mode == "going_school":
+                                add cfg["school_marker"] at blinking_highlight:
+                                    pos (marker_x, marker_y)
+                                    anchor (0.5, 0.6)
+                                    zoom 1.4
+                            else:
+                                add Transform(cfg["school_marker"], zoom=1.4):
+                                    pos (marker_x, marker_y)
+                                    anchor (0.5, 0.6)
+                        elif _nav_color_map and node_id in _nav_color_map:
+                            $ nav_color, nav_img = _nav_color_map[node_id]
+                            # 行き先マーカーをボタン化して「移動機能」を実装
+                            if renpy.loadable(nav_img):
+                                imagebutton:
+                                    idle Transform(nav_img, zoom=cfg["nav_marker_scale"] * 1.6)
+                                    hover Transform(nav_img, zoom=cfg["nav_marker_scale"] * 1.6, matrixcolor=BrightnessMatrix(0.2))
                                     pos (marker_x, marker_y)
                                     anchor (0.5, 0.5)
-                                    zoom 1.6
-                    elif node_id == "start_point":
-                        if game_mode == "going_school":
-                            add cfg["school_marker"] at blinking_highlight:
-                                pos (marker_x, marker_y)
-                                anchor (0.5, 0.6)  # 少し上にずらす
-                                zoom 1.4           # 1.6 -> 1.4 に縮小
+                                    # クリックで移動！ 
+                                    action [Hide("fullscreen_map"), Return(node_id)]
+                            else:
+                                imagebutton:
+                                    idle Text("\u25cf", size=48, color=nav_color)
+                                    hover Text("\u25cf", size=48, color="#ffffff")
+                                    pos (marker_x, marker_y)
+                                    anchor (0.5, 0.5)
+                                    # クリックで移動！ 
+                                    action [Hide("fullscreen_map"), Return(node_id)]
                         else:
-                            add cfg["school_marker"]:
-                                pos (marker_x, marker_y)
-                                anchor (0.5, 0.6)  # 少し上にずらす
-                                zoom 1.4           # 1.6 -> 1.4 に縮小
-                    elif _nav_color_map and node_id in _nav_color_map:
-                        # 行き先ノード → カラーマーカー画像に差し替え
-                        $ nav_color, nav_img = _nav_color_map[node_id]
-                        if renpy.loadable(nav_img):
-                            add nav_img:
-                                pos (marker_x, marker_y)
-                                anchor (0.30, 0.30)
-                                zoom cfg["nav_marker_scale"] * 1.6 # 少し大きめに
-                        else:
-                            add Text("\u25cf", size=48, color=nav_color, font=gui.text_font):
+                            add Transform(cfg["node_marker"], zoom=0.8):
                                 pos (marker_x, marker_y)
                                 anchor (0.5, 0.5)
-                    else:
-                        add cfg["node_marker"]:
-                            pos (marker_x, marker_y)
-                            anchor (0.5, 0.5)
-                            zoom 0.8
 
-            # 現在地ピン（最前面）
-            if _cur_node and _cur_node in map_coordinates:
-                $ c_pos = map_coordinates[_cur_node]
-                if c_pos:
-                    $ pin_x = int(c_pos[0] * p_zoom)
-                    $ pin_y = int(c_pos[1] * p_zoom)
-                    add cfg["pin_image"]:
+                # いまここピン
+                if pos:
+                    $ pin_x = int(pos[0] * p_zoom)
+                    $ pin_y = int(pos[1] * p_zoom)
+                    add Transform(cfg["pin_image"], zoom=cfg["pin_scale"] * 1.0):
                         pos (pin_x, pin_y)
                         anchor (0.5, 1.0)
-                        zoom cfg["pin_scale"] * 1.0
 
 
 
-    # 閉じるボタン
+    # とじるボタン
     textbutton "× とじる":
         text_font gui.text_font
         xalign 0.5 yalign 0.96
@@ -492,17 +662,17 @@ screen fullscreen_map():
 
 # =============================================================================
 # 座標デバッグツール（フルスクリーン版）
-# ミニマップを画面中央に大きく表示し、クリックで座標を記録
-# 使い方：コンソールで renpy.show_screen("minimap_debug")
-#         終了は renpy.hide_screen("minimap_debug")
+# ミニマップを画面なか央に大きく表示し、クリックで座標をきろく
+# 使いかた：コンソールで renpy.show_screen("minimap_debug")
+#         しゅうりょうは renpy.hide_screen("minimap_debug")
 # =============================================================================
 
 init python:
-    # クリックされた座標を記録するリスト
+    # クリックされた座標をきろくするリスト
     debug_clicked_coords = []
-    # 一時的に座標を保存
+    # 一じ的に座標を保存
     _pending_coord = None
-    # 入力中のノード情報
+    # 入ちからなかのノード情報
     _pending_node_name = None
     _pending_bg_name = None
     
@@ -510,19 +680,19 @@ init python:
     _debug_mode = "click"
     
     def request_coord_input(x, y):
-        """座標を一時保存してから入力画面を呼び出す"""
+        """座標を一じ保存してから入ちから画面を呼び出す"""
         global _pending_coord
         _pending_coord = (x, y)
         renpy.call_in_new_context("_node_input_label")
     
     def debug_go_to_bg_select():
-        """ノード名入力後にUI画像選択へ"""
+        """ノード名入ちからうしろにUI画像せんたくへ"""
         global _debug_mode
         _debug_mode = "select_bg"
         renpy.restart_interaction()
     
     def debug_select_bg_and_save(bg_name):
-        """背景を選択して保存"""
+        """背景をせんたくして保存"""
         global _pending_coord, _pending_node_name, _pending_bg_name, _debug_mode
         
         if not _pending_coord or not _pending_node_name:
@@ -549,7 +719,7 @@ init python:
         renpy.restart_interaction()
     
     def debug_cancel_bg_select():
-        """画像選択をキャンセル"""
+        """画像せんたくをきゃんせる"""
         global _pending_coord, _pending_node_name, _debug_mode
         _pending_coord = None
         _pending_node_name = None
@@ -557,20 +727,20 @@ init python:
         renpy.restart_interaction()
     
     def do_save_node_to_json():
-        """ノードをJSONに保存（旧方式、UI選択へ遷移）"""
+        """ノードをJSONに保存（旧かた式、UIせんたくへ遷移）"""
         global _pending_coord, _pending_node_name, _pending_bg_name
         
         if not _pending_coord or not _pending_node_name:
-            renpy.notify("保存をキャンセルしました")
+            renpy.notify("保存をきゃんせるしました")
             return
         
-        # UI選択モードへ遷移
+        # UIせんたくモードへ遷移
         debug_go_to_bg_select()
 
-# 座標入力用のラベル（ノード名→画像名の順で入力）
+# 座標入ちから用のラベル（ノード名→画像名の順で入ちから）
 label _node_input_label:
     $ _pending_node_name = renpy.input(
-        "ノード名を入力（例: street_1）\n座標: ({}, {})".format(_pending_coord[0], _pending_coord[1]),
+        "ノード名を入ちから（例: street_1）\n座標: ({}, {})".format(_pending_coord[0], _pending_coord[1]),
         default="", length=30)
     
     if _pending_node_name and _pending_node_name.strip():
@@ -583,12 +753,12 @@ label _node_input_label:
                 _default_bg = "back_town"
         
         $ _pending_bg_name = renpy.input(
-            "背景画像名を入力（例: back_town）\n※既存ノードなら現在値: {}".format(_default_bg),
+            "背景画像名を入ちから（例: back_town）\n※既存ノードならいま値: {}".format(_default_bg),
             default=_default_bg, length=30)
         
         $ do_save_node_to_json()
     else:
-        "キャンセルしました"
+        "きゃんせるしました"
         python:
             _pending_coord = None
             _pending_node_name = None
@@ -615,7 +785,7 @@ screen minimap_debug():
     $ map_w = int(map_img[0] * debug_zoom)
     $ map_h = int(map_img[1] * debug_zoom)
     
-    # マップの左上座標（中央配置）
+    # マップのひだりうえ座標（なか央配置）
     $ map_left = (config.screen_width - map_w) // 2
     $ map_top = (config.screen_height - map_h) // 2
     
@@ -623,7 +793,7 @@ screen minimap_debug():
     $ rel_x = mx - map_left
     $ rel_y = my - map_top
     
-    # オリジナル画像上の座標
+    # オリジナル画像うえの座標
     $ orig_x = int(rel_x / debug_zoom)
     $ orig_y = int(rel_y / debug_zoom)
     
@@ -633,7 +803,7 @@ screen minimap_debug():
     # 背景を暗く
     add "#000000AA"
     
-    # マップ画像（中央に大きく・クリック可能）
+    # マップ画像（なか央に大きく・クリック可能）
     frame:
         xalign 0.5 yalign 0.5
         padding (5, 5)
@@ -663,14 +833,14 @@ screen minimap_debug():
         # 縦線
         add Solid("#ff0000", xsize=2, ysize=30):
             pos (mx - 1, my - 15)
-        # 横線
+        # よこ線
         add Solid("#ff0000", xsize=30, ysize=2):
             pos (mx - 15, my - 1)
-        # 中心点
+        # なかこころ点
         add Solid("#ffff00", xsize=4, ysize=4):
             pos (mx - 2, my - 2)
     
-    # 座標表示（画面左上）
+    # 座標表示（画面ひだりうえ）
     frame:
         xalign 0.0 yalign 0.0
         xoffset 10
@@ -681,7 +851,7 @@ screen minimap_debug():
         vbox:
             spacing 5
             text "【座標デバッグモード】" color "#ffff00" size 20
-            text "クリックで座標を記録！" color "#88ff88" size 16
+            text "クリックで座標をきろく！" color "#88ff88" size 16
             
             null height 5
             text "マウス座標: ([mx], [my])" color "#ffffff" size 14
@@ -690,16 +860,16 @@ screen minimap_debug():
                 text "★ マップ内 ★" color "#00ff00" size 18
                 text "画像座標: ([orig_x], [orig_y])" color "#00ffff" size 24 bold True
             else:
-                text "（マップ外）" color "#888888" size 16
+                text "（マップそと）" color "#888888" size 16
             
             null height 10
-            text "記録数: [len(debug_clicked_coords)]" color "#ffcc00" size 16
+            text "きろく数: [len(debug_clicked_coords)]" color "#ffcc00" size 16
             text "ログ: game/coordinate_log.txt" color "#aaaaaa" size 12
             
             null height 10
             textbutton "[[Close]" action Hide("minimap_debug") text_color "#ff8888" text_size 18
     
-    # 背景画像選択オーバーレイ（select_bgモード時）
+    # 背景画像せんたくオーバーレイ（select_bgモードじ）
     if _debug_mode == "select_bg":
         frame:
             xalign 0.5 yalign 0.5
@@ -754,8 +924,8 @@ screen minimap_debug():
 
 # =============================================================================
 # リンクエディタUI
-# ノードを選択してリンクを追加・編集
-# 使い方：コンソールで renpy.show_screen("link_editor")
+# ノードをせんたくしてリンクを追加・編集
+# 使いかた：コンソールで renpy.show_screen("link_editor")
 # =============================================================================
 
 init python:
@@ -765,9 +935,9 @@ init python:
         "mode": "select_node",  # select_node, confirm_node, edit_links, ruby_edit, select_dest
         "link_text": "",
         "dest_node": None,
-        "hover_node": None,      # ホバー中のノード
-        "pending_node": None,    # 確認待ちのノード
-        "hover_dest_node": None, # 遷移先選択時にホバー中のノード（マップ上でハイライト用）
+        "hover_node": None,      # ホバーなかのノード
+        "pending_node": None,    # かくにん待ちのノード
+        "hover_dest_node": None, # 遷移先せんたくじにホバーなかのノード（マップうえでハイライト用）
     }
     
     def link_editor_hover_node(node_name):
@@ -776,28 +946,28 @@ init python:
         renpy.restart_interaction()
     
     def link_editor_hover_dest(node_name):
-        """遷移先リストでホバー（マップ上のノードをハイライト）"""
+        """遷移先リストでホバー（マップうえのノードをハイライト）"""
         _link_editor_state["hover_dest_node"] = node_name
         renpy.restart_interaction()
     
     def link_editor_click_node(node_name):
-        """ノードをクリック→確認モードへ"""
+        """ノードをクリック→かくにんモードへ"""
         _link_editor_state["pending_node"] = node_name
         _link_editor_state["mode"] = "confirm_node"
         renpy.restart_interaction()
     
     def link_editor_confirm_node():
-        """ノード選択を確定"""
+        """ノードせんたくを確定"""
         node = _link_editor_state["pending_node"]
         if node:
             _link_editor_state["selected_node"] = node
             _link_editor_state["pending_node"] = None
-            _link_editor_state["hover_dest_node"] = None  # ハイライトをクリア
+            _link_editor_state["hover_dest_node"] = None  # ハイライトをくりあ
             _link_editor_state["mode"] = "edit_links"
         renpy.restart_interaction()
     
     def link_editor_cancel_confirm():
-        """ノード選択確認をキャンセル"""
+        """ノードせんたくかくにんをきゃんせる"""
         _link_editor_state["pending_node"] = None
         _link_editor_state["mode"] = "select_node"
         renpy.restart_interaction()
@@ -814,7 +984,7 @@ init python:
     }
     
     def start_create_node_mode():
-        """Create Nodeモードを開始"""
+        """Create Nodeモードをかいし"""
         _create_node_state["name"] = ""
         _create_node_state["bg"] = "back_town"
         _create_node_state["coord_x"] = 0
@@ -824,14 +994,14 @@ init python:
         renpy.restart_interaction()
     
     def create_node_set_coord(x, y):
-        """座標を確定してノード名入力へ"""
+        """座標を確定してノード名入ちからへ"""
         _create_node_state["coord_x"] = x
         _create_node_state["coord_y"] = y
         _create_node_state["step"] = "name"
         renpy.call_in_new_context("_create_node_name_input")
     
     def create_node_select_bg(bg_name):
-        """背景を選択して保存"""
+        """背景をせんたくして保存"""
         _create_node_state["bg"] = bg_name
         # ノードを実際に保存
         name = _create_node_state["name"]
@@ -844,12 +1014,12 @@ init python:
         renpy.restart_interaction()
     
     def cancel_create_node():
-        """Create Nodeモードをキャンセル"""
+        """Create Nodeモードをきゃんせる"""
         _create_node_state["step"] = "coord"
         _link_editor_state["mode"] = "select_node"
         renpy.restart_interaction()
 
-# Create Node用ノード名入力ラベル
+# Create Node用ノード名入ちからラベル
 label _create_node_name_input:
     $ _cx = _create_node_state["coord_x"]
     $ _cy = _create_node_state["coord_y"]
@@ -875,13 +1045,13 @@ label _create_node_name_input:
 init python:
     
     def link_editor_select_node(node_name):
-        """ノードを直接選択（リストから）"""
+        """ノードを直接せんたく（リストから）"""
         _link_editor_state["selected_node"] = node_name
         _link_editor_state["mode"] = "edit_links"
         renpy.restart_interaction()
     
     def link_editor_start_add():
-        """リンク追加モードを開始"""
+        """リンク追加モードをかいし"""
         _link_editor_state["mode"] = "add_link"
         _link_editor_state["link_text"] = ""
         _link_editor_state["dest_node"] = None
@@ -895,7 +1065,7 @@ init python:
             renpy.restart_interaction()
     
     def link_editor_start_delete_node():
-        """ノード削除確認モードへ"""
+        """ノード削除かくにんモードへ"""
         _link_editor_state["mode"] = "confirm_delete"
         renpy.restart_interaction()
     
@@ -910,12 +1080,12 @@ init python:
         renpy.restart_interaction()
     
     def link_editor_cancel_delete():
-        """削除キャンセル"""
+        """削除きゃんせる"""
         _link_editor_state["mode"] = "edit_links"
         renpy.restart_interaction()
     
     def link_editor_back():
-        """前の画面に戻る"""
+        """まえの画面にもどる"""
         if _link_editor_state["mode"] == "edit_links":
             _link_editor_state["selected_node"] = None
             _link_editor_state["mode"] = "select_node"
@@ -924,13 +1094,13 @@ init python:
         renpy.restart_interaction()
     
     # =========================================================================
-    # 背景画像選択
+    # 背景画像せんたく
     # =========================================================================
     # 利用可能な背景画像リスト（images/back/フォルダ内の全画像を動的に取得）
     _available_bg_images = []
     for fn in renpy.list_files():
         if fn.startswith("images/back/") and fn.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
-            # 拡張子を除去し、パスの最後の部分（ファイル名）のみを取得
+            # 拡張こを除去し、パスの最うしろの部ふん（ファイル名）のみを取得
             # 例: images/back/back_town.png -> back_town
             name = fn.rsplit(".", 1)[0].split("/")[-1]
             _available_bg_images.append(name)
@@ -939,17 +1109,17 @@ init python:
     
     _bg_selector_state = {
         "selected_bg": None,
-        "callback": None,  # 選択後のコールバック
+        "callback": None,  # せんたくうしろのコールバック
     }
     
     def show_bg_selector(callback_mode):
-        """背景選択画面を表示"""
+        """背景せんたく画面を表示"""
         _link_editor_state["mode"] = "select_bg"
         _bg_selector_state["callback"] = callback_mode
         renpy.restart_interaction()
     
     def select_bg_image(bg_name):
-        """背景画像を選択"""
+        """背景画像をせんたく"""
         _bg_selector_state["selected_bg"] = bg_name
         
         callback = _bg_selector_state.get("callback")
@@ -981,7 +1151,7 @@ init python:
     }
     
     def start_new_node():
-        """新規ノード作成開始"""
+        """新規ノード作成かいし"""
         _new_node_state["name"] = ""
         _new_node_state["bg"] = "back_town"
         _new_node_state["coord"] = None
@@ -1000,7 +1170,7 @@ init python:
         renpy.restart_interaction()
     
     def cancel_new_node():
-        """新規ノード作成キャンセル"""
+        """新規ノード作成きゃんせる"""
         _new_node_state["name"] = ""
         _new_node_state["coord"] = None
         _link_editor_state["mode"] = "select_node"
@@ -1010,7 +1180,7 @@ init python:
         """マップクリックで座標を取得（new_node_coordモード用）"""
         # マウス座標を取得
         x, y = renpy.get_mouse_pos()
-        # マップフレームのオフセットを考慮（左側フレーム幅10 + padding 10）
+        # マップフレームのオフセットを考慮（ひだり側フレーム幅10 + padding 10）
         frame_offset_x = 20
         frame_offset_y = 60  # vbox spacing + text height
         
@@ -1031,7 +1201,7 @@ init python:
         set_new_node_coord(map_x, map_y)
     
     def link_editor_map_click_for_new_node():
-        """マップクリックで座標を取得してノード追加を開始（統合版）"""
+        """マップクリックで座標を取得してノード追加をかいし（統合版）"""
         # マウス座標を取得
         x, y = renpy.get_mouse_pos()
         frame_offset_x = 20
@@ -1046,14 +1216,14 @@ init python:
         map_y = max(0, min(map_y, 754))
         
         if _link_editor_state["mode"] == "new_node_coord":
-            # 既にノード名入力済み - 座標セットして保存
+            # 既にノード名入ちから済み - 座標セットして保存
             set_new_node_coord(map_x, map_y)
         else:
-            # select_nodeモード - 座標を保存してノード名入力へ
+            # select_nodeモード - 座標を保存してノード名入ちからへ
             _new_node_state["coord"] = (map_x, map_y)
             renpy.call_in_new_context("_new_node_from_map_click")
 
-# 新規ノード名入力ラベル
+# 新規ノード名入ちからラベル
 label _new_node_name_input:
     $ _new_node_name = renpy.input(
         "Enter new node name (e.g. street_1)",
@@ -1095,7 +1265,7 @@ label _new_node_from_map_click:
                 _bg_selector_state["callback"] = "new_node"
                 _link_editor_state["mode"] = "select_bg"
             else:
-                # 新規ノード - bg選択へ
+                # 新規ノード - bgせんたくへ
                 _new_node_state["name"] = _node_name
                 _bg_selector_state["callback"] = "new_node"
                 _link_editor_state["mode"] = "select_bg"
@@ -1108,7 +1278,7 @@ label _new_node_from_map_click:
 
 init python:
     def _apply_ruby_to_text(text):
-        """ルビ記法を適用: 道(みち) → {rb}道{/rb}{rt}みち{/rt}"""
+        """ルビ記法を適用: みち(みち) → みち"""
         return ruby(text)
     
     def _do_add_link_from_input(link_text, dest_node):
@@ -1124,17 +1294,17 @@ init python:
             renpy.notify("リンクを追加しました！")
     
     def link_editor_select_dest(dest_node):
-        """遷移先を選択してリンクを保存"""
+        """遷移先をせんたくしてリンクを保存"""
         link_text = _link_editor_state.get("pending_link_text", "")
         if link_text:
             _do_add_link_from_input(link_text, dest_node)
-        _link_editor_state["hover_dest_node"] = None  # ハイライトをクリア
+        _link_editor_state["hover_dest_node"] = None  # ハイライトをくりあ
         renpy.restart_interaction()
     
     def strip_ruby_tags(text):
         """ルビタグを除去してプレーンテキストを返す（表示用）"""
         import re
-        # {rb}漢字{/rb}{rt}ふりがな{/rt} → 漢字(ふりがな)
+        # ふりがな → かんじ(ふりがな)
         pattern = r'\{rb\}([^{]+)\{/rb\}\{rt\}([^{]+)\{/rt\}'
         return re.sub(pattern, r'\1(\2)', text)
 
@@ -1146,7 +1316,7 @@ init python:
         ruby_ranges = []
         last_end = 0
         for m in re.finditer(pattern, tagged_text):
-            # マッチ前のプレーンテキスト
+            # マッチまえのプレーンテキスト
             base_text += tagged_text[last_end:m.start()]
             # ルビ対象のテキスト
             target = m.group(1)
@@ -1156,7 +1326,7 @@ init python:
             end_idx = len(base_text)
             ruby_ranges.append((start_idx, end_idx, ruby))
             last_end = m.end()
-        # 残りのテキスト
+        # のこりのテキスト
         base_text += tagged_text[last_end:]
         return base_text, ruby_ranges
     
@@ -1171,32 +1341,32 @@ init python:
     }
     
     def ruby_editor_set_text(text):
-        """テキストを設定"""
+        """テキストをせってい"""
         _ruby_editor_state["text"] = text
         _ruby_editor_state["ruby_ranges"] = []
         renpy.restart_interaction()
     
     def ruby_editor_toggle_char(index):
-        """文字をクリックして選択/解除"""
+        """文字をクリックしてせんたく/解除"""
         state = _ruby_editor_state
         if not state["selecting"]:
-            # 選択開始
+            # せんたくかいし
             state["selecting"] = True
             state["select_start"] = index
         else:
-            # 選択終了 → ルビ入力
+            # せんたくしゅうりょう → ルビ入ちから
             start = min(state["select_start"], index)
             end = max(state["select_start"], index) + 1
             state["selecting"] = False
             state["select_start"] = -1
             
-            # ルビ入力を呼び出す
+            # ルビ入ちからを呼び出す
             renpy.call_in_new_context("_ruby_range_input", start, end)
     
     def ruby_editor_add_ruby(start, end, ruby_text):
-        """指定範囲にルビを追加"""
+        """ゆび定範囲にルビを追加"""
         if ruby_text and ruby_text.strip():
-            # 重複チェック・上書き
+            # 重複チェック・うえ書き
             _ruby_editor_state["ruby_ranges"] = [
                 r for r in _ruby_editor_state["ruby_ranges"]
                 if not (r[0] < end and r[1] > start)  # 重複しないものだけ残す
@@ -1206,7 +1376,7 @@ init python:
         renpy.restart_interaction()
     
     def ruby_editor_remove_ruby(start, end):
-        """指定範囲のルビを削除"""
+        """ゆび定範囲のルビを削除"""
         _ruby_editor_state["ruby_ranges"] = [
             r for r in _ruby_editor_state["ruby_ranges"]
             if not (r[0] == start and r[1] == end)
@@ -1228,32 +1398,32 @@ init python:
         return result
     
     def ruby_editor_confirm():
-        """確定して遷移先選択へ"""
+        """確定して遷移先せんたくへ"""
         result = ruby_editor_get_result()
         _link_editor_state["pending_link_text"] = result
         _link_editor_state["mode"] = "select_dest"
         renpy.restart_interaction()
     
     def ruby_editor_cancel():
-        """キャンセル"""
+        """きゃんせる"""
         _ruby_editor_state["text"] = ""
         _ruby_editor_state["ruby_ranges"] = []
         _link_editor_state["mode"] = "edit_links"
         renpy.restart_interaction()
 
-# ルビ範囲入力用ラベル
+# ルビ範囲入ちから用ラベル
 label _ruby_range_input(start, end):
     $ _selected_text = _ruby_editor_state["text"][start:end]
     $ _ruby_input = renpy.input(
-        "「{}」のふりがなを入力".format(_selected_text),
+        "「{}」のふりがなを入ちから".format(_selected_text),
         default="", length=20)
     $ ruby_editor_add_ruby(start, end, _ruby_input)
     return
 
-# リンクテキスト入力用ラベル
+# リンクテキスト入ちから用ラベル
 label _link_input_label:
     $ _link_text_input = renpy.input(
-        "リンクテキストを入力\n（後でルビを追加できます）",
+        "リンクテキストを入ちから\n（うしろでルビを追加できます）",
         default="", length=50)
     
     if _link_text_input and _link_text_input.strip():
@@ -1262,7 +1432,7 @@ label _link_input_label:
             ruby_editor_set_text(_link_text_input.strip())
             _link_editor_state["mode"] = "ruby_edit"
     else:
-        "キャンセルしました"
+        "きゃんせるしました"
         python:
             _link_editor_state["mode"] = "edit_links"
     
@@ -1292,7 +1462,7 @@ screen link_editor():
             _map_w = int(_map_base_w * _zoom_factor)
             _map_h = int(_map_base_h * _zoom_factor)
             
-            # マップの左上座標（画面中央配置時の計算）
+            # マップのひだりうえ座標（画面なか央配置じの計算）
             _map_left = (config.screen_width - _map_w) // 2
             _map_top = (config.screen_height - _map_h) // 2
             
@@ -1350,7 +1520,7 @@ screen link_editor():
                 if node_pos:
                     $ _nx = int(node_pos[0] * _zoom_factor)
                     $ _ny = int(node_pos[1] * _zoom_factor)
-                    # 移動中は選択中のノードをズーム変え
+                    # 移動なかはせんたくなかのノードをズーム変え
                     python:
                         if state["mode"] == "move_node_confirm" and node_id == state["selected_node"]:
                             _m_zoom = 0.6
@@ -1372,7 +1542,7 @@ screen link_editor():
                     pos (_rel_x, 0)
                     xsize 2
                     ysize _map_h
-                # 横線
+                # よこ線
                 add Solid("#00ff00"):
                     pos (0, _rel_y)
                     xsize _map_w
@@ -1380,7 +1550,7 @@ screen link_editor():
         
         # UIオーバーレイ (モード別)
         if state["mode"] == "create_node":
-            # 上部情報パネル
+            # うえ部情報パネル
             frame:
                 xalign 0.5 yalign 0.0
                 yoffset 10
@@ -1393,23 +1563,23 @@ screen link_editor():
                     if _in_map:
                         text "座標: ([_orig_x], [_orig_y])" color "#00ffff" size 24
                     else:
-                        text "マップ上にカーソルを移動してください" color "#888888" size 20
-                    text "クリックして決定" color "#aaaaaa" size 16
+                        text "マップうえにカーソルを移動してください" color "#888888" size 20
+                    text "クリックしてけってい" color "#aaaaaa" size 16
             
-            # キャンセルボタン
+            # きゃんせるボタン
             frame:
                 xalign 0.5 yalign 1.0
                 yoffset -20
                 padding (20, 10)
                 background "#000000CC"
                 
-                textbutton "【キャンセル】":
+                textbutton "【きゃんせる】":
                     text_size 20
                     text_color "#ff8888"
                     action Function(cancel_create_node)
 
         elif state["mode"] == "create_node_bg":
-            # 背景選択パネル
+            # 背景せんたくパネル
             frame:
                 xalign 0.5 yalign 0.5
                 padding (20, 20)
@@ -1418,7 +1588,7 @@ screen link_editor():
                 vbox:
                     spacing 10
                     
-                    text "【背景画像を選択】" color "#ffcc00" size 24
+                    text "【背景画像をせんたく】" color "#ffcc00" size 24
                     $ _cn = _create_node_state
                     text "ノード名: [_cn['name']]" color "#88ff88" size 16
                     text "座標: ([_cn['coord_x']], [_cn['coord_y']])" color "#aaaaaa" size 14
@@ -1448,13 +1618,13 @@ screen link_editor():
                                         vbox:
                                             spacing 3
                                             text "[bg_name]" color "#00ffff" size 16
-                                            textbutton "【選択】":
+                                            textbutton "【せんたく】":
                                                 text_size 14
                                                 text_color "#00ff00"
                                                 action Function(create_node_select_bg, bg_name)
                     
                     null height 10
-                    textbutton "【キャンセル】":
+                    textbutton "【きゃんせる】":
                         text_size 16
                         text_color "#ff8888"
                         action Function(cancel_create_node)
@@ -1474,14 +1644,14 @@ screen link_editor():
                     if _in_map:
                         text "新座標: ([_orig_x], [_orig_y])" color "#00ffff" size 20
                     else:
-                        text "新しい位置をクリックしてください" color "#aaaaaa" size 16
+                        text "あたらしい位置をクリックしてください" color "#aaaaaa" size 16
             
             frame:
                 xalign 0.5 yalign 1.0
                 yoffset -20
                 padding (20, 10)
                 background "#000000CC"
-                textbutton "【キャンセル】":
+                textbutton "【きゃんせる】":
                     text_size 20
                     text_color "#ff8888"
                     action Function(link_editor_cancel_move)
@@ -1493,7 +1663,7 @@ screen link_editor():
             yfill True
             spacing 20
             
-            # 左側: マップ表示（ノードクリック可能）
+            # ひだり側: マップ表示（ノードクリック可能）
             frame:
                 xsize 780
                 yfill True
@@ -1503,7 +1673,7 @@ screen link_editor():
                 # マウス座標計算（フレーム内座標を正しく計算）
                 python:
                     _mx, _my = renpy.get_mouse_pos()
-                    # フレームの左上座標を考慮（padding 10 + 10）
+                    # フレームのひだりうえ座標を考慮（padding 10 + 10）
                     _frame_offset_x = 20
                     _frame_offset_y = 20
                     _zoom = 0.75  # 拡大して余白を減らす
@@ -1519,7 +1689,7 @@ screen link_editor():
                     add cfg["image"]:
                         zoom _zoom
                     
-                    # マップクリック可能エリア（空いている場所をクリックでノード追加）
+                    # マップクリック可能エリア（そらいているばしょをクリックでノード追加）
                     # select_nodeモードまたはnew_node_coordモードでマップクリック有効
                     if state["mode"] in ["select_node", "new_node_coord"]:
                         $ _map_w = int(1000 * _zoom)
@@ -1531,7 +1701,7 @@ screen link_editor():
                             action Function(link_editor_map_click_for_new_node)
                     
                     # 各ノードをクリック可能なボタンとして表示
-                    # ミニマップと同じ方法で node_marker 画像を使用
+                    # ミニマップと同じかた法で node_marker 画像を使用
                     for node_id, node_pos in map_coordinates.items():
                         if node_pos:
                             $ btn_x = int(node_pos[0] * _zoom)
@@ -1552,13 +1722,13 @@ screen link_editor():
                                 else:
                                     _marker_zoom = cfg["marker_scale"]  # ミニマップと同じ 0.5
                             
-                            # ミニマップと同じ方法で配置（add + pos + anchor）
+                            # ミニマップと同じかた法で配置（add + pos + anchor）
                             add cfg["node_marker"]:
                                 pos (btn_x, btn_y)
                                 anchor (0.5, 0.5)
                                 zoom _marker_zoom
                             
-                            # 遷移先ホバー時はノード名を表示
+                            # 遷移先ホバーじはノード名を表示
                             if is_dest_hover:
                                 frame:
                                     pos (btn_x + 10, btn_y - 20)
@@ -1567,7 +1737,7 @@ screen link_editor():
                                     text "[node_id]" color "#ffff00" size 12
                             
                             # クリック可能領域（透明ボタン）
-                            # select_dest モードでは遷移先として選択
+                            # select_dest モードでは遷移先としてせんたく
                             python:
                                 if state["mode"] == "select_dest":
                                     if node_id != state["selected_node"]:
@@ -1586,7 +1756,7 @@ screen link_editor():
                                 unhovered Function(link_editor_hover_node, None)
                                 action _node_action
                     
-                    # 座標・ホバー情報をオーバーレイで表示（マップ上部）
+                    # 座標・ホバー情報をオーバーレイで表示（マップうえ部）
                     frame:
                         pos (0, 0)
                         background "#000000AA"
@@ -1597,7 +1767,7 @@ screen link_editor():
                             if _in_map:
                                 text "座標: ([_map_x], [_map_y])" color "#00ffff" size 14
                             else:
-                                text "マップ外" color "#888888" size 14
+                                text "マップそと" color "#888888" size 14
                             
                             if state.get("hover_node"):
                                 text "| Hover: [state['hover_node']]" color "#ffcc00" size 14
@@ -1606,7 +1776,7 @@ screen link_editor():
                             elif _in_map:
                                 text "| クリックでノード追加" color "#88ff88" size 14
             
-            # 右側: ノード情報とリンク編集
+            # みぎ側: ノード情報とリンク編集
             frame:
                 xfill True
                 yfill True
@@ -1617,9 +1787,9 @@ screen link_editor():
                     spacing 10
                     
                     if state["mode"] == "rename_node":
-                        # 名前変更モード
+                        # なまえ変更モード
                         text "【ノード名の変更】" color "#00ffff" size 24
-                        text "新しい名前を入力してください" color "#aaaaaa" size 16
+                        text "あたらしいなまえを入ちからしてください" color "#aaaaaa" size 16
                         
                         null height 20
                         
@@ -1636,18 +1806,18 @@ screen link_editor():
                                 text_size 18
                                 text_color "#00ff00"
                                 action Function(link_editor_rename_node, _link_editor_state["temp_input"])
-                            textbutton "【キャンセル】":
+                            textbutton "【きゃんせる】":
                                 text_size 18
                                 text_color "#ff8888"
                                 action SetDict(_link_editor_state, "mode", "edit_links")
 
                     elif state["mode"] == "confirm_node":
-                        # ノード選択確認モード
+                        # ノードせんたくかくにんモード
                         $ pending = state.get("pending_node", "")
                         $ pending_data = world_map.get(pending, {})
                         
-                        text "【確認】" color "#00ffff" size 24
-                        text "このノードを選択しますか？" color "#aaaaaa" size 16
+                        text "【かくにん】" color "#00ffff" size 24
+                        text "このノードをせんたくしますか？" color "#aaaaaa" size 16
                         
                         null height 15
                         
@@ -1671,19 +1841,19 @@ screen link_editor():
                                 text_size 18
                                 text_color "#00ff00"
                                 action Function(link_editor_confirm_node)
-                            textbutton "【キャンセル】":
+                            textbutton "【きゃんせる】":
                                 text_size 18
                                 text_color "#ff8888"
                                 action Function(link_editor_cancel_confirm)
                 
                     elif state["mode"] == "select_node" or (not state["selected_node"] and state["mode"] not in ("event_editor", "event_ruby_edit")):
-                        # ノード未選択
+                        # ノード未せんたく
                         text "【リンクエディタ】" color "#ffff00" size 24
-                        text "マップ上のノードをクリックして選択" color "#aaaaaa" size 16
+                        text "マップうえのノードをクリックしてせんたく" color "#aaaaaa" size 16
                         
                         null height 20
                         text "ノードリスト:" color "#88ff88" size 18
-                        text "(ホバーでマップ上にハイライト)" color "#888888" size 12
+                        text "(ホバーでマップうえにハイライト)" color "#888888" size 12
                         
                         viewport:
                             scrollbars "vertical"
@@ -1711,7 +1881,7 @@ screen link_editor():
                         null height 10
                         hbox:
                             spacing 15
-                            textbutton "【閉じる】":
+                            textbutton "【とじる】":
                                 text_size 18
                                 text_color "#ff8888"
                                 action Hide("link_editor")
@@ -1726,7 +1896,7 @@ screen link_editor():
                         
                         if ev_state["mode"] == "file_list":
                             text "【イベント編集】" color "#ff88ff" size 24
-                            text "ファイルを選択" color "#aaaaaa" size 14
+                            text "ファイルをせんたく" color "#aaaaaa" size 14
                             
                             null height 10
                             viewport:
@@ -1743,7 +1913,7 @@ screen link_editor():
                                             action Function(event_editor_select_file, ev_fname, ev_fpath)
                             
                             null height 15
-                            textbutton "【戻る】":
+                            textbutton "【もどる】":
                                 text_size 16
                                 text_color "#ff8888"
                                 action Function(event_editor_close)
@@ -1775,11 +1945,11 @@ screen link_editor():
                                             
                                             hbox:
                                                 spacing 8
-                                                # 行番号
+                                                # 行ばんごう
                                                 text "L[_ev_ln]" color "#666666" size 12 yalign 0.5 min_width 40
                                                 # タイプ表示
                                                 if _ev_tp == "menu":
-                                                    text "選択" color "#ffcc00" size 12 yalign 0.5
+                                                    text "せんたく" color "#ffcc00" size 12 yalign 0.5
                                                 elif _ev_sp:
                                                     text "[_ev_sp]" color "#88ccff" size 12 yalign 0.5
                                                 else:
@@ -1821,9 +1991,9 @@ screen link_editor():
                                 text "ナレーション (L[_ev_ln2])" color "#aaaaaa" size 14
                         
                         if is_selecting:
-                            text "★ 選択中... 終了位置をクリック" color "#ffff00" size 16
+                            text "★ せんたくなか... しゅうりょう位置をクリック" color "#ffff00" size 16
                         else:
-                            text "文字をクリックして選択開始/終了" color "#aaaaaa" size 14
+                            text "文字をクリックしてせんたくかいし/しゅうりょう" color "#aaaaaa" size 14
                         
                         null height 10
                         
@@ -1898,7 +2068,7 @@ screen link_editor():
                                 text_size 16
                                 text_color "#00ff00"
                                 action Function(event_editor_save_ruby)
-                            textbutton "【キャンセル】":
+                            textbutton "【きゃんせる】":
                                 text_size 16
                                 text_color "#ff8888"
                                 action Function(event_editor_cancel_ruby)
@@ -1909,7 +2079,7 @@ screen link_editor():
                         $ new_bg = _new_node_state.get("bg", "")
                         
                         text "【マップをクリック】" color "#00ffff" size 24
-                        text "新規ノードの座標を選択してください" color "#aaaaaa" size 14
+                        text "新規ノードの座標をせんたくしてください" color "#aaaaaa" size 14
                         
                         null height 10
                         frame:
@@ -1919,23 +2089,23 @@ screen link_editor():
                             
                             vbox:
                                 spacing 3
-                                text "名前: [new_name]" color "#88ff88" size 16
+                                text "なまえ: [new_name]" color "#88ff88" size 16
                                 text "bg: [new_bg]" color "#aaaaaa" size 14
                         
                         null height 15
-                        textbutton "【キャンセル】":
+                        textbutton "【きゃんせる】":
                             text_size 16
                             text_color "#ff8888"
                             action Function(cancel_new_node)
                     
                     elif state["mode"] == "confirm_delete":
-                        # ノード削除確認モード
+                        # ノード削除かくにんモード
                         $ del_node = state["selected_node"]
                         $ del_data = world_map.get(del_node, {})
                         $ del_links = len(del_data.get("links", {}))
                         
                         text "【ノード削除】" color "#ff4444" size 24
-                        text "このノードを本当に削除しますか？" color "#ffaaaa" size 16
+                        text "このノードをほんとうに削除しますか？" color "#ffaaaa" size 16
                         
                         null height 15
                         
@@ -1958,15 +2128,15 @@ screen link_editor():
                                 text_size 18
                                 text_color "#ff0000"
                                 action Function(link_editor_confirm_delete_node)
-                            textbutton "【キャンセル】":
+                            textbutton "【きゃんせる】":
                                 text_size 18
                                 text_color "#88ff88"
                                 action Function(link_editor_cancel_delete)
                     
                     elif state["mode"] == "select_bg":
-                        # 背景画像選択モード
-                        text "【背景画像を選択】" color "#ffcc00" size 24
-                        text "クリックしてプレビュー・選択" color "#aaaaaa" size 14
+                        # 背景画像せんたくモード
+                        text "【背景画像をせんたく】" color "#ffcc00" size 24
+                        text "クリックしてプレビュー・せんたく" color "#aaaaaa" size 14
                         
                         null height 10
                         
@@ -1993,13 +2163,13 @@ screen link_editor():
                                             vbox:
                                                 spacing 3
                                                 text "[bg_name]" color "#00ffff" size 16
-                                                textbutton "【選択】":
+                                                textbutton "【せんたく】":
                                                     text_size 14
                                                     text_color "#00ff00"
                                                     action Function(select_bg_image, bg_name)
                         
                         null height 10
-                        textbutton "【キャンセル】":
+                        textbutton "【きゃんせる】":
                             text_size 16
                             text_color "#ff8888"
                             action [SetDict(_link_editor_state, "mode", "edit_links")]
@@ -2013,10 +2183,10 @@ screen link_editor():
                         $ select_start = ruby_state["select_start"]
                         
                         text "【ルビ編集】" color "#ff88ff" size 24
-                        text "文字をクリックして選択開始/終了" color "#aaaaaa" size 14
+                        text "文字をクリックしてせんたくかいし/しゅうりょう" color "#aaaaaa" size 14
                         
                         if is_selecting:
-                            text "★ 選択中... 終了位置をクリック" color "#ffff00" size 16
+                            text "★ せんたくなか... しゅうりょう位置をクリック" color "#ffff00" size 16
                         
                         null height 10
                         
@@ -2088,28 +2258,28 @@ screen link_editor():
                         
                         hbox:
                             spacing 15
-                            textbutton "【確定 → 遷移先選択】":
+                            textbutton "【確定 → 遷移先せんたく】":
                                 text_size 16
                                 text_color "#00ff00"
                                 action Function(ruby_editor_confirm)
-                            textbutton "【キャンセル】":
+                            textbutton "【きゃんせる】":
                                 text_size 16
                                 text_color "#ff8888"
                                 action Function(ruby_editor_cancel)
                     
                     elif state["mode"] == "select_dest":
-                        # 遷移先選択モード
+                        # 遷移先せんたくモード
                         $ sel_node = state["selected_node"]
                         $ pending_text = state.get("pending_link_text", "")
                         $ display_text = strip_ruby_tags(pending_text) if pending_text else ""
                         
-                        text "【遷移先を選択】" color "#ff88ff" size 24
+                        text "【遷移先をせんたく】" color "#ff88ff" size 24
                         text "From: [sel_node]" color "#aaaaaa" size 14
                         text "Text: [display_text]" color "#88ff88" size 14
                         
                         null height 10
-                        text "リストまたはマップから選択:" color "#ffff00" size 16
-                        text "(ホバーでマップ上にハイライト)" color "#888888" size 12
+                        text "リストまたはマップからせんたく:" color "#ffff00" size 16
+                        text "(ホバーでマップうえにハイライト)" color "#888888" size 12
                         
                         viewport:
                             scrollbars "vertical"
@@ -2128,13 +2298,13 @@ screen link_editor():
                                             action Function(link_editor_select_dest, node_id)
                         
                         null height 10
-                        textbutton "【キャンセル】":
+                        textbutton "【きゃんせる】":
                             text_size 16
                             text_color "#ff8888"
                             action [SetDict(_link_editor_state, "mode", "edit_links"), SetDict(_link_editor_state, "pending_link_text", None), SetDict(_link_editor_state, "hover_dest_node", None)]
                     
                     else:
-                        # ノード選択済み - リンク編集モード
+                        # ノードせんたく済み - リンク編集モード
                         $ sel_node = state["selected_node"]
                         $ node_data = world_map.get(sel_node, {})
                         $ node_links = node_data.get("links", {})
@@ -2150,10 +2320,10 @@ screen link_editor():
                                 text_color "#ffcc00"
                                 action Function(show_bg_selector, "edit")
                         
-                        # 名前の変更と移動
+                        # なまえの変更と移動
                         hbox:
                             spacing 15
-                            textbutton "【名前変更】":
+                            textbutton "【なまえ変更】":
                                 text_size 18
                                 text_color "#00ffff"
                                 action Function(link_editor_start_rename)
@@ -2195,7 +2365,7 @@ screen link_editor():
                                 text_color "#00ff00"
                                 action Function(link_editor_start_add)
                             
-                            textbutton "【戻る】":
+                            textbutton "【もどる】":
                                 text_size 16
                                 text_color "#ffcc00"
                                 action Function(link_editor_back)
@@ -2213,12 +2383,12 @@ screen link_editor():
                                 action Function(event_editor_open)
                         
                         null height 20
-                        textbutton "【閉じる】":
+                        textbutton "【とじる】":
                             text_size 18
                             text_color "#ff8888"
                             action Hide("link_editor")
 
-    # デバッグメッセージ表示エリア (最前面)
+    # デバッグメッセージ表示エリア (最まえ面)
     if _link_editor_state.get("last_message"):
         text _link_editor_state["last_message"]:
             align (0.5, 0.1)

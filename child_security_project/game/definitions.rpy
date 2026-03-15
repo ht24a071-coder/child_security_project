@@ -8,43 +8,44 @@ default trust_point = 0
 default current_score = 0
 default is_window_hovered = False # テキストウィンドウのホバー状態
 
-# プレイヤー設定
+# プレイヤーせってい
 default player_name = "ナナシ"
 default player_icon = "bear"
+default player_destination = "" # 行き先の動的テキスト（例：「かえる」「いく」）
 
-# 山札変数
+# やま札変数
 default deck_suspicious = []
 default deck_safe = []
  
-# 全キャラクター・ナレーション共通でCTCを設定
+# 全キャラクター・ナレーション共通でCTCをせってい
 define narrator = Character(ctc="ctc_icon", ctc_position="nestled")
 
 # キャラクター定義（CTC追加）
 define officer = Character("おまわりさん", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
 define woman = Character("おねえさん", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
-define teacher = Character("先生", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
+define teacher = Character("せんせい", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
 define stranger = Character("???", color="#ff8888", ctc="ctc_icon", ctc_position="nestled")
 define pc = Character("[player_name]", image="player", ctc="ctc_icon", ctc_position="nestled")
-define parent = Character("お母さん", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
-define t = Character("伊東マンショ", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
+define parent = Character("おかあさん", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
+define t = Character("いとう まんしょ", color="#c8ffc8", ctc="ctc_icon", ctc_position="nestled")
 
-# 不審者のランダム画像用
+# ふしんしゃのランダム画像用
 default stranger_type = "stranger"
 
-# 遭遇したイベントの記録（振り返りミニゲーム用）
+# 遭遇したイベントのきろく（振り返りミニゲーム用）
 default encountered_events = [] 
 
-# 不審者の見た目ごとのボイスマッピング
+# ふしんしゃの見ためごとのボイスマッピング
 define stranger_voice_map = {
     "stranger": {
-        "001": "audio/stranger1_kaeri.wav",
-        "002": "audio/stranger1_okuru.wav",
-        "003": "audio/stranger1_hello.wav",
+        "kaeri": "audio/stranger1_kaeri.wav",
+        "okuru": "audio/stranger1_okuru.wav",
+        "hello": "audio/stranger1_hello.wav",
     },
     "stranger2": {
-        "001": "audio/stranger2_kaeri.wav",
-        "002": "audio/stranger2_okuru.wav",
-        "003": "audio/stranger2_hello.wav",
+        "kaeri": "audio/stranger2_kaeri.wav",
+        "okuru": "audio/stranger2_okuru.wav",
+        "hello": "audio/stranger2_hello.wav",
     },
 }
 
@@ -57,7 +58,7 @@ image side player = "images/icons/[player_icon].png"
 image side officer = "images/actor/officer.png"
 image side woman = "images/actor/woman.png"
 image side teacher = "images/actor/teacher.png"
-image side parent = "images/actor/woman3.png" # お母さん（仮）
+image side parent = "images/actor/woman3.png" # おかあさん（仮）
 image side stranger = ConditionSwitch(
     "stranger_type == 'stranger2'", "images/actor/stranger2.png",
     "True", "images/actor/stranger.png"
@@ -73,32 +74,24 @@ image officer = Transform("images/actor/officer.png", fit="contain", ysize=900)
 
 init python:
     def get_helper_data():
-        """現在地に基づいて助けに来る人（キャラ画像名、名前）を返す"""
-        # 現在のノードを取得（global current_node を想定、なければ safe デフォルト）
+        """いまここに基づいて助けに来るひと（キャラ画像名、なまえ）を返す"""
+        # いまのノードを取得（global current_node を想定、なければ safe デフォルト）
         # ただし current_node は script.rpy 等で管理されているはず
         # ここでは renpy.store.current_node を参照する
         c_node = getattr(renpy.store, "current_node", "")
         
         if c_node in NEAR_SCHOOL_NODES:
-            return "teacher", "先生"
+            return "teacher", "せんせい"
         else:
             return "officer", "おまわりさん"
 
-# -----------------------------------------------------------
-# スコア表示システム
-# -----------------------------------------------------------
-
-# -----------------------------------------------------------
-# スコア表示システム
-# -----------------------------------------------------------
-
-# 1. 常時表示するスコアボード
+# 1. 常じ表示するスコアボード
 screen score_hud():
     zorder 100
     style_prefix "score_hud"
 
     frame:
-        xalign 0.02 yalign 0.02 # 画面の配置（左上）
+        xalign 0.02 yalign 0.02 # 画面の配置（ひだりうえ）
         padding (20, 10)        # 枠の内側の余白
         background "#00000080"  # 半透明の黒背景
 
@@ -107,12 +100,12 @@ screen score_hud():
             
             # スコア表示
             text "スコア: [total_score]":
-                color "#ffff00"  # 黄色
+                color "#ffff00"  # 黄いろ
                 size 32          # 文字サイズ
                 bold True        # 太字
-                yalign 0.5       # 上下の真ん中寄せ
+                yalign 0.5       # うえしたの真んなか寄せ
 
-            # 目的地表示（下校モードのみ）
+            # もくてきち表示（げこうモードのみ）
             $ _target_home = globals().get("target_home", None)
             if game_mode == "going_home" and _target_home:
                 hbox:
@@ -122,51 +115,51 @@ screen score_hud():
                     
                     $ home_name = ""
                     if _target_home == "home_nw":
-                        $ home_name = "{rb}左上{/rb}{rt}ひだりうえ{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                        $ home_name = "ひだりうえのいえ"
                     elif _target_home == "home_sw":
-                        $ home_name = "{rb}左下{/rb}{rt}ひだりした{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                        $ home_name = "ひだりしたのいえ"
                     elif _target_home == "home_se":
-                        $ home_name = "{rb}右下{/rb}{rt}みぎした{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                        $ home_name = "みぎしたのいえ"
                     elif _target_home == "home_w":
-                        $ home_name = "{rb}左{/rb}{rt}ひだり{/rt}の{rb}家{/rb}{rt}いえ{/rt}"
+                        $ home_name = "ひだりのいえ"
                     
-                    text "目的地: [home_name]":
+                    text "もくてきち: [home_name]":
                         color "#00ffff"
                         size 24
                         bold True
                         outlines [(3, "#000000", 0, 0)] # ルビが見やすいように太めのアウトライン
                         yalign 0.5
 
-# 2. 点数変動時のポップアップ演出
+# 2. 点数変動じのポップアップ演出
 screen score_popup(amount):
-    zorder 101 # スコアボードよりさらに手前
+    zorder 101 # スコアボードよりさらにてまえ
 
-    # プラスかマイナスかで色と記号を変える
+    # プラスかマイナスかでいろと記号を変える
     if amount >= 0:
         $ display_text = "+" + str(amount)
-        $ text_color = "#00ff00" # 緑色
+        $ text_color = "#00ff00" # 緑いろ
     else:
         $ display_text = str(amount) # マイナスは最初からついてる
-        $ text_color = "#ff0000" # 赤色
+        $ text_color = "#ff0000" # 赤いろ
 
     # ふわっと消えるアニメーションを適用
     text "[display_text]" at score_float_up:
         color text_color
         size 40
-        outlines [(2, "#000000", 0, 0)] # 黒いフチドリで見やすく
+        outlines [(2, "#000000", 0, 0)] # くろいフチドリで見やすく
         # ★修正済み：bold True
         bold True
-        xalign 0.05 yalign 0.08 # スコアボードのちょっと下に表示
+        xalign 0.05 yalign 0.08 # スコアボードのちょっとしたに表示
 
-    # 1.5秒後に自動で消す
+    # 1.5びょううしろに自動で消す
     timer 1.5 action Hide("score_popup")
 
 # 3. アニメーションの動き定義（トランスフォーム）
 transform score_float_up:
-    alpha 0.0 yoffset 20 # 最初は透明でちょっと下
-    easein 0.3 alpha 1.0 yoffset 0 # 0.3秒で現れる
-    time 1.0 # 1秒間そのまま
-    easeout 0.5 alpha 0.0 yoffset -30 # 0.5秒かけて上に浮きながら消える
+    alpha 0.0 yoffset 20 # 最初は透明でちょっとした
+    easein 0.3 alpha 1.0 yoffset 0 # 0.3びょうで現れる
+    time 1.0 # 1びょう間そのまま
+    easeout 0.5 alpha 0.0 yoffset -30 # 0.5びょうかけてうえに浮きながら消える
 
 # 4. 便利な関数（update_score）
 init python:
@@ -175,7 +168,7 @@ init python:
         global total_score
         total_score += amount
         
-        # 履歴に追加
+        # りれきに追加
         # reasonがない場合は自動的に補完するか、Noneのままにして表示側で処理
         if reason:
             score_history.append((amount, reason))
@@ -186,33 +179,33 @@ init python:
         # ポップアップ演出を表示（引数で増減値を渡す）
         renpy.show_screen("score_popup", amount=amount)
         
-        # 音を鳴らす（ファイルがない場合はコメントアウトしてください）
+        # おとを鳴らす（ファイルがない場合はコメントアウトしてください）
         # if amount > 0:
         #    renpy.play("audio/se_good.ogg", channel="sound")
         # elif amount < 0:
         #    renpy.play("audio/se_bad.ogg", channel="sound")
 
     def setup_stranger(event_name="unknown"):
-        """ランダムで不審者の見た目を選ぶ & 遭遇イベントを記録"""
+        """ランダムでふしんしゃの見ためを選ぶ & 遭遇イベントをきろく"""
         global stranger_type
         stranger_type = renpy.random.choice(["stranger", "stranger2"])
         
-        # 特徴をランダムに決定
+        # 特徴をランダムにけってい
         trait = renpy.random.choice(stranger_traits)
         
         # 遭遇リストに追加
         record_detailed_encounter(stranger_type, event_name, trait=trait, is_stranger=True)
 
     def record_detailed_encounter(char_type, event_name, trait=None, is_stranger=False):
-        """遭遇イベントを詳細に記録する"""
-        # 重複チェック（同じイベント名は一度だけ記録）
+        """遭遇イベントを詳細にきろくする"""
+        # 重複チェック（同じイベント名は一度だけきろく）
         for e in encountered_events:
             if isinstance(e, dict) and e.get("event_name") == event_name:
                 return
             elif isinstance(e, tuple) and e[1] == event_name: # 互換性
                 return
 
-        # スプライト(画像パス)の決定
+        # スプライト(画像パス)のけってい
         sprite_map = {
             "stranger": "images/actor/stranger.png",
             "stranger2": "images/actor/stranger2.png",
@@ -223,7 +216,7 @@ init python:
         }
         sprite = sprite_map.get(char_type, "")
 
-        # 記録
+        # きろく
         data = {
             "char_type": char_type,
             "event_name": event_name,
@@ -234,35 +227,38 @@ init python:
         encountered_events.append(data)
 
     def record_encounter(char_type, event_name):
-        """遭遇イベントを記録（後方互換性用）"""
+        """遭遇イベントをきろく（うしろかた互換性用）"""
         record_detailed_encounter(char_type, event_name)
 
     def get_stranger_voice(line_id=None):
         """
-        現在のstranger_typeに対応するボイスファイルパスを返す
-        line_idがNone、または 'auto' の場合は、game_modeに合わせて 001(下校) か 002(登校) を選ぶ
+        いまのstranger_typeに対応するボイスファイルパスを返す
+        line_idがNone、または 'auto' の場合は、game_modeに合わせて kaeri(げこう) か okuru(とうこう) を選ぶ
         """
         if line_id is None or line_id == "auto":
-            # game_mode が going_home なら 001(kaeri)、それ以外なら 002(okuru)
-            line_id = "001" if getattr(renpy.store, "game_mode", "going_home") == "going_home" else "002"
+            # game_mode が going_home なら kaeri、それいがいなら okuru
+            line_id = "kaeri" if getattr(renpy.store, "game_mode", "going_home") == "going_home" else "okuru"
             
         return stranger_voice_map.get(stranger_type, {}).get(line_id, None)
 
     def play_voice(line_id="auto"):
-        """不審者のボイスを自動判別して再生する"""
+        """ふしんしゃのボイスを自動判別して再生する"""
         v = get_stranger_voice(line_id)
         if v:
-            renpy.voice(v)
+            try:
+                # soundチャンネルのplay関数を使用してvoiceチャンネルで再生
+                renpy.sound.play(v, channel="voice")
+            except:
+                pass
 
     def play_commute_bgm(fadein=1.0):
         """モードに合わせてBGMを再生する"""
-        mode = getattr(renpy.store, "game_mode", "going_home")
-        if mode == "going_home":
-            # 下校用のBGM（既存のファイルを指定するか、適宜変更してください）
-            renpy.music.play("audio/train.mp3", fadein=fadein, loop=True)
-        else:
-            # 登校用のBGM
-            renpy.music.play("audio/humikiri.mp3", fadein=fadein, loop=True)
+        import store
+        # game_modeがうまく取れない場合を考慮
+        mode = getattr(store, "game_mode", "going_home")
+        
+        # ユーザーゆび定のBGMを再生
+        renpy.music.play("audio/あにまるさんぽ.mp3", fadein=fadein, loop=True, if_changed=True)
 
     def get_npc_dialogue(npc_tag, dialogue_type="Greeting"):
         """
@@ -277,7 +273,7 @@ init python:
         # globals() からリストを取得
         dialogue_list = globals().get(list_name, [])
         if not dialogue_list:
-            # フォールバック: モード指定なしの名前を試す
+            # フォールバック: モードゆび定なしのなまえを試す
             dialogue_list = globals().get(npc_tag + dialogue_type, ["..."])
             
         return renpy.random.choice(dialogue_list)
@@ -285,15 +281,15 @@ init python:
     def get_commute_text(home_text, school_text):
         """
         game_mode に基づいてテキストを返す
-        home_text: 下校時のテキスト
-        school_text: 登校時のテキスト
+        home_text: げこうじのテキスト
+        school_text: とうこうじのテキスト
         """
         if getattr(renpy.store, "game_mode", "going_home") == "going_home":
             return home_text
         return school_text
 
     # -----------------------------------------------------------
-# コントローラー設定
+# コントローラーせってい
 # -----------------------------------------------------------
 default persistent.controller_layout = "standard"
 
@@ -302,7 +298,7 @@ init python:
     if "Nintendo Switch" in config.controller_blocklist:
         config.controller_blocklist.remove("Nintendo Switch")
     
-    # 一般的なSwitch ProコントローラーのSDL2マッピングを追加（認識精度向上）
+    # 一般的なSwitch ProコントローラーのSDL2マッピングを追加（認識精度向うえ）
     # 030000007e0500000920000000000000,Nintendo Switch Pro Controller,a:b0,b:b1,back:b8,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b4,leftstick:b10,lefttrigger:b6,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b11,righttrigger:b7,rightx:a2,righty:a3,start:b9,x:b2,y:b3,
     try:
         import os
@@ -317,28 +313,28 @@ init python:
     def update_controller_bindings():
         """コントローラーのボタン割り当てを更新"""
         
-        # Nintendoレイアウト（A決定=右、B戻る=下）
+        # Nintendoレイアウト（Aけってい=みぎ、Bもどる=した）
         if persistent.controller_layout == "nintendo":
-            # Aボタン（XboxのB位置）で決定
+            # Aボタン（XboxのB位置）でけってい
             config.pad_bindings["pad_b_press"] = [ "dismiss", "button_select", "bar_activate", "bar_deactivate", "chosen" ]
-            # Bボタン（XboxのA位置）でメニューを開く
+            # Bボタン（XboxのA位置）でめにゅーを開く
             config.pad_bindings["pad_a_press"] = [ "game_menu" ]
             
-        # Standardレイアウト（A決定=下、B戻る=右）
+        # Standardレイアウト（Aけってい=した、Bもどる=みぎ）
         else:
-            # Aボタン（XboxのA位置）で決定
+            # Aボタン（XboxのA位置）でけってい
             config.pad_bindings["pad_a_press"] = [ "dismiss", "button_select", "bar_activate", "bar_deactivate", "chosen" ]
-            # Bボタン（XboxのB位置）でキャンセル・メニュー
+            # Bボタン（XboxのB位置）できゃんせる・めにゅー
             config.pad_bindings["pad_b_press"] = [ "game_menu" ]
 
-    # 初期化時に適用
+    # 初期化じに適用
     update_controller_bindings()
 
 # -----------------------------------------------------------
 # クリック待ちアイコン（CTC）
 # -----------------------------------------------------------
 image ctc_icon:
-    # ホバー時は黄色、通常は白
+    # ホバーじは黄いろ、通常は白
     ConditionSwitch(
         "is_window_hovered", Text("▼", size=24, color="#ffff00", outlines=[(2, "#000000", 0, 0)]),
         "True", Text("▼", size=24, color="#ffffff", outlines=[(2, "#000000", 0, 0)])

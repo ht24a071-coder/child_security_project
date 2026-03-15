@@ -1,20 +1,23 @@
-# 不審者イベント1：お菓子で誘う不審者
+# ふしんしゃイベント1：お菓こで誘うふしんしゃ
 # イベント登録は def_mapdat.rpy の event_pools で管理
 
 label suspi_e_test_1:
     $ setup_stranger()
+    # play music "audio/Pinch!!.mp3" fadein 1.0  # 削除：ここではまだ流さない
     show stranger with dissolve
     
     # 特徴を表示
     $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'suspicious_event_1'), "")
     if current_trait:
         "（[current_trait] ひとのようだ。）"
-    $ s_text = get_commute_text("{rb}学校{/rb}{rt}がっこう{/rt}{rb}帰{/rb}{rt}かえ{/rt}り？", "{rb}学校{/rb}{rt}がっこう{/rt}に いくの？")
-    stranger "{rb}君{/rb}{rt}きみ{/rt} [s_text] おいしいケーキがあるんだけど{rb}来{/rb}{rt}こ{/rt}ない？"
+    $ s_text = get_commute_text("がっこうかえり？", "がっこうに いくの？")
+    $ player_destination = get_commute_text("かえら", "か")
+    $ play_voice()
+    stranger "きみ [s_text] おいしいケーキがあるんだけどこない？"
 
     menu:
         "いくー！":
-            stranger "いい{rb}子{/rb}{rt}こ{/rt}だね～こっちこっち..."
+            stranger "いいこだね～こっちこっち..."
             hide stranger
             scene black with fade
             
@@ -23,26 +26,30 @@ label suspi_e_test_1:
             jump game_over
 
         "ごめんなさい。まっすぐ [player_destination]ないといけないんです":
-            $ player_destination = get_commute_text("{rb}帰{/rb}{rt}かえ{/rt}ら", "{rb}行{/rb}{rt}か{/rt}")
+            $ play_se("decide")
+            $ player_destination = get_commute_text("かえら", "か")
             $ update_score(15, "はっきりと ことわった")
             
             pc "いりません！"
             
             # 強制連れ去りイベント
             stranger "いいから こいよ！"
+            play music "audio/Pinch!!.mp3" fadein 1.0 # ここで流す！
             "ふしんしゃは うでを つかもうとしてきた！"
             
             menu:
                 "おおごえを だす":
+                    $ play_se("decide")
                     jump .shout_cake
                 
                 "にげる":
+                    $ play_se("decide")
                     jump .run_cake
 
 label .shout_cake:
-    # 大声ミニゲーム
+    # おおごえミニゲーム
     window hide
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
     
@@ -64,13 +71,13 @@ label .shout_cake:
             jump .cake_fail
 
 label .run_cake:
-    # 逃走ミニゲーム（連打）
+    # 逃走ミニゲーム（れんだ）
     window hide
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
     
-    $ game = MashingMinigame(target_count=15, time_limit=8.0, title="にげろ", text="ボタンを連打して\nダッシュしろ！")
+    $ game = MashingMinigame(target_count=15, time_limit=8.0, title="にげろ", text="ボタンをれんだして\nダッシュしろ！")
     call screen mashing_minigame(game)
     
     # UI復帰
@@ -110,7 +117,7 @@ label .cake_success_buzzer:
     jump .cake_rescued
 
 label .cake_rescued:
-    # 助けに来る人をランダム決定
+    # 助けに来るひとをランダムけってい
     $ is_officer = renpy.random.choice([True, False])
     
     if is_officer:

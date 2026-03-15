@@ -1,6 +1,6 @@
 # =============================================================================
-# Windows ネイティブ マイク音量検出
-# 外部ライブラリ不要 - Windows API (winmm.dll) を直接使用
+# Windows ネイティブ マイクおと量検出
+# そと部ライブラリ不要 - Windows API (winmm.dll) を直接使用
 # =============================================================================
 
 init -1 python:
@@ -28,7 +28,7 @@ init -1 python:
             WHDR_DONE = 0x00000001
             WHDR_PREPARED = 0x00000002
             
-            # WAVEFORMATEX構造体
+            # WAVEFORMATEX構造からだ
             class WAVEFORMATEX(ctypes.Structure):
                 _fields_ = [
                     ("wFormatTag", wintypes.WORD),
@@ -40,7 +40,7 @@ init -1 python:
                     ("cbSize", wintypes.WORD),
                 ]
             
-            # WAVEHDR構造体
+            # WAVEHDR構造からだ
             class WAVEHDR(ctypes.Structure):
                 _fields_ = [
                     ("lpData", ctypes.POINTER(ctypes.c_char)),
@@ -58,11 +58,11 @@ init -1 python:
         except Exception as e:
             _win_mic_error = str(e)
     else:
-        _win_mic_error = "Windows以外のOSです"
+        _win_mic_error = "WindowsいがいのOSです"
 
 
     class WinMicRecorder:
-        """Windows APIを使ったマイク録音クラス（ダブルバッファリング）"""
+        """Windows APIを使ったマイク録おとクラス（ダブルバッファリング）"""
         
         NUM_BUFFERS = 4
         
@@ -79,13 +79,13 @@ init -1 python:
             self._buffer_count = 0  # デバッグ用カウンタ
         
         def start(self):
-            """録音開始"""
+            """録おとかいし"""
             if not _win_mic_available:
                 self.debug_info = "not available"
                 return False
             
             try:
-                # フォーマット設定
+                # フォーマットせってい
                 fmt = WAVEFORMATEX()
                 fmt.wFormatTag = WAVE_FORMAT_PCM
                 fmt.nChannels = 1
@@ -109,7 +109,7 @@ init -1 python:
                     self.debug_info = f"open error: {result}"
                     return False
                 
-                # 複数バッファ準備 - ctypes配列として確保
+                # 複数バッファじゅんび - ctypes配列として確保
                 buf_size = self.buffer_size * 2  # 16bit = 2bytes per sample
                 self.headers = (WAVEHDR * self.NUM_BUFFERS)()
                 
@@ -132,7 +132,7 @@ init -1 python:
                         self.debug_info = f"addbuf error: {result}"
                         return False
                 
-                # 録音開始
+                # 録おとかいし
                 result = winmm.waveInStart(self.hwi)
                 if result != 0:
                     self.debug_info = f"start error: {result}"
@@ -141,7 +141,7 @@ init -1 python:
                 self.is_recording = True
                 self.debug_info = "recording"
                 
-                # 音量取得スレッド開始
+                # おと量取得スレッドかいし
                 self._thread = threading.Thread(target=self._update_volume, daemon=True)
                 self._thread.start()
                 
@@ -152,7 +152,7 @@ init -1 python:
                 return False
         
         def _update_volume(self):
-            """音量を継続的に更新"""
+            """おと量を継続的に更新"""
             while self.is_recording:
                 try:
                     found_done = False
@@ -165,15 +165,15 @@ init -1 python:
                             recorded = self.headers[i].dwBytesRecorded
                             if recorded >= 2:
                                 data = self.buffers[i].raw[:recorded]
-                                # 16bit PCMデータから音量計算
+                                # 16bit PCMデータからおと量計算
                                 num_samples = len(data) // 2
                                 samples = struct.unpack(f"<{num_samples}h", data)
                                 if samples:
                                     # RMS計算
                                     sum_sq = sum(s*s for s in samples)
                                     rms = (sum_sq / num_samples) ** 0.5
-                                    # 0-1に正規化（感度を下げる）
-                                    # 元は2000だったが、小声で100%にならないように10000へ変更
+                                    # 0-1に正規化（感度をしたげる）
+                                    # 元は2000だったが、小こえで100%にならないように10000へ変更
                                     with self._lock:
                                         self.current_volume = min(1.0, rms / 10000)
                                         self.debug_info = f"vol:{int(rms)}/{10000} buf:{self._buffer_count}"
@@ -194,14 +194,14 @@ init -1 python:
                         self.debug_info = f"update error: {e}"
         
         def get_volume(self):
-            """現在の音量を取得 (0.0-1.0)"""
+            """いまのおと量を取得 (0.0-1.0)"""
             with self._lock:
                 return self.current_volume
         
         def stop(self):
-            """録音停止"""
+            """録おと停止"""
             self.is_recording = False
-            time.sleep(0.05)  # スレッド終了を待つ
+            time.sleep(0.05)  # スレッドしゅうりょうを待つ
             try:
                 if self.hwi:
                     winmm.waveInStop(self.hwi)
@@ -219,14 +219,14 @@ init -1 python:
 
     class ShoutMinigame:
         """
-        おおごえミニゲーム（不審者撃退・HP制）
+        おおごえミニゲーム（ふしんしゃ撃退・HP制）
         Windows: マイク使用
-        その他: ボタン連打フォールバック
+        その他: ボタンれんだフォールバック
         """
         def __init__(self, 
                      threshold=0.6, # 90dB相当
-                     duration=8.0,  # 制限時間を長めに（削り切る必要があるため）
-                     hp=100,        # 不審者のHP
+                     duration=8.0,  # 制限じかんを長めに（削り切る必要があるため）
+                     hp=100,        # ふしんしゃのHP
                      title=None,    # イントロ画面タイトル
                      text=None):    # イントロ画面説明文
             self.threshold = threshold
@@ -236,9 +236,9 @@ init -1 python:
             
             # イントロオーバーレイ用（BaseMinigame互換）
             self.started = False
-            self.key = "dismiss"  # イントロ用（実際のゲーム入力とは別）
+            self.key = "dismiss"  # イントロ用（実際のゲーム入ちからとは別）
             
-            # マイク機能チェック（タイトル・テキスト決定前に必要）
+            # マイク機能チェック（タイトル・テキストけっていまえに必要）
             self.mic_available = _win_mic_available
             
             # タイトル・テキスト（マイク有無で自動切り替え）
@@ -262,7 +262,7 @@ init -1 python:
             self.start_time = None
             self.elapsed = 0.0
             
-            # 音量関連
+            # おと量関連
             self.current_volume = 0.0
             self.max_volume = 0.0
             
@@ -275,8 +275,8 @@ init -1 python:
             self.shout_texts = [] 
             self.next_text_time = 0.0
             self.shake_offset = (0, 0)
-            self.stranger_shake = (0, 0) # 不審者の揺れ
-            self.damage_flash = 0.0      # ダメージ時の赤フラッシュ
+            self.stranger_shake = (0, 0) # ふしんしゃの揺れ
+            self.damage_flash = 0.0      # ダメージじの赤フラッシュ
             
             self.debug_info = ""
             self.mic_started = False
@@ -287,7 +287,7 @@ init -1 python:
             ]
 
         def get_remaining(self):
-            """残り時間をリアルタイムで取得"""
+            """のこりじかんをリアルタイムで取得"""
             if self._real_start_time is None:
                 return self.duration
             elapsed = renpy.get_game_runtime() - self._real_start_time
@@ -318,12 +318,12 @@ init -1 python:
             self.elapsed = st - self.start_time
             dt = 0.02 # 近似deltaTime
             
-            # マイク音量取得
+            # マイクおと量取得
             if self.mic_available and self.recorder:
                 self.current_volume = self.recorder.get_volume()
                 self.max_volume = max(self.max_volume, self.current_volume)
             
-            # 時間切れ判定
+            # じかん切れ判定
             if not self.show_result and self.elapsed >= self.duration:
                 self.stop_mic()
                 if self.current_hp <= 0:
@@ -333,44 +333,44 @@ init -1 python:
                 self.show_result = True
                 self.finished = True
             
-            # ゲームプレイ中（HP判定とダメージ処理）
+            # ゲームプレイなか（HP判定とダメージ処理）
             if not self.show_result:
-                # 攻撃力計算（閾値を超えた分だけダメージ）
+                # 攻撃ちから計算（閾値を超えたふんだけダメージ）
                 damage = 0
                 is_attacking = False
                 
                 if self.mic_available:
-                    # 判定基準を厳しくする (閾値の80%以上から有効)
+                    # 判定基準を厳しくする (閾値の80%以うえから有効)
                     damage_threshold = self.threshold * 0.8
                     
                     if self.current_volume >= damage_threshold:
-                        # 以前は音量に応じてダメージが変わっていたが、
-                        # 「近くで叫べばすぐ終わる」という問題を解消するため固定値に変更
-                        # 3.0ダメージ/frame -> 60FPSで180DPS -> HP500を3秒弱
+                        # 以まえはおと量に応じてダメージが変わっていたが、
+                        # 「ちかくで叫べばすぐ終わる」という問題を解消するため固定値に変更
+                        # 3.0ダメージ/frame -> 60FPSで180DPS -> HP500を3びょう弱
                         # 調整: HP=100ならもっと低く。
-                        # 現在のHP=100 (init参照)。duration=5.0s。
-                        # 5秒で削り切るには 20DPS 必要 = 20/60 = 0.33/frame?
-                        # updateは dt=0.02 (50FPS相当) で呼ばれている前提なら
+                        # いまのHP=100 (init参照)。duration=5.0s。
+                        # 5びょうで削り切るには 20DPS 必要 = 20/60 = 0.33/frame?
+                        # updateは dt=0.02 (50FPS相当) で呼ばれているまえ提なら
                         # 100 / (5.0 * 50) = 0.4 damage/frame
                         # 余裕を持たせて 0.6 くらいにする
                         
                         # 修正: updateはRen'PyのDisplayable updateなのでFPS依存だが、dt=0.02固定で計算している
-                        # 実際には st - start_time で経過時間は正しいが、1フレームの重みはフレームレートによる
+                        # 実際には st - start_time で経過じかんはただしいが、1フレームの重みはフレームレートによる
                         # とはいえ、dt=0.02 固定加算ではないので、
-                        # 確実に削れるように少し大きめに設定
+                        # 確実に削れるようにすこし大きめにせってい
                         
-                        damage = 0.8  # 固定ダメージ (約2秒～3秒で満タンから削りきれるくらい)
+                        damage = 0.8  # 固定ダメージ (約2びょう～3びょうで満タンから削りきれるくらい)
                         is_attacking = True
                 else:
-                    # 連打モードは後述のon_mashで処理
+                    # れんだモードはうしろ述のon_mashで処理
                     pass
 
                 # ダメージ適用
                 if damage > 0:
                     self.current_hp = max(0, self.current_hp - damage)
-                    self.damage_flash = min(1.0, self.damage_flash + 0.2) # 赤く光らせる
+                    self.damage_flash = min(1.0, self.damage_flash + 0.2) # 赤くひかりらせる
                     
-                    # 不審者揺らし
+                    # ふしんしゃ揺らし
                     import random
                     shake_amp = int(5 * damage) 
                     self.stranger_shake = (random.randint(-shake_amp, shake_amp), random.randint(-shake_amp, shake_amp))
@@ -402,7 +402,7 @@ init -1 python:
             # HPバー表示用（割合）
             hp_ratio = self.current_hp / self.max_hp
             
-            # バーの色（HPに応じて変化）
+            # バーのいろ（HPに応じて変化）
             if hp_ratio > 0.5:
                 bar_color = "#00ff00"
             elif hp_ratio > 0.2:
@@ -413,11 +413,11 @@ init -1 python:
             return Solid(bar_color, xsize=int(400 * hp_ratio), ysize=30), dt
 
         def on_mash(self):
-            """連打攻撃"""
+            """れんだ攻撃"""
             if self.show_result or self.finished:
                 return
             
-            # 連打ダメージ
+            # れんだダメージ
             damage = 4.0
             self.current_hp = max(0, self.current_hp - damage)
             self.damage_flash = 1.0
@@ -440,26 +440,26 @@ init -1 python:
 
 
 # =============================================================================
-# おおごえミニゲーム画面（不審者バトル版）
+# おおごえミニゲーム画面（ふしんしゃバトル版）
 # =============================================================================
 screen shout_minigame(game):
     modal True
-    zorder 200 # ミニマップ(98)より手前に表示
+    zorder 200 # ミニマップ(98)よりてまえに表示
     
-    # イントロオーバーレイ（STARTボタン押下前）
+    # イントロオーバーレイ（STARTボタン押したまえ）
     if not game.started:
         use minigame_intro_overlay(game)
     else:
-        # ゲーム本編
+        # ゲームほん編
         if not game.finished:
             timer 0.05 repeat True action Function(renpy.restart_interaction)
         
         add Solid("#000000DD")
         
         # ---------------------------------------------------------------
-        # 背景アニメーション（激しさ・爆発感 / 赤・黄色系）
+        # 背景アニメーション（激しさ・爆発感 / 赤・黄いろ系）
         # ---------------------------------------------------------------
-        # 音波を模した同心円（パルス）
+        # おと波を模した同こころ円（パルス）
         add Solid("#330000", xsize=600, ysize=600):
             align (0.5, 0.5)
             at mg_bg_pulse(delay=0.0, lo=0.8, hi=1.2, period=1.2)
@@ -470,7 +470,7 @@ screen shout_minigame(game):
             align (0.5, 0.5)
             at mg_bg_pulse(delay=0.8, lo=0.9, hi=1.05, period=2.0)
 
-        # 左右に浮遊する炎のような図形
+        # ひだりみぎに浮遊する炎のような図かたち
         add Solid("#ff2200", xsize=80, ysize=80) rotate 45 alpha 0.15:
             align (0.05, 0.4)
             at mg_bg_float(delay=0.0, amp=30)
@@ -484,7 +484,7 @@ screen shout_minigame(game):
             align (0.92, 0.65)
             at mg_bg_float(delay=0.3, amp=35)
 
-        # ダメージフラッシュ（damage_flash > 0 のとき赤く光る）
+        # ダメージフラッシュ（damage_flash > 0 のとき赤くひかりる）
         if game.damage_flash > 0.0:
             add Solid("#ff0000", xsize=1920, ysize=1080) alpha game.damage_flash:
                 at mg_flash_in
@@ -492,7 +492,9 @@ screen shout_minigame(game):
         # ---------------------------------------------------------------
         
         # 叫び文字演出（背景側）
-        for txt_data in game.shout_texts:
+        # スレッドあんぜんのためコピーして回す
+        $ display_shout_texts = list(game.shout_texts)
+        for txt_data in display_shout_texts:
             $ txt = txt_data[0]
             $ tx = txt_data[1]
             $ ty = txt_data[2]
@@ -511,7 +513,7 @@ screen shout_minigame(game):
             xalign 0.5
             yalign 0.5
             padding (40, 40)
-            background None # 背景なしでオーバーレイ風に
+            background None # 背景なしでオーバーレイかぜに
             xoffset game.shake_offset[0]
             yoffset game.shake_offset[1]
             
@@ -537,14 +539,14 @@ screen shout_minigame(game):
 
                 null height 180
 
-                # 不審者エリア（HPバー + 画像）
+                # ふしんしゃエリア（HPバー + 画像）
                 frame:
                     background None
                     xalign 0.5
                     ysize 400
                     xsize 400
                     
-                    # 不審者の画像（現在遭遇している不審者を表示）
+                    # ふしんしゃの画像（いま遭遇しているふしんしゃを表示）
                     $ st_img_path = "images/actor/stranger2.png" if getattr(store, "stranger_type", "stranger") == "stranger2" else "images/actor/stranger.png"
                     add st_img_path:
                         xalign 0.5
@@ -553,7 +555,7 @@ screen shout_minigame(game):
                         xoffset game.stranger_shake[0]
                         yoffset game.stranger_shake[1]
                     
-                    # HPバー（頭上）
+                    # HPバー（あたまうえ）
                     vbox:
                         xalign 0.5
                         yalign 0.0
@@ -577,7 +579,7 @@ screen shout_minigame(game):
                 
                 null height 20
                 
-                # 残り時間
+                # のこりじかん
                 $ remaining = game.get_remaining()
                 text "のこり: [remaining:.1f] びょう":
                     size 40
@@ -586,7 +588,7 @@ screen shout_minigame(game):
                     bold True
                     outlines [(2, "#000000", 0, 0)]
                 
-                # 自分の音量メーター（下部）
+                # 自ふんのおと量メーター（した部）
                 if game.mic_available:
                      vbox:
                         xalign 0.5
@@ -602,7 +604,7 @@ screen shout_minigame(game):
                             background "#333333"
                             xalign 0.5
                             
-                            # 現在の音量バー
+                            # いまのおと量バー
                             $ v_width = int(300 * min(1.0, game.current_volume / game.threshold))
                             frame:
                                 background "#00ffff"
@@ -610,16 +612,27 @@ screen shout_minigame(game):
                                 ysize 20
                                 xalign 0.0
 
-                # フォールバック案内
+                # フォールバックあんない
                 elif not game.mic_available:
                     text "ボタンを れんだ！！":
                         size 30
                         color "#ff8800"
                         bold True
 
-        # 入力処理
-        if not game.show_result and not game.mic_available:
-            key "K_SPACE" action Function(game.on_mash)
+        # 入ちから処理（例そと防止のため全てのキーをキャッチしてなにもしない）
+        if not game.show_result:
+            if not game.mic_available:
+                key "K_SPACE" action Function(game.on_mash)
+                key "dismiss" action Function(game.on_mash)
+            else:
+                # マイク使用じはキーで抜けないようダミーを置く
+                key "dismiss" action []
+            
+            # システムキー等の誤爆防止
+            key "K_ESCAPE" action []
+            key "K_RETURN" action []
+            key "K_KP_ENTER" action []
+            key "joy_dismiss" action []
         
         # 結果表示
         if game.show_result:
@@ -645,7 +658,7 @@ screen shout_minigame(game):
 
 
 # =============================================================================
-# マイク設定・デバッグ画面
+# マイクせってい・デバッグ画面
 # =============================================================================
 screen mic_settings():
     modal True
@@ -662,7 +675,7 @@ screen mic_settings():
             spacing 20
             xalign 0.5
             
-            text "マイク設定":
+            text "マイクせってい":
                 size 40
                 color "#ffffff"
                 bold True
@@ -693,14 +706,14 @@ screen mic_settings():
                     text "[err_msg]":
                         size 16
                         color "#ff6666"
-                text "（ボタン連打モードで動作します）":
+                text "（ボタンれんだモードで動作します）":
                     size 18
                     color "#888888"
             
             null height 30
             
-            # 閉じるボタン
-            textbutton "閉じる":
+            # とじるボタン
+            textbutton "とじる":
                 xalign 0.5
                 action Return()
                 text_size 28

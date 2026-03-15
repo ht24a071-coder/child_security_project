@@ -1,9 +1,9 @@
 # =============================================================================
-# 共通：防犯ブザー反撃（ミニゲーム失敗時の救済措置）
+# 共通：ぼうはんブザー反撃（ミニゲームしっぱいじの救済措置）
 # =============================================================================
 
 label fallback_buzzer_sequence:
-    # ミニゲーム失敗後に呼ばれる
+    # ミニゲームしっぱいうしろに呼ばれる
     # scene black  <-- Removed to keep context visible
     # with None
     
@@ -12,7 +12,7 @@ label fallback_buzzer_sequence:
     "でも まだ ぼうはんブザーが ある！！"
     
     # ブザーチャンス画面呼び出し
-    # UI一時非表示
+    # UI一じ非表示
     hide screen minimap
     hide screen score_hud
     
@@ -83,7 +83,7 @@ screen buzzer_chance_screen():
         # ボタン
         imagebutton:
             idle Transform("images/00000436.png", fit="contain", xysize=(300, 300)) # 画像サイズを調整
-            hover Transform("images/00000436.png", fit="contain", xysize=(300, 300), matrixcolor=BrightnessMatrix(0.2)) # ホバー時は明るく
+            hover Transform("images/00000436.png", fit="contain", xysize=(300, 300), matrixcolor=BrightnessMatrix(0.2)) # ホバーじは明るく
             action Return("success")
             xalign 0.5
             
@@ -96,6 +96,6 @@ screen buzzer_chance_screen():
             action Return("success")
             xalign 0.5
             
-    # キー入力対応
+    # キー入ちから対応
     key "K_SPACE" action Return("success")
     key "dismiss" action Return("success")
