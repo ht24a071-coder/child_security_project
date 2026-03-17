@@ -2,25 +2,22 @@
 # イベント登録は def_mapdat.rpy の event_pools で管理
 
 label suspi_e_test_2:
-    $ setup_stranger()
+    $ setup_stranger("suspi_e_test_2")
     # play music "audio/Pinch!!.mp3" fadein 1.0  # 削除：ここではまだ流さない
     show stranger with dissolve
     
     # 特徴を表示
-    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'suspicious_event_2'), "")
+    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'suspi_e_test_2'), "")
     if current_trait:
-        "（[current_trait] ひとのようだ。）"
+        "（{color=#ff0000}[current_trait]{/color} ひとのようだ。）"
     $ s_text = get_commute_text("かえっ", "い")
     $ player_destination = get_commute_text("かえ", "いけ")
     
     play music "audio/Pinch!!.mp3" fadein 1.0  # ここで流す
 
-    if stranger_type == "stranger2":
-        play audio "audio/stranger2_okuru.wav" volume 3.0
-    else:
-        play audio "audio/stranger1_okuru.wav" volume 3.0
-            
-    stranger "ねえ、みちにまよっちゃったんだ。くるまでおくってあげようか？ がっこうに [s_text]く のかな？"
+    $ play_voice("okuru")
+
+    stranger "ねえ、みちにまよっちゃったんだ。{color=#ff0000}くるまでおくってあげようか？{/color} がっこうに [s_text]く のかな？"
 
     menu:
         "のります！":
@@ -97,7 +94,7 @@ label .run_car_2:
 
 label .car_2_success_shout:
     $ update_score(25, "おおごえで げきたい")
-    play audio "audio/防犯ブザー.mp3"
+    $ play_se("buzzer")
     stranger "ちっ...！"
     "ふしんしゃは おおごえに おどろいて にげていった！"
     hide stranger with dissolve
@@ -111,6 +108,7 @@ label .car_2_success_run:
 
 label .car_2_success_buzzer:
     $ update_score(15, "ぼうはんブザーで げきたい")
+    $ play_se("buzzer")
     "ピピピピピ！！"
     stranger "うわっ、なんだ！！"
     "ふしんしゃは あわてて にげだした！"

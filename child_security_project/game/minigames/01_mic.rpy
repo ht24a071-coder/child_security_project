@@ -216,6 +216,26 @@ init -1 python:
             except:
                 pass
 
+        def __getstate__(self):
+            # ctypesオブジェクト、スレッド、ロックは保存できないため除外
+            state = self.__dict__.copy()
+            state['hwi'] = None
+            state['headers'] = None
+            state['buffers'] = []
+            state['_thread'] = None
+            state['_lock'] = None
+            state['is_recording'] = False
+            return state
+
+        def __setstate__(self, state):
+            self.__dict__.update(state)
+            import threading
+            self.hwi = ctypes.c_void_p()
+            self.headers = None
+            self.buffers = []
+            self._lock = threading.Lock()
+            self._thread = None
+
 
     class ShoutMinigame:
         """
@@ -224,11 +244,11 @@ init -1 python:
         その他: ボタンれんだフォールバック
         """
         def __init__(self, 
-                     threshold=0.6, # 90dB相当
-                     duration=8.0,  # 制限じかんを長めに（削り切る必要があるため）
-                     hp=100,        # ふしんしゃのHP
-                     title=None,    # イントロ画面タイトル
-                     text=None):    # イントロ画面説明文
+            threshold=0.6, # 90dB相当
+            duration=8.0,  # 制限じかんを長めに（削り切る必要があるため）
+            hp=100,        # ふしんしゃのHP
+            title=None,    # イントロ画面タイトル
+            text=None):    # イントロ画面説明文
             self.threshold = threshold
             self.duration = duration
             self.max_hp = hp
@@ -379,7 +399,7 @@ init -1 python:
                     
                     # 画面揺らし (閾値超えなら激しく)
                     if self.current_volume >= self.threshold:
-                         self.shake_offset = (random.randint(-5, 5), random.randint(-5, 5))
+                        self.shake_offset = (random.randint(-5, 5), random.randint(-5, 5))
                     
                     # テキスト演出 (閾値超えのみ)
                     if st > self.next_text_time and self.current_volume >= self.threshold:
@@ -431,6 +451,18 @@ init -1 python:
                 self.result = "perfect"
                 self.show_result = True
                 self.finished = True
+
+        def __getstate__(self):
+            # recorderは保存できないWinMicRecorderを含むため除外
+            state = self.__dict__.copy()
+            state['recorder'] = None
+            return state
+
+        def __setstate__(self, state):
+            self.__dict__.update(state)
+            # 再開じに必要ならupdate内で再生成されるロジックにするか、Noneのままにする
+            # ここではrecorderをNoneにして、update時のstart_micに任せる
+            self.recorder = None
 
 
     def mic_get_status():
@@ -502,7 +534,7 @@ screen shout_minigame(game):
             $ ty = txt_data[2]
             $ t_size = txt_data[4]
             if renpy.get_game_runtime() - txt_data[3] < 0.6:
-                 text "[txt]":
+                text "[txt]":
                     size t_size
                     xalign tx
                     yalign ty
@@ -592,7 +624,7 @@ screen shout_minigame(game):
                 
                 # 自ふんのおと量メーター（した部）
                 if game.mic_available:
-                     vbox:
+                    vbox:
                         xalign 0.5
                         spacing 5
                         text "あなたの こえの おおきさ":

@@ -191,8 +191,11 @@ init python:
         global stranger_type
         stranger_type = renpy.random.choice(["stranger", "stranger2"])
         
-        # 特徴をランダムにけってい
-        trait = renpy.random.choice(stranger_traits)
+        # 特徴をランダムにけってい（スプライトに合わせる）
+        if stranger_type == "stranger":
+            trait = renpy.random.choice(stranger_traits_1)
+        else:
+            trait = renpy.random.choice(stranger_traits_2)
         
         # 遭遇リストに追加
         record_detailed_encounter(stranger_type, event_name, trait=trait, is_stranger=True)
@@ -236,9 +239,15 @@ init python:
         いまのstranger_typeに対応するボイスファイルパスを返す
         line_idがNone、または 'auto' の場合は、game_modeに合わせて kaeri(げこう) か okuru(とうこう) を選ぶ
         """
+        mode = getattr(renpy.store, "game_mode", "going_home")
+        
         if line_id is None or line_id == "auto":
-            # game_mode が going_home なら kaeri、それいがいなら okuru
-            line_id = "kaeri" if getattr(renpy.store, "game_mode", "going_home") == "going_home" else "okuru"
+            # game_mode が going_home なら kaeri、それいがいなら hello (とうこうじに「送る」は不自然なため)
+            line_id = "kaeri" if mode == "going_home" else "hello"
+            
+        # 登校中に「送る」や「帰り」を明示的に指定された場合も安全のため「挨拶」に差し替える
+        if mode == "going_to_school" and line_id in ["kaeri", "okuru"]:
+            line_id = "hello"
             
         return stranger_voice_map.get(stranger_type, {}).get(line_id, None)
 

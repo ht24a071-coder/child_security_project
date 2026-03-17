@@ -6,17 +6,14 @@ label encounter_e_stranger:
     play music "audio/Pinch!!.mp3" fadein 1.0
     "だれかが ちかづいてきた。"
     
-    call show_stranger_wrapper("encounter_danger") from _call_show_stranger_wrapper_danger
+    call show_stranger_wrapper("encounter_e_stranger") from _call_show_stranger_wrapper_danger
 
     # 特徴を表示
-    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'encounter_danger'), "")
+    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'encounter_e_stranger'), "")
     if current_trait:
-        "（[current_trait] ひとのようだ。）"
+        "（{color=#ff0000}[current_trait]{/color} ひとのようだ。）"
     
-    if stranger_type == "stranger2":
-        play audio "audio/stranger2_hello.wav" volume 3.0
-    else:
-        play audio "audio/stranger1_hello.wav" volume 3.0
+    $ play_voice("hello")
         
     stranger "こんにちは～"
     
@@ -31,7 +28,7 @@ label encounter_e_stranger:
             pc "..."
     
     pause 0.3
-    stranger "ねえねえ、おいしい おかしが あるんだけど、たべない？"
+    stranger "ねえねえ、{color=#ff0000}おいしい おかしが あるんだけど、たべない？{/color}"
     stranger "こっちに おいでよ。"
 
     pc "いりません！"
@@ -52,7 +49,7 @@ label encounter_e_stranger:
 # -----------------------------------------------------------------------------
 label .buzzer_stranger:
     # ぼうはんブザーを鳴らす
-    play audio "audio/防犯ブザー.mp3"
+    $ play_se("buzzer")
     
     pc "えいっ！！"
     
@@ -122,7 +119,7 @@ label .follow_stranger:
 
 # ぼうはんブザーでにげる（ついていったうしろ）
 label .escape_buzzer:
-    play audio "audio/防犯ブザー.mp3"
+    $ play_se("buzzer")
     
     "ピピピピピ！！"
     stranger "うわっ！？"
@@ -293,7 +290,7 @@ label .escape_shout:
     
     if _return != "miss":
         $ update_score(15, "おおごえで たすけを よんだ")
-        play audio "audio/防犯ブザー.mp3"
+        $ play_se("buzzer")
         stranger "うわっ…！"
         hide stranger with dissolve
         
@@ -435,9 +432,9 @@ label .stage2_run:
     show screen score_hud
 
     if _return == "perfect" or _return == "good":
-         jump .stranger_repelled_run
+        jump .stranger_repelled_run
     else:
-         jump .stage3_choice
+        jump .stage3_choice
 
 label .stage3_choice:
     stranger "いいかげんに しろ！"
@@ -456,7 +453,7 @@ label .stage3_choice:
             jump .buzzer_stranger
 
 label .stage3_shout:
-     # ステージ3のおおごえ（最終）
+    # ステージ3のおおごえ（最終）
     pc "「だれかーー！！」"
     
     hide screen minimap
@@ -476,7 +473,7 @@ label .stage3_shout:
         jump .game_over_capture
 
 label .stage3_run:
-     # ステージ3の逃走
+    # ステージ3の逃走
     pc "（にげるんだ！！）"
     
     hide screen minimap
@@ -599,7 +596,7 @@ label .flee_fail:
     
     call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_10
     if _return == "success":
-         jump .escape_buzzer
+        jump .escape_buzzer
     
     hide stranger
     scene black with fade
