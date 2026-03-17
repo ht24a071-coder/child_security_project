@@ -246,7 +246,7 @@ init python:
             line_id = "kaeri" if mode == "going_home" else "hello"
             
         # 登校中に「送る」や「帰り」を明示的に指定された場合も安全のため「挨拶」に差し替える
-        if mode == "going_to_school" and line_id in ["kaeri", "okuru"]:
+        if mode == "going_school" and line_id in ["kaeri", "okuru"]:
             line_id = "hello"
             
         return stranger_voice_map.get(stranger_type, {}).get(line_id, None)

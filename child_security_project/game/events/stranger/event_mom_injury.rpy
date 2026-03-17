@@ -4,16 +4,16 @@
 
 label suspi_e_mom_injury:
 
-    call show_stranger_wrapper("suspi_e_mom_injury") from _call_show_stranger_wrapper_mom
+    call show_stranger_wrapper from _call_show_stranger_wrapper_mom
 
     # 特徴を表示
-    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'suspi_e_mom_injury'), "")
+    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'mom_injury'), "")
     if current_trait:
-        "（{color=#ff0000}[current_trait]{/color} ひとのようだ。）"
+        "（[current_trait] ひとのようだ。）"
     
     $ play_voice() # おかあさんの怪我という緊急性はセリフで表現し、ボイスは標準的なものを使用
     stranger "ねえ、キミ！たいへんだよ！"
-    stranger "{color=#ff0000}キミの おかあさんが けがをして びょういんに はこばれたんだ！{/color}"
+    stranger "キミの おかあさんが けがをして びょういんに はこばれたんだ！"
 
     pc "えっ！？ ママが！？"
     
@@ -217,7 +217,7 @@ label .escape_fail_mom:
 # ぼうはんブザー（大正解）
 # -----------------------------------------------------------------------------
 label .buzzer_car_mom:
-    $ play_se("buzzer")
+    play audio "audio/buzzer.mp3"
     
     $ update_score(20, "ぼうはんブザーで げきたい")
     

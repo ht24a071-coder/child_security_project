@@ -2,23 +2,26 @@
 # イベント登録は def_mapdat.rpy の event_pools で管理
 
 label suspi_e_test_1:
-    $ setup_stranger("suspi_e_test_1")
+    $ setup_stranger()
     # play music "audio/Pinch!!.mp3" fadein 1.0  # 削除：ここではまだ流さない
     show stranger with dissolve
     
     # 特徴を表示
-    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'suspi_e_test_1'), "")
+    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'suspicious_event_1'), "")
     if current_trait:
-        "（{color=#ff0000}[current_trait]{/color} ひとのようだ。）"
+        "（[current_trait] ひとのようだ。）"
     $ s_text = get_commute_text("がっこうかえり？", "がっこうに いくの？")
     $ player_destination = get_commute_text("かえら", "か")
     
     play music "audio/Pinch!!.mp3" fadein 1.0  # ここで流す
 
     if game_mode == "going_home":
-        $ play_voice("kaeri")
-
-    stranger "きみ [s_text] {color=#ff0000}おいしいケーキがあるんだけどこない？{/color}"
+        if stranger_type == "stranger2":
+            play audio "audio/stranger2_kaeri.wav" volume 3.0
+        else:
+            play audio "audio/stranger1_kaeri.wav" volume 3.0
+            
+    stranger "きみ [s_text] おいしいケーキがあるんだけどこない？"
 
     menu:
         "いくー！":
@@ -100,7 +103,7 @@ label .run_cake:
 
 label .cake_success_shout:
     $ update_score(25, "おおごえで げきたい")
-    $ play_se("buzzer")
+    play audio "audio/防犯ブザー.mp3"
     stranger "ちっ...！"
     "ふしんしゃは おおごえに おどろいて にげていった！"
     hide stranger with dissolve

@@ -16,14 +16,8 @@ label suspi_e_test_2:
     play music "audio/Pinch!!.mp3" fadein 1.0  # ここで流す
 
     $ play_voice("okuru")
-
-    stranger "ねえ、みちにまよっちゃったんだ。{color=#ff0000}くるまでおくってあげようか？{/color} がっこうに [s_text]く のかな？"
-    if stranger_type == "stranger2":
-        play audio "audio/stranger2_okuru.wav" volume 3.0
-    else:
-        play audio "audio/stranger1_okuru.wav" volume 3.0
-            
-    stranger "こんにちは、おうちまでくるまでおくってあげようか？ がっこうに [s_text]く のかな？"
+    $ s_text = get_commute_text("おうちまで", "がっこうまで")
+    stranger "こんにちは、[s_text] くるまで おくってあげようか？"
 
     menu:
         "のります！":

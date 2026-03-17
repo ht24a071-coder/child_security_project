@@ -20,96 +20,65 @@ init python:
                 # 1. 見ためクイズ（画像せんたく）
                 target_type = encounter["char_type"]
                 options = [target_type]
-
-                # --- 確実に会ったことがない人のプール ---
-                # ゲームのどのイベントにも登場しない、画像フォルダにのみ存在する素材
-                UNSEEN_POOL = [
-                    "man3", "man4", "man5", "officer2", "officer3", 
-                    "officer4", "officer5", "woman2", "woman4", "woman5", "boy"
-                ]
-                
-                # ダミーとして使用する候補をシャッフルして2人選ぶ
-                dummies = [d for d in UNSEEN_POOL]
+                dummies = ["stranger", "stranger2", "officer", "woman", "teacher", "parent"]
+                # 重複排除とターゲット除外
+                dummies = [d for d in dummies if d != target_type]
                 random.shuffle(dummies)
                 options.extend(dummies[:2])
                 random.shuffle(options)
                 
                 self.questions.append({
                     "type": "image",
-                    "text": "この　なかの　だれに　あったかな？",
+                    "text": "このなかの だれに あったかな？",
                     "choices": options,
                     "correct_index": options.index(target_type),
                     "sprite_map": {
                         "stranger": "images/actor/stranger.png",
                         "stranger2": "images/actor/stranger2.png",
                         "officer": "images/actor/officer.png",
-                        "officer2": "images/actor/officer2.png",
-                        "officer3": "images/actor/officer3.png",
-                        "officer4": "images/actor/officer4.png",
-                        "officer5": "images/actor/officer5.png",
                         "woman": "images/actor/woman.png",
-                        "woman2": "images/actor/woman2.png",
-                        "woman4": "images/actor/woman4.png",
-                        "woman5": "images/actor/woman5.png",
                         "teacher": "images/actor/teacher.png",
-                        "parent": "images/actor/woman3.png",
-                        "man3": "images/actor/man3.png",
-                        "man4": "images/actor/man4.png",
-                        "man5": "images/actor/man5.png",
-                        "boy": "images/actor/boy.png"
+                        "parent": "images/actor/woman3.png"
                     }
                 })
 
-                # 2. 特徴クイズ（テキストせんたく）
+                # ふしんしゃの場合のみ追加の質問
                 if encounter.get("is_stranger"):
+                    # 2. 特徴クイズ（テキストせんたく）
                     target_trait = encounter["trait"]
                     t_options = [target_trait]
-                    
-                    # 遭遇時のタイプに合わせたダミーを選ぶ（矛盾を避けるため dummy リストから選ぶ）
-                    t_dummies = [t for t in stranger_traits_dummy if t != target_trait]
+                    t_dummies = [t for t in stranger_traits if t != target_trait]
                     random.shuffle(t_dummies)
                     t_options.extend(t_dummies[:2])
                     random.shuffle(t_options)
                     
                     self.questions.append({
                         "type": "text",
-                        "text": "どんな　とくちょうが　あったかな？",
+                        "text": "どんな とくちょうが あったかな？",
                         "choices": t_options,
                         "correct_index": t_options.index(target_trait)
                     })
 
                     # 3. 行動クイズ（テキストせんたく）
                     event_name = encounter["event_name"]
-                    target_action = event_action_map.get(event_name, "こえを　かけられた")
+                    target_action = event_action_map.get(event_name, "あやしい こえを かけられた")
                     a_options = [target_action]
-                    
-                    # 今回のプレイで遭遇した「全ての」行動を取得して除外する
-                    encountered_actions = []
-                    for e in encountered_events:
-                        action = event_action_map.get(e["event_name"], "")
-                        if action:
-                            encountered_actions.append(action)
-                    
-                    # 全ての選択肢プールから、今回起きたことを全て除外
-                    a_dummies = [v for k, v in event_action_map.items() if v not in encountered_actions]
-                    
-                    # 重複排除
-                    a_unique_dummies = list(set(a_dummies))
+                    a_dummies = [v for k, v in event_action_map.items() if v != target_action]
+                    # 完全に同一の内容がリストにある場合は排除
+                    a_unique_dummies = []
+                    for d in a_dummies:
+                        if d not in a_unique_dummies and d != target_action:
+                            a_unique_dummies.append(d)
                     random.shuffle(a_unique_dummies)
                     a_options.extend(a_unique_dummies[:2])
                     random.shuffle(a_options)
 
                     self.questions.append({
                         "type": "text",
-                        "text": "なにを　されたかな？",
+                        "text": "なにを されたかな？",
                         "choices": a_options,
                         "correct_index": a_options.index(target_action)
                     })
-
-            # 問題数を最大5問に制限
-            if len(self.questions) > 5:
-                random.shuffle(self.questions)
-                self.questions = self.questions[:5]
 
             return True
 
@@ -167,7 +136,7 @@ screen recall_minigame_screen(game):
             align (0.5, 0.1)
             spacing 20
             text "[q_text]" size 50 xalign 0.5 color "#fff" outlines [(3, "#000", 0, 0)]
-            text "だい　[game.current_q_index + 1]　もん　/　ぜん　[len(game.questions)]　もん" size 24 xalign 0.5 color "#aaa"
+            text "第 [game.current_q_index + 1] 問 / 全 [len(game.questions)] 問" size 24 xalign 0.5 color "#aaa"
 
         if current_q["type"] == "image":
             hbox:

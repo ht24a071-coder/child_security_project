@@ -103,7 +103,7 @@ label .greet_back:
 # ぼうはんブザールート（お叱り）
 # -----------------------------------------------------------------------------
 label .buzzer_safe:
-    $ play_se("buzzer")
+    play audio "audio/buzzer.mp3"
     
     "ピピピピピ！！"
     
