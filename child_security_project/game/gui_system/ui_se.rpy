@@ -21,10 +21,10 @@ init -2 python:
         "cancel"          : ("audio/se_ui_cancel.mp3",        0.7),
         "good"            : ("audio/se_good.mp3",             1.0),
         "bad"             : ("audio/ブブー、不正解.mp3",       1.0),
-        "buzzer"          : ("audio/buzzer.mp3",              1.0),
-        "minigame_start"  : ("audio/se_ui_decide.mp3",        0.9),
-        "minigame_hit"    : ("audio/se_ui_decide.mp3",        0.6),
-        "minigame_result" : ("audio/se_good.mp3",             1.0),
+        "buzzer"          : ("audio/防犯ブザー.mp3",          1.0),
+        "minigame_start"  : ("audio/システム決定音_12.mp3",   0.9),
+        "minigame_hit"    : ("audio/アイテム入手音(もしくはカーソル移動音).mp3", 0.6),
+        "minigame_result" : ("audio/正解、ピンポーン_2.mp3",  1.0),
     }
 
 # =========================================================================

@@ -280,7 +280,7 @@ init -1 python:
             
             self.debug_info = ""
             self.mic_started = False
-            self._real_start_time = None
+            self.start_real_time = None
             
             self.shout_phrases = [
                 "たすけて！", "やめて！", "こないで！", "だれかー！", "うわあああん！", "あっちいけ！"
@@ -288,10 +288,11 @@ init -1 python:
 
         def get_remaining(self):
             """のこりじかんをリアルタイムで取得"""
-            if self._real_start_time is None:
+            if self.start_real_time is None:
                 return self.duration
-            elapsed = renpy.get_game_runtime() - self._real_start_time
-            return max(0, self.duration - elapsed)
+            import time
+            elapsed = time.time() - self.start_real_time
+            return max(0.0, self.duration - elapsed)
 
         def start_mic(self):
             if not self.mic_available:
@@ -309,13 +310,14 @@ init -1 python:
                 self.recorder = None
 
         def update(self, st, at):
+            import time
             if self.start_time is None:
                 self.start_time = st
-                self._real_start_time = renpy.get_game_runtime()
+                self.start_real_time = time.time()
                 if self.mic_available:
                     self.start_mic()
             
-            self.elapsed = st - self.start_time
+            self.elapsed = time.time() - self.start_real_time
             dt = 0.02 # 近似deltaTime
             
             # マイクおと量取得

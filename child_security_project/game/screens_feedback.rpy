@@ -53,7 +53,7 @@ screen game_feedback():
                     spacing 10
                     xalign 0.5
                     
-                    text "スコア":
+                    text "てんすう":
                         size 28
                         color "#FFEB3B"
                         xalign 0.5

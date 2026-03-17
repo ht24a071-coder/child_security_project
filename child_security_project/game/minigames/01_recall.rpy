@@ -21,8 +21,10 @@ init python:
                 target_type = encounter["char_type"]
                 options = [target_type]
                 dummies = ["stranger", "stranger2", "officer", "woman", "teacher", "parent"]
+                # 重複排除とターゲット除外
                 dummies = [d for d in dummies if d != target_type]
-                options.extend(random.sample(dummies, 2))
+                random.shuffle(dummies)
+                options.extend(dummies[:2])
                 random.shuffle(options)
                 
                 self.questions.append({
@@ -46,7 +48,8 @@ init python:
                     target_trait = encounter["trait"]
                     t_options = [target_trait]
                     t_dummies = [t for t in stranger_traits if t != target_trait]
-                    t_options.extend(random.sample(t_dummies, 2))
+                    random.shuffle(t_dummies)
+                    t_options.extend(t_dummies[:2])
                     random.shuffle(t_options)
                     
                     self.questions.append({
@@ -58,10 +61,16 @@ init python:
 
                     # 3. 行動クイズ（テキストせんたく）
                     event_name = encounter["event_name"]
-                    target_action = event_action_map.get(event_name, "なにかをされた")
+                    target_action = event_action_map.get(event_name, "あやしい こえを かけられた")
                     a_options = [target_action]
                     a_dummies = [v for k, v in event_action_map.items() if v != target_action]
-                    a_options.extend(random.sample(a_dummies, min(2, len(a_dummies))))
+                    # 完全に同一の内容がリストにある場合は排除
+                    a_unique_dummies = []
+                    for d in a_dummies:
+                        if d not in a_unique_dummies and d != target_action:
+                            a_unique_dummies.append(d)
+                    random.shuffle(a_unique_dummies)
+                    a_options.extend(a_unique_dummies[:2])
                     random.shuffle(a_options)
 
                     self.questions.append({
@@ -211,11 +220,11 @@ label recall_minigame:
         $ is_correct = recall_minigame_obj.next_question(_return)
         
         if is_correct:
-            play audio "audio/se_good.ogg"
+            play audio "audio/正解、ピンポーン_2.mp3"
             "{b}せいかい！{/b}"
             $ update_score(10, "クイズにせいかいした")
         else:
-            play audio "audio/se_bad.ogg"
+            play audio "audio/ブブー、不正解.mp3"
             "{b}ざんねん...{/b}"
 
     # UI復帰

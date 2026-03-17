@@ -65,8 +65,17 @@ label going_school_start:
     call screen home_select_map()
     $ current_node = _return
     $ active_home = _return
+    
+    # ミニマップのいまここをリセットして表示し直す（フォーカス更新）
+    hide screen minimap
+    show screen minimap
+    
+    # さいしょのいえを「とおったみち」にきろく
+    python:
+        if current_node not in visited_nodes:
+            visited_nodes.append(current_node)
 
-    show screen image_overlay("images/Tutorial.png", "チュートリアル")
+    show screen image_overlay("images/Tutorial.png", "ちゅーとりある")
 
     scene start with fade
     # おかあさんの見送りボイス（プレースホルダー）
@@ -91,7 +100,16 @@ label going_home_start:
     $ target_home = _return
     $ active_home = _return
 
-    show screen image_overlay("images/Tutorial.png", "チュートリアル")
+    # ミニマップのいまここをリセットして表示し直す（フォーカス更新）
+    hide screen minimap
+    show screen minimap
+    
+    # さいしょのばしょを「とおったみち」にきろく
+    python:
+        if current_node not in visited_nodes:
+            visited_nodes.append(current_node)
+
+    show screen image_overlay("images/Tutorial.png", "ちゅーとりある")
 
     pc "さあ、いえに かえろう！"
     
@@ -170,9 +188,11 @@ label travel_loop:
         # きょりが縮まっていなければペナルティ
         if d_after >= d_before:
             update_score(-2, "よりみちをした")
+            renpy.notify("みちを まちがえちゃったみたい。まっすぐ かえろう！")
 
     $ previous_node = current_node
     $ current_node = next_location
+    play audio "audio/ローファー_2.mp3"
 
     python:
         if current_node not in visited_nodes:
@@ -186,12 +206,6 @@ label travel_loop:
 
     jump travel_loop
 
-# =============================================================================
-# イベント抽選
-# =============================================================================
-# =============================================================================
-# イベント抽選
-# =============================================================================
 # =============================================================================
 # イベント抽選
 # =============================================================================
@@ -311,10 +325,10 @@ label game_clear:
         feedback_tips = []
         
         # 1. 遭遇したイベントに基づくアドバイス
-        has_stranger = any(e[1] in ["suspicious", "stranger", "car", "mom_injury"] for e in encountered_events)
-        has_acquaintance = any(e[1] == "acquaintance" for e in encountered_events)
-        has_officer = any(e[1] in ["officer", "teacher"] for e in encountered_events)
-        has_safe_person = any(e[1] == "safe_person" for e in encountered_events)
+        has_stranger = any(isinstance(e, dict) and e.get("event_name") in ["suspicious", "stranger", "car", "mom_injury", "car_abduction", "suspicious_event_1", "suspicious_event_2", "encounter_danger"] for e in encountered_events)
+        has_acquaintance = any(isinstance(e, dict) and e.get("event_name") == "acquaintance" for e in encountered_events)
+        has_officer = any(isinstance(e, dict) and e.get("char_type") in ["officer", "teacher"] for e in encountered_events)
+        has_safe_person = any(isinstance(e, dict) and e.get("char_type") == "safe_person" for e in encountered_events)
         
         # だれも会わなかった場合
         if not encountered_events:
@@ -353,7 +367,7 @@ label game_clear:
     
     # くりあBGM再生
     stop music fadeout 1.5
-    play audio "audio/おひろめふぁんふぁーれ.mp3"
+    play audio "audio/お披露目ファンファーレ.mp3"
     
     call screen game_feedback
     call game_end_processing from _call_game_end_processing
@@ -381,7 +395,7 @@ label game_over(set_message="つれさられてしまった..."):
     
     # しっぱいBGM再生
     stop music fadeout 1.5
-    play audio "audio/しっぱい、げーむおーばー.mp3"
+    play audio "audio/失敗、ゲームオーバー.mp3"
     
     call screen game_feedback
     $ renpy.full_restart()

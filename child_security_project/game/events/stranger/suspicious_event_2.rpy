@@ -12,7 +12,14 @@ label suspi_e_test_2:
         "（[current_trait] ひとのようだ。）"
     $ s_text = get_commute_text("かえっ", "い")
     $ player_destination = get_commute_text("かえ", "いけ")
-    $ play_voice()
+    
+    play music "audio/Pinch!!.mp3" fadein 1.0  # ここで流す
+
+    if stranger_type == "stranger2":
+        play audio "audio/stranger2_okuru.wav" volume 3.0
+    else:
+        play audio "audio/stranger1_okuru.wav" volume 3.0
+            
     stranger "ねえ、みちにまよっちゃったんだ。くるまでおくってあげようか？ がっこうに [s_text]く のかな？"
 
     menu:
@@ -30,7 +37,6 @@ label suspi_e_test_2:
             $ play_se("decide")
             $ update_score(15, "はっきりと ことわった")
             
-            play music "audio/Pinch!!.mp3" fadein 1.0 # ここで流す！
             stranger "いいから のりなよ！"
             "ふしんしゃは うでを つかもうとしてきた！"
             
@@ -91,7 +97,7 @@ label .run_car_2:
 
 label .car_2_success_shout:
     $ update_score(25, "おおごえで げきたい")
-    play audio "audio/buzzer.mp3"
+    play audio "audio/防犯ブザー.mp3"
     stranger "ちっ...！"
     "ふしんしゃは おおごえに おどろいて にげていった！"
     hide stranger with dissolve

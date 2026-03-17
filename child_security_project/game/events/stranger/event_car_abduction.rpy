@@ -3,9 +3,8 @@
 # =============================================================================
 
 label suspi_e_car:
-
-    $ setup_stranger()
-    # play music "audio/Pinch!!.mp3" fadein 1.0  # 削除：ここではまだ流さない
+    $ setup_stranger("car_abduction")
+    play music "audio/Pinch!!.mp3" fadein 1.0  # ここで流す
     "くるまが ゆっくり ちかづいてきた。"
     
     "まどが あいて、なかから ひとが こえを かけてきた。"
@@ -18,10 +17,12 @@ label suspi_e_car:
         "（[current_trait] ひとのようだ。）"
     
     if game_mode == "going_home":
-        $ play_voice("kaeri")
+        if stranger_type == "stranger2":
+            play audio "audio/stranger2_kaeri.wav" volume 3.0
+        else:
+            play audio "audio/stranger1_kaeri.wav" volume 3.0
         stranger "ねえ、きみ、がっこうの かえり？"
     else:
-        $ play_voice("okuru")
         stranger "ねえ、きみ、がっこうに いくの？"
     
     # まず挨拶への反応
@@ -35,7 +36,10 @@ label suspi_e_car:
             pc "..."
             stranger "ねえ、きいてる？"
 
-    $ play_voice("002")
+    if stranger_type == "stranger2":
+        play audio "audio/stranger2_okuru.wav" volume 3.0
+    else:
+        play audio "audio/stranger1_okuru.wav" volume 3.0
     $ s_text = get_commute_text("おうちまで おくってあげようか？", "がっこうまで おくってあげようか？")
     stranger "[s_text]"
     $ player_destination = get_commute_text("かえれ", "いけ")
@@ -83,7 +87,6 @@ label .refuse_car:
 # 強引に乗せようとしてくるパターン
 # -----------------------------------------------------------------------------
 label .forceful_attempt:
-    play music "audio/Pinch!!.mp3" fadein 1.0 # ここで流す！
     stranger "いいから のりなよ！"
     stranger "ちょっとだけだから！"
     
@@ -119,7 +122,7 @@ label .forceful_shout:
     
     if _return != "miss":
         $ update_score(25, "おおごえで げきたい")
-        play audio "audio/buzzer.mp3"
+        play audio "audio/防犯ブザー.mp3"
         stranger "ちっ...！"
         "ふしんしゃは くるまに のって にげていった！"
         hide stranger with dissolve
@@ -128,6 +131,7 @@ label .forceful_shout:
         $ is_officer = renpy.random.choice([True, False])
         
         if is_officer:
+            hide stranger
             show officer with dissolve
             officer "どうしたの！？ だいじょうぶ！？"
             pc "くるまに のせられそうに...！"
@@ -135,6 +139,7 @@ label .forceful_shout:
             officer "すぐ パトロールに いってくるよ。"
             hide officer with dissolve
         else:
+            hide stranger
             show teacher with dissolve
             teacher "どうしたの！？ だいじょうぶ！？"
             pc "くるまに のせられそうに...！"
@@ -204,12 +209,14 @@ label .car_repelled_buzzer:
     $ is_officer = renpy.random.choice([True, False])
     
     if is_officer:
+        hide stranger
         show officer with dissolve
         officer "どうしたの！？ だいじょうぶ！？"
         pc "くるまに のせられそうに...！"
         officer "こわかったね！よく ブザーを ならせて えらかったね！"
         hide officer with dissolve
     else:
+        hide stranger
         show teacher with dissolve
         teacher "どうしたの！？ だいじょうぶ！？"
         pc "くるまに のせられそうに...！"
@@ -263,7 +270,7 @@ label .run_away_car:
 # ぼうはんブザールート
 # -----------------------------------------------------------------------------
 label .buzzer_car:
-    play audio "audio/buzzer.mp3"
+    play audio "audio/防犯ブザー.mp3"
     
     $ update_score(20, "ぼうはんブザーで げきたい")
     
@@ -275,12 +282,14 @@ label .buzzer_car:
         _is_teacher = (h_tag == "teacher")
 
     if _is_teacher:
+        hide stranger
         show teacher with dissolve
         teacher "どうしたの！？"
         pc "くるまの ひとに こえを かけられて..."
         teacher "よくできたね！あやしいと おもったら すぐ ブザーだね！"
         hide teacher with dissolve
     else:
+        hide stranger
         show officer with dissolve
         officer "どうしたの！？"
         pc "くるまの ひとに こえを かけられて..."
