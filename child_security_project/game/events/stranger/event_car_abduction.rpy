@@ -3,7 +3,7 @@
 # =============================================================================
 
 label suspi_e_car:
-    $ setup_stranger("car_abduction")
+    $ setup_stranger("suspi_e_car")
     play music "audio/Pinch!!.mp3" fadein 1.0  # ここで流す
     "くるまが ゆっくり ちかづいてきた。"
     
@@ -12,15 +12,12 @@ label suspi_e_car:
     show stranger with dissolve
     
     # 特徴を表示
-    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'car_abduction'), "")
+    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'suspi_e_car'), "")
     if current_trait:
-        "（[current_trait] ひとのようだ。）"
+        "（{color=#ff0000}[current_trait]{/color} ひとのようだ。）"
     
     if game_mode == "going_home":
-        if stranger_type == "stranger2":
-            play audio "audio/stranger2_kaeri.wav" volume 3.0
-        else:
-            play audio "audio/stranger1_kaeri.wav" volume 3.0
+        $ play_voice("kaeri")
         stranger "ねえ、きみ、がっこうの かえり？"
     else:
         stranger "ねえ、きみ、がっこうに いくの？"
@@ -36,12 +33,9 @@ label suspi_e_car:
             pc "..."
             stranger "ねえ、きいてる？"
 
-    if stranger_type == "stranger2":
-        play audio "audio/stranger2_okuru.wav" volume 3.0
-    else:
-        play audio "audio/stranger1_okuru.wav" volume 3.0
+    $ play_voice("okuru")
     $ s_text = get_commute_text("おうちまで おくってあげようか？", "がっこうまで おくってあげようか？")
-    stranger "[s_text]"
+    stranger "{color=#ff0000}[s_text]{/color}"
     $ player_destination = get_commute_text("かえれ", "いけ")
     stranger "くるまの ほうが はやいよ？"
 
@@ -122,7 +116,7 @@ label .forceful_shout:
     
     if _return != "miss":
         $ update_score(25, "おおごえで げきたい")
-        play audio "audio/防犯ブザー.mp3"
+        $ play_se("buzzer")
         stranger "ちっ...！"
         "ふしんしゃは くるまに のって にげていった！"
         hide stranger with dissolve
@@ -270,7 +264,7 @@ label .run_away_car:
 # ぼうはんブザールート
 # -----------------------------------------------------------------------------
 label .buzzer_car:
-    play audio "audio/防犯ブザー.mp3"
+    $ play_se("buzzer")
     
     $ update_score(20, "ぼうはんブザーで げきたい")
     

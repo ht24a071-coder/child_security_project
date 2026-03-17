@@ -28,7 +28,7 @@ label fallback_buzzer_sequence:
         jump .buzzer_fail
 
 label .buzzer_success:
-    play audio "audio/防犯ブザー.mp3"
+    $ play_se("buzzer")
     # フラッシュ演出（背景を消さないように show を使用）
     show expression Solid("#ffffff") as flash zorder 1000
     with None

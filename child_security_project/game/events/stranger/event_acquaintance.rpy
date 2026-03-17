@@ -5,12 +5,12 @@
 label suspi_e_acquaintance:
 
 
-    call show_stranger_wrapper from _call_show_stranger_wrapper_acquaintance
+    call show_stranger_wrapper("suspi_e_acquaintance") from _call_show_stranger_wrapper_acquaintance
 
     # 特徴を表示
-    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'acquaintance'), "")
+    $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'suspi_e_acquaintance'), "")
     if current_trait:
-        "（[current_trait] ひとのようだ。）"
+        "（{color=#ff0000}[current_trait]{/color} ひとのようだ。）"
 
     
     $ play_voice("kaeri")
@@ -26,7 +26,7 @@ label suspi_e_acquaintance:
     stranger "おかあさんは げんきにしてるかい？"
     pc "うん、げんきだよ。"
     
-    stranger "そうかそうか。じつはね、あっちに かわいいこいぬがいるんだ。"
+    stranger "そうかそうか。じつはね、{color=#ff0000}あっちに かわいいこいぬがいるんだ。{/color}"
     stranger "[player_name]ちゃん、いぬすきだよね？ ちょっとみていかない？"
 
     pc "えっ、こいぬ..."
@@ -102,7 +102,7 @@ label .refuse_acquaintance:
 # ぼうはんブザー（大正解）
 # -----------------------------------------------------------------------------
 label .buzzer_acquaintance:
-    play audio "audio/buzzer.mp3"
+    $ play_se("buzzer")
     
     $ update_score(15, "ぼうはんブザーで げきたい")
     

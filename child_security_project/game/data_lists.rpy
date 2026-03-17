@@ -157,28 +157,47 @@ define WomanBuzzer = ["なに！？なんなの？"]
 # 不審者の特徴・行動リスト（クイズ用）
 # ---------------------------------------------------------
 
-# 特徴リスト（ランダムに選ばれる）
-define stranger_traits = [
-    "{rb}背{/rb}{rt}せ{/rt}が{rb}低{/rb}{rt}ひく{/rt}い",
-    "{rb}背{/rb}{rt}せ{/rt}が{rb}高{/rb}{rt}たか{/rt}い",
-    "ふとっている",
-    "やせている",
-    "{rb}帽子{/rb}{rt}ぼうし{/rt}をかぶっている",
-    "{rb}眼鏡{/rb}{rt}めがね{/rt}をかけている",
-    "{rb}黒{/rb}{rt}くろ{/rt}い{rb}服{/rb}{rt}ふく{/rt}を{rb}着{/rb}{rt}き{/rt}ている",
-    "{rb}青{/rb}{rt}あお{/rt}い{rb}服{/rb}{rt}ふく{/rt}を{rb}着{/rb}{rt}き{/rt}ている",
-    "{rb}優{/rb}{rt}やさ{/rt}しそうな{rb}顔{/rb}{rt}かお{/rt}",
-    "{rb}怖{/rb}{rt}こわ{/rt}そうな{rb}顔{/rb}{rt}かお{/rt}",
-    "{rb}大{/rb}{rt}おお{/rt}きな{rb}荷物{/rb}{rt}にもつ{/rt}を{rb}持{/rb}{rt}も{/rt}っている"
+# 特徴リスト（スプライトごとのもの）
+define stranger_traits_1 = [
+    "はいいろの　ぱーかーを　きている",
+    "くろいろの　りゅっくを　もっている",
+    "げーむを　もっている",
+    "わらっている"
 ]
 
-# イベント名と行動の説明の対応
+define stranger_traits_2 = [
+    "くろいろの　すーつを　きている",
+    "ねくたいを　している",
+    "しゅっと　している"
+]
+
+# 不正解用の汎用特徴（ひらがなのみ）
+define stranger_traits_dummy = [
+    "めがねを　かけている",
+    "ぼうしを　かぶっている",
+    "あおいろの　ふくを　きている",
+    "ふとっている",
+    "やせている",
+    "こわそうな　かお",
+    "おおきな　にもつを　もっている"
+]
+
+# 全ての特徴をまとめたもの（後方互換性のため）
+define stranger_traits = stranger_traits_1 + stranger_traits_2 + stranger_traits_dummy
+
+# イベント名と行動の説明の対応（ひらがなのみ・具体的に）
 define event_action_map = {
-    "acquaintance": "しっている{rb}人{/rb}{rt}ひと{/rt}に{rb}誘{/rb}{rt}さそ{/rt}われた",
-    "car_abduction": "{rb}車{/rb}{rt}くるま{/rt}に{rb}乗{/rb}{rt}の{/rt}せられそうになった",
-    "mom_injury": "お{rb}母{/rb}{rt}かあ{/rt}さんのケガのことを{rb}言{/rb}{rt}い{/rt}われた",
-    "suspicious": "あやしい{rb}誘{/rb}{rt}さそ{/rt}いをされた",
-    "suspicious_event_1": "ケーキをあげると{rb}言{/rb}{rt}い{/rt}われた",
-    "suspicious_event_2": "{rb}車{/rb}{rt}くるま{/rt}で{rb}送{/rb}{rt}おく{/rt}ってあげると{rb}言{/rb}{rt}い{/rt}われた",
-    "encounter_danger": "{rb}強引{/rb}{rt}ごういん{/rt}に{rb}連{/rb}{rt}つ{/rt}れていかれそうになった"
+    "suspi_e_acquaintance": "しっている　ひとに　「いっしょに　あそぼう」と　いわれた",
+    "suspi_e_car": "くるまに　むりやり　のせられそうに　なった",
+    "suspi_e_mom_injury": "「おかあさんが　けがをしたから　いっしょに　いこう」と　いわれた",
+    "suspi_e_test_1": "「けーきを　あげるから　おいで」と　さそわれた",
+    "suspi_e_test_2": "「くるまで　おくってあげる」と　るすばんの　おとなの　ふりをした　ひとに　さそわれた",
+    "encounter_e_stranger": "みちを　きかれる　ふりを　して　ちかづいて　こられた",
+    "safe_e_lesson_dispatch": "じゅくの　おくりむかえの　えんじぇるぱとろーるに　あった",
+    "safe_e_railway": "ふみきりを　あんぜんに　わたった",
+    "acquaintance": "しっている　ひとに　「いっしょに　あそぼう」と　いわれた", # 互換性
+    "car_abduction": "くるまに　むりやり　のせられそうに　なった", # 互換性
+    "mom_injury": "「おかあさんが　けがをしたから　いっしょに　いこう」と　いわれた", # 互換性
+    "suspicious_event_1": "「けーきを　あげるから　おいで」と　いわれた", # 互換性
+    "suspicious_event_2": "「くるまで　おくってあげる」と　いわれた" # 互換性
 }
