@@ -20,7 +20,7 @@ label suspi_e_test_2:
     else:
         play audio "audio/stranger1_okuru.wav" volume 3.0
             
-    stranger "ねえ、みちにまよっちゃったんだ。くるまでおくってあげようか？ がっこうに [s_text]く のかな？"
+    stranger "こんにちは、おうちまでくるまでおくってあげようか？ がっこうに [s_text]く のかな？"
 
     menu:
         "のります！":
@@ -33,7 +33,7 @@ label suspi_e_test_2:
             
             jump game_over
 
-        "いりません！":
+        "いやです！":
             $ play_se("decide")
             $ update_score(15, "はっきりと ことわった")
             
