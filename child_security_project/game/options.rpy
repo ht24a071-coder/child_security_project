@@ -1,4 +1,4 @@
-﻿## このファイルはゲームをカスタマイズする基本的なオプションを記載しています。
+## このファイルはゲームをカスタマイズする基本的なオプションを記載しています。
 ##
 ## 二つの'#'で始まる行はコメントなのでアンコメント（#を消してコメントをコード
 ## に戻すこと）してはいけません。一つの'#'で始まる行はコメントアウト（#を加えて
@@ -31,6 +31,29 @@ define config.version = "1.0"
 ## にテキストを入力します。段落の間には空行を挿入して下さい。
 
 define gui.about = _p("""
+[クレジット]
+
+■ BGM
+・街中ポップ (DOVA-SYNDROME / https://dova-s.jp/bgm/detail/11749)
+・Bouncy Bebop Blunder (DOVA-SYNDROME / https://dova-s.jp/bgm/detail/23192)
+・BGM - 028 - It's OK (DOVA-SYNDROME / https://dova-s.jp/bgm/detail/20845)
+・あにまるさんぽ (DOVA-SYNDROME / https://dova-s.jp/bgm/detail/23162)
+・邪悪なる者 (DOVA-SYNDROME / https://dova-s.jp/bgm/detail/17665)
+・獣の棲む (DOVA-SYNDROME / https://dova-s.jp/bgm/detail/23066)
+・Pinch!! (DOVA-SYNDROME / https://dova-s.jp/bgm/detail/4140)
+・Mechanical Wars (DOVA-SYNDROME / https://dova-s.jp/bgm/detail/23098)
+・パズル気分 (DOVA-SYNDROME / https://dova-s.jp/bgm/detail/21678)
+・「調査」 DBD file No.03 (MusMus / https://musmus.main.jp/jazz.html)
+
+■ 効果音 (SE)
+・アイテム入手音 / カーソル移動音 (DOVA-SYNDROME / https://dova-s.jp/se/detail/468)
+・システム決定音_12 (DOVA-SYNDROME / https://dova-s.jp/se/detail/1026)
+・システム決定音_9 (DOVA-SYNDROME / https://dova-s.jp/se/detail/1472)
+・正解、ピンポーン2 (DOVA-SYNDROME / https://dova-s.jp/se/detail/1392/track/2)
+・ブブー、不正解 (DOVA-SYNDROME / https://dova-s.jp/se/detail/1391/track/3)
+・お披露目ファンファーレ (DOVA-SYNDROME / https://dova-s.jp/se/detail/1149)
+・失敗、ゲームオーバー (DOVA-SYNDROME / https://dova-s.jp/se/detail/601)
+・ローファー (DOVA-SYNDROME / https://dova-s.jp/se/detail/368/track/2)
 """)
 
 
@@ -63,7 +86,7 @@ define config.has_voice = True
 ## 生されます。このファイルは、停止するか他の音楽が再生されない限りゲーム中で流
 ## れ続けます。
 
-# define config.main_menu_music = "main-menu-theme.ogg"
+define config.main_menu_music = "audio/街中ポップ.mp3"
 
 
 ## トランジション #####################################################################

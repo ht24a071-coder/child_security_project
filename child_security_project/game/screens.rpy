@@ -285,13 +285,13 @@ screen quick_menu():
             style_prefix "quick"
             style "quick_menu"
 
-            textbutton _("ロールバック") action [SoundAction("cancel"), Rollback()] hovered SoundAction("hover")
-            textbutton _("ヒストリー") action [SoundAction("decide"), ShowMenu('history')] hovered SoundAction("hover")
-            textbutton _("スキップ") action [SoundAction("decide"), Skip()] alternate Skip(fast=True, confirm=True) hovered SoundAction("hover")
-            textbutton _("オート") action [SoundAction("decide"), Preference("auto-forward", "toggle")] hovered SoundAction("hover")
-            textbutton _("セーブ") action [SoundAction("decide"), ShowMenu('save')] hovered SoundAction("hover")
-            textbutton _("Q.セーブ") action [SoundAction("decide"), QuickSave()] hovered SoundAction("hover")
-            textbutton _("Q.ロード") action [SoundAction("decide"), QuickLoad()] hovered SoundAction("hover")
+            textbutton _("まきもどし") action [SoundAction("cancel"), Rollback()] hovered SoundAction("hover")
+            textbutton _("りれき") action [SoundAction("decide"), ShowMenu('history')] hovered SoundAction("hover")
+            textbutton _("すきっぷ") action [SoundAction("decide"), Skip()] alternate Skip(fast=True, confirm=True) hovered SoundAction("hover")
+            textbutton _("おーと") action [SoundAction("decide"), Preference("auto-forward", "toggle")] hovered SoundAction("hover")
+            textbutton _("ほぞん") action [SoundAction("decide"), ShowMenu('save')] hovered SoundAction("hover")
+            textbutton _("きゅう・ほぞん") action [SoundAction("decide"), QuickSave()] hovered SoundAction("hover")
+            textbutton _("きゅう・よみこみ") action [SoundAction("decide"), QuickLoad()] hovered SoundAction("hover")
             textbutton _("せってい") action [SoundAction("decide"), ShowMenu('preferences')] hovered SoundAction("hover")
 
 
@@ -320,12 +320,12 @@ screen controller_guide():
                     hbox:
                         spacing 5
                         text "Ⓐ" size 26 color "#4FC3F7" yoffset 3 font gui.interface_text_font
-                        text "けってい/送る" size 22 color "#ddd"
+                        text "けってい/おくる" size 22 color "#ddd"
 
                     hbox:
                         spacing 5
                         text "Ⓨ" size 26 color "#FFEB3B" yoffset 3 font gui.interface_text_font # Yボタンガイド
-                        text "マップ" size 22 color "#ddd"
+                        text "なび" size 22 color "#ddd"
                 else:
                     hbox:
                         spacing 5
@@ -335,12 +335,12 @@ screen controller_guide():
                     hbox:
                         spacing 5
                         text "Ⓨ" size 26 color "#FFEB3B" yoffset 3 font gui.interface_text_font
-                        text "マップ" size 22 color "#ddd"
+                        text "なび" size 22 color "#ddd"
 
                 hbox:
                     spacing 5
                     text "◁▷△▽" size 26 color "#aaa" yoffset 3 font gui.interface_text_font
-                    text "移動" size 22 color "#ddd"
+                    text "いどう" size 22 color "#ddd"
 
 init python:
     # コントローラーの誤操作防止せってい
@@ -413,17 +413,17 @@ screen navigation():
 
         if main_menu:
 
-            textbutton _("スタート") action [SoundAction("decide"), Start()] hovered SoundAction("hover")
+            textbutton _("はじめる") action [SoundAction("decide"), Start()] hovered SoundAction("hover")
 
         else:
 
-            textbutton _("ヒストリー") action [SoundAction("decide"), ShowMenu("history")] hovered SoundAction("hover")
+            textbutton _("りれき") action [SoundAction("decide"), ShowMenu("history")] hovered SoundAction("hover")
 
-            textbutton _("セーブ") action [SoundAction("decide"), ShowMenu("save")] hovered SoundAction("hover")
+            textbutton _("ほぞん") action [SoundAction("decide"), ShowMenu("save")] hovered SoundAction("hover")
 
-        textbutton _("ロード") action [SoundAction("decide"), ShowMenu("load")] hovered SoundAction("hover")
+        textbutton _("よみこむ") action [SoundAction("decide"), ShowMenu("load")] hovered SoundAction("hover")
 
-        textbutton _("環境せってい") action [SoundAction("decide"), ShowMenu("preferences")] hovered SoundAction("hover")
+        textbutton _("せってい") action [SoundAction("decide"), ShowMenu("preferences")] hovered SoundAction("hover")
 
         if _in_replay:
 
@@ -433,18 +433,18 @@ screen navigation():
 
             textbutton _("メインめにゅー") action [SoundAction("cancel"), MainMenu()] hovered SoundAction("hover")
 
-        textbutton _("バージョン情報") action [SoundAction("decide"), ShowMenu("about")] hovered SoundAction("hover")
+        textbutton _("げーむの じょうほう") action [SoundAction("decide"), ShowMenu("about")] hovered SoundAction("hover")
 
         if renpy.variant("pc") or (renpy.variant("web") and not renpy.variant("mobile")):
 
             ## モバイルデバイスにはヘルプは不要であるか不適切です。
-            textbutton _("ヘルプ") action [SoundAction("decide"), ShowMenu("help")] hovered SoundAction("hover")
+            textbutton _("へるぷ") action [SoundAction("decide"), ShowMenu("help")] hovered SoundAction("hover")
 
         if renpy.variant("pc"):
 
             ## しゅうりょうボタンはiOSでは使用できません。また、AndroidやWebでは必要あ
             ## りません。
-            textbutton _("しゅうりょう") action [SoundAction("cancel"), Quit(confirm=not main_menu)] hovered SoundAction("hover")
+            textbutton _("おわる") action [SoundAction("cancel"), Quit(confirm=not main_menu)] hovered SoundAction("hover")
 
 
 style navigation_button is gui_button

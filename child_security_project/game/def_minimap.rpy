@@ -113,7 +113,8 @@ init -5 python:
                 
                 # 等間隔で点を配置
                 steps = int(dist / interval)
-                for s in range(1, steps):
+                if steps == 0: steps = 1 # 短いきょりでも最低1点はだす
+                for s in range(0, steps):
                     t = float(s) / steps
                     px = x1 + (x2 - x1) * t
                     py = y1 + (y2 - y1) * t
@@ -386,7 +387,7 @@ screen minimap():
                     align (1.0, 0.0)
                     offset (-5, 5)
                     action ToggleScreenVariable("show_minimap_legend")
-                    tooltip "はんれいを表示/非表示"
+                    tooltip "はんれいの ひょうじ/ひひょうじ"
 
             # --- 凡例 (Legend) ---
             if show_minimap_legend:
@@ -414,7 +415,7 @@ screen minimap():
                             text "いける ばしょ" size 16 color "#fff" yalign 0.5
 
     # ミニマップのしたにマップ表示ボタン
-    textbutton "🗺 マップ {size=22}{color=#FFE66D}Ⓨ{/color}{/size}":
+    textbutton "🗺 まっぷ {size=22}{color=#FFE66D}Ⓨ{/color}{/size}":
         xalign 1.0 yalign 0.0
         xoffset -cfg["margin_x"]
         yoffset cfg["margin_y"] + 450
@@ -536,7 +537,7 @@ screen fullscreen_map():
     add Solid("#000000CC")
 
     # タイトル
-    text "🗺 マップ" xalign 0.5 yalign 0.02 size 28 color "#ffffff" bold True
+    text "🗺 まっぷ" xalign 0.5 yalign 0.02 size 28 color "#ffffff" bold True
 
     # マップ表示（なか央に大きく）
     frame:

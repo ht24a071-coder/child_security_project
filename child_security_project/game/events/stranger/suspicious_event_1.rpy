@@ -12,7 +12,15 @@ label suspi_e_test_1:
         "（[current_trait] ひとのようだ。）"
     $ s_text = get_commute_text("がっこうかえり？", "がっこうに いくの？")
     $ player_destination = get_commute_text("かえら", "か")
-    $ play_voice()
+    
+    play music "audio/Pinch!!.mp3" fadein 1.0  # ここで流す
+
+    if game_mode == "going_home":
+        if stranger_type == "stranger2":
+            play audio "audio/stranger2_kaeri.wav" volume 3.0
+        else:
+            play audio "audio/stranger1_kaeri.wav" volume 3.0
+            
     stranger "きみ [s_text] おいしいケーキがあるんだけどこない？"
 
     menu:
@@ -34,7 +42,6 @@ label suspi_e_test_1:
             
             # 強制連れ去りイベント
             stranger "いいから こいよ！"
-            play music "audio/Pinch!!.mp3" fadein 1.0 # ここで流す！
             "ふしんしゃは うでを つかもうとしてきた！"
             
             menu:
@@ -96,7 +103,7 @@ label .run_cake:
 
 label .cake_success_shout:
     $ update_score(25, "おおごえで げきたい")
-    play audio "audio/buzzer.mp3"
+    play audio "audio/防犯ブザー.mp3"
     stranger "ちっ...！"
     "ふしんしゃは おおごえに おどろいて にげていった！"
     hide stranger with dissolve

@@ -3,16 +3,21 @@
 # =============================================================================
 
 label encounter_e_stranger:
+    play music "audio/Pinch!!.mp3" fadein 1.0
     "だれかが ちかづいてきた。"
     
-    call show_stranger_wrapper from _call_show_stranger_wrapper_danger
+    call show_stranger_wrapper("encounter_danger") from _call_show_stranger_wrapper_danger
 
     # 特徴を表示
     $ current_trait = next((e['trait'] for e in encountered_events if e['event_name'] == 'encounter_danger'), "")
     if current_trait:
         "（[current_trait] ひとのようだ。）"
     
-    $ play_voice("hello")
+    if stranger_type == "stranger2":
+        play audio "audio/stranger2_hello.wav" volume 3.0
+    else:
+        play audio "audio/stranger1_hello.wav" volume 3.0
+        
     stranger "こんにちは～"
     
     # まず挨拶への反応
@@ -47,7 +52,7 @@ label encounter_e_stranger:
 # -----------------------------------------------------------------------------
 label .buzzer_stranger:
     # ぼうはんブザーを鳴らす
-    play audio "audio/ぼうはんブザー.mp3"
+    play audio "audio/防犯ブザー.mp3"
     
     pc "えいっ！！"
     
@@ -64,12 +69,14 @@ label .buzzer_stranger:
         h_tag, _unused = get_helper_data()
     
     if h_tag == "teacher":
+        hide stranger
         show teacher with dissolve
         teacher "どうしたの！？ すごい おとが したけど！"
         pc "しらない ひとに こえを かけられて……"
         teacher "ブザーを ならしたのね。えらいわ！"
         hide teacher with dissolve
     else:
+        hide stranger
         show officer with dissolve
         officer "どうしたの！？ すごい おとが したけど！"
         pc "しらない ひとに こえを かけられて……"
@@ -115,7 +122,7 @@ label .follow_stranger:
 
 # ぼうはんブザーでにげる（ついていったうしろ）
 label .escape_buzzer:
-    play audio "audio/buzzer.mp3"
+    play audio "audio/防犯ブザー.mp3"
     
     "ピピピピピ！！"
     stranger "うわっ！？"
@@ -163,12 +170,14 @@ label .escape_110:
             h_tag, _unused = get_helper_data()
         
         if h_tag == "teacher":
+            hide stranger
             show teacher with dissolve
             teacher "どうしたの！？"
             pc "しらない ひとに つれていかれそうに……！"
             teacher "だいじょうぶ、ここは あんぜんだよ。よく にげてきたね！"
             hide teacher with dissolve
         else:
+            hide stranger
             show officer with dissolve
             officer "どうしたの！？"
             pc "しらない ひとに つれていかれそうに……！"
@@ -255,7 +264,7 @@ label .escape_home:
         else:
             $ update_score(5, "いえに にげこんだ")
             "なんとか いえに にげこめた…"
-            
+            hide stranger
             show parent with dissolve
             parent "おかえり！どうしたの、そんなにあわてて？"
             pc "しらない ひとに..."
@@ -284,7 +293,7 @@ label .escape_shout:
     
     if _return != "miss":
         $ update_score(15, "おおごえで たすけを よんだ")
-        play audio "audio/buzzer.mp3"
+        play audio "audio/防犯ブザー.mp3"
         stranger "うわっ…！"
         hide stranger with dissolve
         
@@ -292,12 +301,14 @@ label .escape_shout:
             h_tag, _unused = get_helper_data()
 
         if h_tag == "teacher":
+            hide stranger
             show teacher with dissolve
             teacher "どうしたの！？ だいじょうぶ！？"
             pc "しらない ひとに……"
             teacher "こわかったね。よく おおごえを だせたね！"
             hide teacher with dissolve
         else:
+            hide stranger
             show officer with dissolve
             officer "どうしたの！？ だいじょうぶ！？"
             pc "しらない ひとに……"
@@ -486,7 +497,6 @@ label .stage3_run:
 
 label .stranger_repelled:
     $ update_score(25, "おおごえで げきたい")
-    play audio "audio/buzzer.mp3"
     stranger "ちっ...！"
     "ふしんしゃは くるまに のって にげていった！"
     hide stranger with dissolve
@@ -512,12 +522,14 @@ label .after_encounter_success:
         h_tag, _unused = get_helper_data()
     
     if h_tag == "teacher":
+        hide stranger
         show teacher with dissolve
         teacher "だいじょうぶ！？"
         pc "しらない ひとに..."
         teacher "こわかったね。よく がんばったね！"
         hide teacher with dissolve
     else:
+        hide stranger
         show officer with dissolve
         officer "だいじょうぶ！？"
         pc "しらない ひとに..."

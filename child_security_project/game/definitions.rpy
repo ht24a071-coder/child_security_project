@@ -99,7 +99,7 @@ screen score_hud():
             spacing 20
             
             # スコア表示
-            text "スコア: [total_score]":
+            text "てんすう: [total_score]":
                 color "#ffff00"  # 黄いろ
                 size 32          # 文字サイズ
                 bold True        # 太字
@@ -123,7 +123,7 @@ screen score_hud():
                     elif _target_home == "home_w":
                         $ home_name = "ひだりのいえ"
                     
-                    text "もくてきち: [home_name]":
+                    text "めざす ばしょ: [home_name]":
                         color "#00ffff"
                         size 24
                         bold True
@@ -165,8 +165,9 @@ transform score_float_up:
 init python:
     def update_score(amount, reason=None):
         # グローバル変数のスコアを更新
+        # グローバル変数のスコアを更新（0をしょげんとする）
         global total_score
-        total_score += amount
+        total_score = max(0, total_score + amount)
         
         # りれきに追加
         # reasonがない場合は自動的に補完するか、Noneのままにして表示側で処理
@@ -246,8 +247,8 @@ init python:
         v = get_stranger_voice(line_id)
         if v:
             try:
-                # soundチャンネルのplay関数を使用してvoiceチャンネルで再生
-                renpy.sound.play(v, channel="voice")
+                # voiceチャンネルで再生
+                renpy.music.play(v, channel="voice")
             except:
                 pass
 

@@ -8,10 +8,10 @@
 # -----------------------------------------------------------------------------
 # ふしんしゃ（Stranger）用ラッパー
 # -----------------------------------------------------------------------------
-label show_stranger_wrapper(transition=dissolve):
+label show_stranger_wrapper(event_name="unknown", transition=dissolve):
     # ふしんしゃの見ためをランダムせっていなど（既存のsetup_strangerを呼ぶ）
     # 引数なしで呼ぶとランダム、引数ありなら固定など、setup_strangerの実装に依存
-    $ setup_stranger()
+    $ setup_stranger(event_name)
     
     # 立ちえ表示
     show stranger with transition
