@@ -3,7 +3,7 @@
 
 label suspi_e_test_1:
     $ setup_stranger("suspi_e_test_1")
-    # play music "audio/Pinch!!.mp3" fadein 1.0  # 削除：ここではまだ流さない
+    # play music "audio/Pinch!!.mp3" fadein 1.0 volume 0.3  # 削除：ここではまだ流さない
     show stranger with dissolve
     
     # 特徴を表示
@@ -13,7 +13,7 @@ label suspi_e_test_1:
     $ s_text = get_commute_text("がっこうかえり？", "がっこうに いくの？")
     $ player_destination = get_commute_text("かえら", "か")
     
-    play music "audio/Pinch!!.mp3" fadein 1.0  # ここで流す
+    play music "audio/Pinch!!.mp3" fadein 1.0 volume 0.3  # ここで流す
 
     # mode に合わせてボイスを流す（かえり or hello）
     $ play_voice("auto")
