@@ -140,6 +140,7 @@ label .forceful_run_mom_dash:
 label .escape_success_mom_shout:
     # おおごえせいこう
     $ update_score(25, "おおごえで げきたい")
+    $ play_se("buzzer")
     pc "やめてー！！"
     "ふしんしゃの てを ふりほどいて にげだした！"
     
@@ -181,6 +182,7 @@ label .escape_rescued_mom:
 label .escape_success_mom_buzzer:
     # ブザーせいこうじ
     $ update_score(15, "ぼうはんブザーで げきたい")
+    $ play_se("buzzer")
     "ピピピピピ！！"
     stranger "うわっ、なんだ！！"
     "ふしんしゃは あわてて にげだした！"
@@ -217,7 +219,7 @@ label .escape_fail_mom:
 # ぼうはんブザー（大正解）
 # -----------------------------------------------------------------------------
 label .buzzer_car_mom:
-    play audio "audio/buzzer.mp3"
+    $ play_se("buzzer")
     
     $ update_score(20, "ぼうはんブザーで げきたい")
     

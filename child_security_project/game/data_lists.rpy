@@ -187,17 +187,17 @@ define stranger_traits = stranger_traits_1 + stranger_traits_2 + stranger_traits
 
 # イベント名と行動の説明の対応（ひらがなのみ・具体的に）
 define event_action_map = {
-    "suspi_e_acquaintance": "しっている　ひとに　「いっしょに　あそぼう」と　いわれた",
-    "suspi_e_car": "くるまに　むりやり　のせられそうに　なった",
-    "suspi_e_mom_injury": "「おかあさんが　けがをしたから　いっしょに　いこう」と　いわれた",
-    "suspi_e_test_1": "「けーきを　あげるから　おいで」と　さそわれた",
-    "suspi_e_test_2": "「くるまで　おくってあげる」と　さそわれた",
-    "encounter_e_stranger": "みちを　きかれる　ふりを　して　ちかづいて　こられた",
-    "safe_e_lesson_dispatch": "じゅくの　おくりむかえの　えんじぇるぱとろーるに　あった",
-    "safe_e_railway": "ふみきりを　あんぜんに　わたった",
-    "acquaintance": "しっている　ひとに　「いっしょに　あそぼう」と　いわれた", # 互換性
-    "car_abduction": "くるまに　むりやり　のせられそうに　なった", # 互換性
-    "mom_injury": "「おかあさんが　けがをしたから　いっしょに　いこう」と　いわれた", # 互換性
-    "suspicious_event_1": "「けーきを　あげるから　おいで」と　さそわれた", # 互換性
-    "suspicious_event_2": "「くるまで　おくってあげる」と　さそわれた" # 互換性
+    "suspi_e_acquaintance": "「こいぬを みせてあげる」と ついてくるように いわれた",
+    "suspi_e_car": "くるまで おくってあげる と いわれ、くるまに のせられそうに なった",
+    "suspi_e_mom_injury": "「おかあさんが けがをしたから いっしょに いこう」と いわれた",
+    "suspi_e_test_1": "「おいしい けーきを あげる」と いわれ、 ついていくよう さそわれた",
+    "suspi_e_test_2": "「がっこうまで のせていってあげる」と くるまに さそわれた",
+    "encounter_e_stranger": "しらない ひとに こえを かけられ、うでを つかもうと された",
+    "safe_e_lesson_dispatch": "じゅくの おくりむかえの えんじぇるぱとろーるに あった",
+    "safe_e_railway": "ふみきりを あんぜんに わたった",
+    "acquaintance": "「こいぬを みせてあげる」と ついてくるように いわれた", # 互換性
+    "car_abduction": "くるまで おくってあげる と いわれ、くるまに のせられそうに なった", # 互換性
+    "mom_injury": "「おかあさんが けがをしたから いっしょに いこう」と いわれた", # 互換性
+    "suspicious_event_1": "「おいしい けーきを あげる」と いわれ、 ついていくよう さそわれた", # 互換性
+    "suspicious_event_2": "「がっこうまで のせていってあげる」と くるまに さそわれた" # 互換性
 }

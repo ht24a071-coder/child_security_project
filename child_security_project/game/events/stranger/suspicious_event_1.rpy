@@ -2,7 +2,7 @@
 # イベント登録は def_mapdat.rpy の event_pools で管理
 
 label suspi_e_test_1:
-    $ setup_stranger()
+    $ setup_stranger("suspi_e_test_1")
     # play music "audio/Pinch!!.mp3" fadein 1.0  # 削除：ここではまだ流さない
     show stranger with dissolve
     
@@ -103,7 +103,7 @@ label .run_cake:
 
 label .cake_success_shout:
     $ update_score(25, "おおごえで げきたい")
-    play audio "audio/防犯ブザー.mp3"
+    $ play_se("buzzer")
     stranger "ちっ...！"
     "ふしんしゃは おおごえに おどろいて にげていった！"
     hide stranger with dissolve
@@ -117,6 +117,7 @@ label .cake_success_run:
 
 label .cake_success_buzzer:
     $ update_score(15, "ぼうはんブザーで げきたい")
+    $ play_se("buzzer")
     "ピピピピピ！！"
     stranger "うわっ、なんだ！！"
     "ふしんしゃは あわてて にげだした！"
