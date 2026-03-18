@@ -257,8 +257,8 @@ init python:
         if v:
             try:
                 # voiceチャンネルで再生（loop=Falseで必ず1回再生）
-                # renpy.music.play(v, channel="voice", loop=False, relative_volume=3.0)
-                renpy.voice(v)
+                renpy.music.play(v, channel="voice", loop=False, relative_volume=3.0)
+                # renpy.voice(v)
             except Exception as e:
                 print(f"Voice play error: {e}")
                 try:
