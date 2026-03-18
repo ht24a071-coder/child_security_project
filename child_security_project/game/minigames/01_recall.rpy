@@ -40,7 +40,22 @@ init python:
 
             # 遭遇した全てのひとに対してクイズを生成
             temp_questions = []
-            for encounter in encountered_events:
+            is_multi = len(encountered_events) > 1
+
+            for idx, encounter in enumerate(encountered_events):
+                encounter_num = idx + 1
+                
+                if is_multi:
+                    q1_text = "{}にんめに あったのは だれかな？".format(encounter_num)
+                    q2_text = "{}にんめの ひとは どんな とくちょうだったかな？".format(encounter_num)
+                    q3_text = "{}にんめの ひとに なにを されたかな？".format(encounter_num)
+                else:
+                    q1_text = "このなかの だれに あったかな？"
+                    q2_text = "どんな とくちょうが あったかな？"
+                    q3_text = "なにを されたかな？"
+
+                encounter_questions = []
+
                 # 1. 見ためクイズ（画像せんたく）
                 target_type = encounter["char_type"]
                 options = [target_type]
@@ -51,9 +66,9 @@ init python:
                 options.extend(dummies[:2])
                 random.shuffle(options)
                 
-                temp_questions.append({
+                encounter_questions.append({
                     "type": "image",
-                    "text": "このなかの だれに あったかな？",
+                    "text": q1_text,
                     "choices": options,
                     "correct_index": options.index(target_type),
                     "sprite_map": sprite_paths
@@ -62,7 +77,7 @@ init python:
                 # ふしんしゃの場合のみ追加の質問
                 if encounter.get("is_stranger"):
                     # 2. 特徴クイズ（テキストせんたく）
-                    target_trait = encounter["trait"]
+                    target_trait = encounter.get("trait", "おおきい")
                     t_options = [target_trait]
                     t_dummies = [t for t in stranger_traits if t != target_trait]
                     random.shuffle(t_dummies)
@@ -75,9 +90,9 @@ init python:
                     t_options.extend(t_unique_dummies[:2])
                     random.shuffle(t_options)
                     
-                    temp_questions.append({
+                    encounter_questions.append({
                         "type": "text",
-                        "text": "どんな とくちょうが あったかな？",
+                        "text": q2_text,
                         "choices": t_options,
                         "correct_index": t_options.index(target_trait)
                     })
@@ -93,16 +108,22 @@ init python:
                     a_options.extend(a_dummies[:2])
                     random.shuffle(a_options)
 
-                    temp_questions.append({
+                    encounter_questions.append({
                         "type": "text",
-                        "text": "なにを されたかな？",
+                        "text": q3_text,
                         "choices": a_options,
                         "correct_index": a_options.index(target_action)
                     })
 
-            # クイズの問題数を最大5問にする
-            random.shuffle(temp_questions)
-            self.questions = temp_questions[:5]
+                # ふしんしゃの場合は3問から2問をランダムに選ぶ（順番は維持）
+                if len(encounter_questions) >= 3:
+                    indices = sorted(random.sample(range(len(encounter_questions)), 2))
+                    encounter_questions = [encounter_questions[i] for i in indices]
+
+                temp_questions.extend(encounter_questions)
+
+            # クイズの問題数の制限とシャッフルをなくし、遭遇順で出題する
+            self.questions = temp_questions
 
             return True
 
@@ -229,8 +250,10 @@ label recall_minigame:
     # 会はなしを挟む
     if game_mode == "going_school":
         teacher "きょうは　だれかに　あったかな？　どんな　ひとだったか　おもいだしてみましょう。"
+        teacher "あったひと　１にんにつき、２つの　しつもんを　するわね。"
     else:
         parent "きょうは　だれかに　あった？　どんな　ひとだったか　おしえてくれる？"
+        parent "あったひと　１にんにつき、２つの　しつもんを　するね。"
 
     # UI一じ非表示
     hide screen minimap
