@@ -20,6 +20,7 @@ label suspi_e_car:
         $ play_voice("kaeri")
         stranger "ねえ、きみ、がっこうの かえり？"
     else:
+        $ play_voice("hello")
         stranger "ねえ、きみ、がっこうに いくの？"
     
     # まず挨拶への反応

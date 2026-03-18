@@ -15,12 +15,9 @@ label suspi_e_test_1:
     
     play music "audio/Pinch!!.mp3" fadein 1.0  # ここで流す
 
-    if game_mode == "going_home":
-        if stranger_type == "stranger2":
-            play audio "audio/stranger2_kaeri.wav" volume 3.0
-        else:
-            play audio "audio/stranger1_kaeri.wav" volume 3.0
-            
+    # mode に合わせてボイスを流す（かえり or hello）
+    $ play_voice("auto")
+
     stranger "きみ [s_text] おいしいケーキがあるんだけどこない？"
 
     menu:

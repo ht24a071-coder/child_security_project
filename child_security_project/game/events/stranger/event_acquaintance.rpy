@@ -13,7 +13,7 @@ label suspi_e_acquaintance:
         "（{color=#ff0000}[current_trait]{/color} ひとのようだ。）"
 
     
-    $ play_voice("kaeri")
+    $ play_voice("auto")
     stranger "おーい、[player_name]ちゃん！"
     $ s_text = get_commute_text("がっこうおわりかい？", "がっこうに いくのかい？")
     stranger "[s_text] えらいねえ。"
