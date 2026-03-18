@@ -38,14 +38,14 @@ default encountered_events = []
 # ふしんしゃの見ためごとのボイスマッピング
 define stranger_voice_map = {
     "stranger": {
-        "kaeri": "audio/stranger1_kaeri.wav",
-        "okuru": "audio/stranger1_okuru.wav",
-        "hello": "audio/stranger1_hello.wav",
+        "kaeri": "<vol=3.0>audio/stranger1_kaeri.wav",
+        "okuru": "<vol=3.0>audio/stranger1_okuru.wav",
+        "hello": "<vol=3.0>audio/stranger1_hello.wav",
     },
     "stranger2": {
-        "kaeri": "audio/stranger2_kaeri.wav",
-        "okuru": "audio/stranger2_okuru.wav",
-        "hello": "audio/stranger2_hello.wav",
+        "kaeri": "<vol=3.0>audio/stranger2_kaeri.wav",
+        "okuru": "<vol=3.0>audio/stranger2_okuru.wav",
+        "hello": "<vol=3.0>audio/stranger2_hello.wav",
     },
 }
 
@@ -274,7 +274,7 @@ init python:
         mode = getattr(store, "game_mode", "going_home")
         
         # ユーザーゆび定のBGMを再生
-        renpy.music.play("audio/あにまるさんぽ.mp3", fadein=fadein, loop=True, if_changed=True, relative_volume=0.3)
+        renpy.music.play("audio/あにまるさんぽ.mp3", fadein=fadein, loop=True, if_changed=True)
 
     def get_npc_dialogue(npc_tag, dialogue_type="Greeting"):
         """
