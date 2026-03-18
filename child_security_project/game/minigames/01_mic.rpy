@@ -331,6 +331,11 @@ init -1 python:
 
         def update(self, st, at):
             import time
+            
+            # Ren'Pyのスクリーン予測による先行実行を防ぐ
+            if not self.started:
+                return Null(), 0.05
+                
             if self.start_time is None:
                 self.start_time = st
                 self.start_real_time = time.time()

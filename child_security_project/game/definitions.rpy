@@ -256,14 +256,13 @@ init python:
         v = get_stranger_voice(line_id)
         if v:
             try:
-                # voiceチャンネルで再生（loop=Falseで必ず1回再生）
-                # renpy.music.play(v, channel="voice", loop=False, relative_volume=3.0)
-                renpy.voice(v)
+                # voiceチャンネルで再生し、音量を2.0倍にする
+                renpy.sound.play(v, channel="voice", relative_volume=2.0)
             except Exception as e:
                 print(f"Voice play error: {e}")
                 try:
                     # フォールバック: soundチャンネルで再生
-                    renpy.sound.play(v, channel="sound")
+                    renpy.sound.play(v, channel="sound", relative_volume=2.0)
                 except:
                     pass
 

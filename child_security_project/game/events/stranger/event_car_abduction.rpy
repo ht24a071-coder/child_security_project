@@ -35,6 +35,7 @@ label suspi_e_car:
             stranger "ねえ、きいてる？"
 
     $ play_voice("okuru")
+    $ s_text = get_commute_text("おうちまで", "がっこうまで")
     stranger "[s_text] {color=#ff0000}くるまで おくってあげようか？{/color}"
     $ player_destination = get_commute_text("かえれ", "いけ")
     stranger "くるまの ほうが はやいよ？"
