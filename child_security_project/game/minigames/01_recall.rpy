@@ -15,31 +15,48 @@ init python:
             
             import random
             
+            # イベントに登場しない「誰だか分からない人」リスト（不正解用）
+            # stranger, officer, woman, teacher, parent は正解になり得るので、それ以外を使用
+            stranger_actors = ["man3", "man4", "man5", "woman2", "woman4", "woman5", "officer2", "officer3", "officer4", "officer5"]
+            sprite_paths = {
+                "stranger": "images/actor/stranger.png",
+                "stranger2": "images/actor/stranger2.png",
+                "officer": "images/actor/officer.png",
+                "officer2": "images/actor/officer2.png",
+                "officer3": "images/actor/officer3.png",
+                "officer4": "images/actor/officer4.png",
+                "officer5": "images/actor/officer5.png",
+                "woman": "images/actor/woman.png",
+                "woman2": "images/actor/woman2.png",
+                "woman3": "images/actor/woman3.png",
+                "woman4": "images/actor/woman4.png",
+                "woman5": "images/actor/woman5.png",
+                "man3": "images/actor/man3.png",
+                "man4": "images/actor/man4.png",
+                "man5": "images/actor/man5.png",
+                "teacher": "images/actor/teacher.png",
+                "parent": "images/actor/woman3.png"
+            }
+
             # 遭遇した全てのひとに対してクイズを生成
+            temp_questions = []
             for encounter in encountered_events:
                 # 1. 見ためクイズ（画像せんたく）
                 target_type = encounter["char_type"]
                 options = [target_type]
-                dummies = ["stranger", "stranger2", "officer", "woman", "teacher", "parent"]
-                # 重複排除とターゲット除外
-                dummies = [d for d in dummies if d != target_type]
+                
+                # 不正解の選択肢を「絶対に違う人」にする
+                dummies = [d for d in stranger_actors if d != target_type]
                 random.shuffle(dummies)
                 options.extend(dummies[:2])
                 random.shuffle(options)
                 
-                self.questions.append({
+                temp_questions.append({
                     "type": "image",
                     "text": "このなかの だれに あったかな？",
                     "choices": options,
                     "correct_index": options.index(target_type),
-                    "sprite_map": {
-                        "stranger": "images/actor/stranger.png",
-                        "stranger2": "images/actor/stranger2.png",
-                        "officer": "images/actor/officer.png",
-                        "woman": "images/actor/woman.png",
-                        "teacher": "images/actor/teacher.png",
-                        "parent": "images/actor/woman3.png"
-                    }
+                    "sprite_map": sprite_paths
                 })
 
                 # ふしんしゃの場合のみ追加の質問
@@ -49,10 +66,16 @@ init python:
                     t_options = [target_trait]
                     t_dummies = [t for t in stranger_traits if t != target_trait]
                     random.shuffle(t_dummies)
-                    t_options.extend(t_dummies[:2])
+                    # 重複排除
+                    t_unique_dummies = []
+                    for d in t_dummies:
+                        if d not in t_unique_dummies and d != target_trait:
+                            t_unique_dummies.append(d)
+                    
+                    t_options.extend(t_unique_dummies[:2])
                     random.shuffle(t_options)
                     
-                    self.questions.append({
+                    temp_questions.append({
                         "type": "text",
                         "text": "どんな とくちょうが あったかな？",
                         "choices": t_options,
@@ -73,12 +96,16 @@ init python:
                     a_options.extend(a_unique_dummies[:2])
                     random.shuffle(a_options)
 
-                    self.questions.append({
+                    temp_questions.append({
                         "type": "text",
                         "text": "なにを されたかな？",
                         "choices": a_options,
                         "correct_index": a_options.index(target_action)
                     })
+
+            # クイズの問題数を最大5問にする
+            random.shuffle(temp_questions)
+            self.questions = temp_questions[:5]
 
             return True
 

@@ -542,9 +542,9 @@ screen fullscreen_map():
     # マップ表示（なか央に大きく）
     frame:
         xalign 0.5 yalign 0.5
-        xsize 1200
-        ysize 800
-        padding (8, 8)
+        xsize 1024
+        ysize 825
+        padding (4, 4)
         background "#222222DD"
 
         # viewport を使ってスクロール/ドラッグ可能に
@@ -555,8 +555,8 @@ screen fullscreen_map():
             edgescroll (100, 1000)
             
             # 初期位置をいまここに
-            xinitial (int(pos[0] * 1.0) - 600 if pos else 0)
-            yinitial (int(pos[1] * 1.0) - 400 if pos else 0)
+            xinitial (int(pos[0] * 1.0) - 512 if pos else 0)
+            yinitial (int(pos[1] * 1.0) - 412 if pos else 0)
 
             fixed:
                 fit_first True

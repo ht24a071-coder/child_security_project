@@ -325,7 +325,7 @@ screen controller_guide():
                     hbox:
                         spacing 5
                         text "Ⓨ" size 26 color "#FFEB3B" yoffset 3 font gui.interface_text_font # Yボタンガイド
-                        text "なび" size 22 color "#ddd"
+                        text "まっぷ" size 22 color "#ddd"
                 else:
                     hbox:
                         spacing 5
@@ -335,7 +335,7 @@ screen controller_guide():
                     hbox:
                         spacing 5
                         text "Ⓨ" size 26 color "#FFEB3B" yoffset 3 font gui.interface_text_font
-                        text "なび" size 22 color "#ddd"
+                        text "まっぷ" size 22 color "#ddd"
 
                 hbox:
                     spacing 5
@@ -989,14 +989,14 @@ screen preferences():
                 vbox:
 
                     if config.has_music:
-                        label _("おんがくのおと量")
+                        label _("BGMの おんりょう")
 
                         hbox:
                             bar value Preference("music volume")
 
                     if config.has_sound:
 
-                        label _("効果おとのおと量")
+                        label _("効果おんの おんりょう")
 
                         hbox:
                             bar value Preference("sound volume")
@@ -1006,7 +1006,7 @@ screen preferences():
 
 
                     if config.has_voice:
-                        label _("ボイスのおと量")
+                        label _("ボイスの おんりょう")
 
                         hbox:
                             bar value Preference("voice volume")
