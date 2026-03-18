@@ -13,7 +13,7 @@ label suspi_e_mom_injury:
     
     $ play_voice() # おかあさんの怪我という緊急性はセリフで表現し、ボイスは標準的なものを使用
     stranger "ねえ、キミ！たいへんだよ！"
-    stranger "キミの おかあさんが けがをして びょういんに はこばれたんだ！"
+    stranger "{color=#ff0000}キミの おかあさんが けがをして びょういんに はこばれたんだ！{/color}"
 
     pc "えっ！？ ママが！？"
     
@@ -68,7 +68,7 @@ label .refuse_car_mom:
     pc "せんせいや パパに れんらくしますから！"
     
     # --- ここから執拗な勧誘 ---
-    play music "audio/Pinch!!.mp3" fadein 1.0 volume 1.0 # ここで流す！
+    play music "audio/Pinch!!.mp3" fadein 1.0 volume 0.4 # ここで流す！
     stranger "いいから こいよ！"
     "ふしんしゃは うでを つかもうとしてきた！"
     

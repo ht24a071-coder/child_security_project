@@ -3,7 +3,7 @@
 # =============================================================================
 
 label encounter_e_stranger:
-    play music "audio/Pinch!!.mp3" fadein 1.0 volume 1.0
+    play music "audio/Pinch!!.mp3" fadein 1.0 volume 0.4
     "だれかが ちかづいてきた。"
     
     call show_stranger_wrapper("encounter_e_stranger") from _call_show_stranger_wrapper_danger
@@ -562,7 +562,7 @@ label .flee_success:
     else:
         call fallback_buzzer_sequence from _call_fallback_buzzer_sequence_9
         if _return == "success":
-             jump .escape_buzzer
+            jump .escape_buzzer
              
         $ update_score(20)
         "なんとか にげられた！"

@@ -274,7 +274,7 @@ init python:
         mode = getattr(store, "game_mode", "going_home")
         
         # ユーザーゆび定のBGMを再生
-        renpy.music.play("audio/あにまるさんぽ.mp3", fadein=fadein, loop=True, if_changed=True)
+        renpy.music.play("audio/あにまるさんぽ.mp3", fadein=fadein, loop=True, if_changed=True, relative_volume=0.4)
 
     def get_npc_dialogue(npc_tag, dialogue_type="Greeting"):
         """

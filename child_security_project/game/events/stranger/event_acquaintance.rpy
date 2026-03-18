@@ -68,7 +68,7 @@ label .refuse_acquaintance:
     
     pc "ごめんなさい！いま いそいでるんです！"
     
-    play music "audio/Pinch!!.mp3" fadein 1.0 volume 1.0
+    play music "audio/Pinch!!.mp3" fadein 1.0 volume 0.4
     stranger "えー、いいじゃないか。ちょっとだけだよ？"
     
     pc "（しつこいな...）"

@@ -4,7 +4,7 @@
 
 label suspi_e_car:
     $ setup_stranger("suspi_e_car")
-    play music "audio/Pinch!!.mp3" fadein 1.0 volume 1.0  # ここで流す
+    play music "audio/Pinch!!.mp3" fadein 1.0 volume 0.4  # ここで流す
     "くるまが ゆっくり ちかづいてきた。"
     
     "まどが あいて、なかから ひとが こえを かけてきた。"
@@ -35,8 +35,7 @@ label suspi_e_car:
             stranger "ねえ、きいてる？"
 
     $ play_voice("okuru")
-    $ s_text = get_commute_text("おうちまで おくってあげようか？", "がっこうまで おくってあげようか？")
-    stranger "{color=#ff0000}[s_text]{/color}"
+    stranger "[s_text] {color=#ff0000}くるまで おくってあげようか？{/color}"
     $ player_destination = get_commute_text("かえれ", "いけ")
     stranger "くるまの ほうが はやいよ？"
 
@@ -44,7 +43,7 @@ label suspi_e_car:
         "のります！":
             jump .get_in_car
 
-        "だいじょうぶです、[player_destination]れます":
+        "だいじょうぶです、[player_destination]ます":
             jump .refuse_car
         
         "（にげる）":

@@ -291,6 +291,7 @@ screen minimap():
                 ysize viewport_h
                 action Show("fullscreen_map")
                 hover_foreground Solid("#ffffff20")
+                keyboard_focus False
                 
                 # viewport を使ってなかこころを合わせる (draggableにして移動可能に)
                 viewport:
@@ -388,6 +389,7 @@ screen minimap():
                     offset (-5, 5)
                     action ToggleScreenVariable("show_minimap_legend")
                     tooltip "はんれいの ひょうじ/ひひょうじ"
+                    keyboard_focus False
 
             # --- 凡例 (Legend) ---
             if show_minimap_legend:
@@ -425,6 +427,7 @@ screen minimap():
         padding (18, 10, 18, 10)
         hover_foreground Solid("#ffffff30")
         action Show("fullscreen_map")
+        keyboard_focus False
 
     key "K_y" action Show("fullscreen_map")
     key "pad_y_press" action Show("fullscreen_map")
@@ -542,8 +545,8 @@ screen fullscreen_map():
     # マップ表示（なか央に大きく）
     frame:
         xalign 0.5 yalign 0.5
-        xsize 1024
-        ysize 825
+        xmaximum 1024
+        ymaximum 825
         padding (4, 4)
         background "#222222DD"
 

@@ -13,11 +13,11 @@ label suspi_e_test_2:
     $ s_text = get_commute_text("かえっ", "い")
     $ player_destination = get_commute_text("かえ", "いけ")
     
-    play music "audio/Pinch!!.mp3" fadein 1.0 volume 1.0  # ここで流す
+    play music "audio/Pinch!!.mp3" fadein 1.0 volume 0.4  # ここで流す
 
     $ play_voice("okuru")
     $ s_text = get_commute_text("おうちまで", "がっこうまで")
-    stranger "こんにちは、[s_text] くるまで おくってあげようか？"
+    stranger "こんにちは、[s_text] {color=#ff0000}くるまで おくってあげようか？{/color}"
 
     menu:
         "のります！":

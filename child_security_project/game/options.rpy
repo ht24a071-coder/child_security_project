@@ -74,6 +74,10 @@ define config.has_sound = True
 define config.has_music = True
 define config.has_voice = True
 
+# 効果音を相対的に大きくするため、BGMのデフォルト音量を少し下げる
+define config.default_music_volume = 0.5
+define config.default_sfx_volume = 1.0
+
 
 ## サウンドやボイスの設定画面で、ユーザーがテストサウンドを再生可能にする場
 ## 合、以下の行をアンコメントしてサンプルサウンドを指定します。

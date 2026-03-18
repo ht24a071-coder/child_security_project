@@ -354,6 +354,12 @@ init python:
     if "pad_b_press" in config.keymap["hide_windows"]:
         config.keymap["hide_windows"].remove("pad_b_press")
 
+    # Yボタン（pad_y_press）が hide_windows 等に割り当たっているのを解除 (マップ機能と競合するため)
+    if "pad_y_press" in config.keymap["hide_windows"]:
+        config.keymap["hide_windows"].remove("pad_y_press")
+    if "pad_y_press" in config.keymap["game_menu"]:
+        config.keymap["game_menu"].remove("pad_y_press")
+
     # Bボタンを "game_menu"（めにゅーを開く・もどる）に割り当てる
     if "pad_b_press" not in config.keymap["game_menu"]:
         config.keymap["game_menu"].append("pad_b_press")
@@ -989,14 +995,14 @@ screen preferences():
                 vbox:
 
                     if config.has_music:
-                        label _("BGMの おんりょう")
+                        label _("おんがくの おんりょう")
 
                         hbox:
                             bar value Preference("music volume")
 
                     if config.has_sound:
 
-                        label _("効果おんの おんりょう")
+                        label _("こうかおんの おんりょう")
 
                         hbox:
                             bar value Preference("sound volume")
@@ -1006,7 +1012,7 @@ screen preferences():
 
 
                     if config.has_voice:
-                        label _("ボイスの おんりょう")
+                        label _("こえの おんりょう")
 
                         hbox:
                             bar value Preference("voice volume")
@@ -1316,7 +1322,11 @@ screen gamepad_help():
         text _("ゲームめにゅーを開く。")
 
     hbox:
-        label _("Ｙ／うえボタン")
+        label _("Ｙボタン")
+        text _("まっぷを ひらく。")
+
+    hbox:
+        label _("うえボタン")
         text _("インターフェースを隠す。")
 
     textbutton _("キャリブレート") action GamepadCalibrate()

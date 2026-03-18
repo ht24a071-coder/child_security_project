@@ -86,14 +86,11 @@ init python:
                     event_name = encounter["event_name"]
                     target_action = event_action_map.get(event_name, "あやしい こえを かけられた")
                     a_options = [target_action]
-                    a_dummies = [v for k, v in event_action_map.items() if v != target_action]
-                    # 完全に同一の内容がリストにある場合は排除
-                    a_unique_dummies = []
-                    for d in a_dummies:
-                        if d not in a_unique_dummies and d != target_action:
-                            a_unique_dummies.append(d)
-                    random.shuffle(a_unique_dummies)
-                    a_options.extend(a_unique_dummies[:2])
+                    
+                    import copy
+                    a_dummies = copy.copy(dummy_action_list)
+                    random.shuffle(a_dummies)
+                    a_options.extend(a_dummies[:2])
                     random.shuffle(a_options)
 
                     temp_questions.append({
