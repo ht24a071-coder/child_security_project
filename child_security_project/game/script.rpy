@@ -82,7 +82,7 @@ label going_school_start:
     # voice "audio/voice_mother_itterasshai.mp3"
     pc "さあ、がっこうに いこう！"
     
-    "みちで あった ひとの 『とくちょう』や、『なにを されたか』を よく おぼえておこう！"
+    "みちで あった ひとの {color=#ff0000}『とくちょう』{/color}や、{color=#ff0000}『なにを されたか』{/color}を よく おぼえておこう！"
     
     jump travel_loop
 
@@ -115,7 +115,7 @@ label going_home_start:
 
     pc "さあ、いえに かえろう！"
     
-    "みちで あった ひとの 『とくちょう』や、『なにを されたか』を よく おぼえておこう！"
+    "みちで あった ひとの {color=#ff0000}『とくちょう』{/color}や、{color=#ff0000}『なにを されたか』{/color}を よく おぼえておこう！"
     
     jump travel_loop
 
