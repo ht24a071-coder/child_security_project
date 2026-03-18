@@ -4,7 +4,7 @@
 
 label suspi_e_car:
     $ setup_stranger("suspi_e_car")
-    play music "audio/Pinch!!.mp3" fadein 1.0 volume 0.4  # ここで流す
+    play music "audio/Pinch!!.mp3" fadein 1.0 volume 0.2  # ここで流す
     "くるまが ゆっくり ちかづいてきた。"
     
     "まどが あいて、なかから ひとが こえを かけてきた。"

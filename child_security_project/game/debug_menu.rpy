@@ -43,5 +43,6 @@ screen debug_event_menu():
                 # その他
                 textbutton "顔見知りの誘い" action Start("suspi_e_acquaintance")
                 textbutton "大声テスト" action Start("test_mic_minigame")
+                null
 
             textbutton "戻る" action Return() xalign 0.5

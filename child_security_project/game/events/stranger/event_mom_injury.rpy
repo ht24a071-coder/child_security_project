@@ -68,7 +68,7 @@ label .refuse_car_mom:
     pc "せんせいや パパに れんらくしますから！"
     
     # --- ここから執拗な勧誘 ---
-    play music "audio/Pinch!!.mp3" fadein 1.0 volume 0.4 # ここで流す！
+    play music "audio/Pinch!!.mp3" fadein 1.0 volume 0.2 # ここで流す！
     stranger "いいから こいよ！"
     "ふしんしゃは うでを つかもうとしてきた！"
     

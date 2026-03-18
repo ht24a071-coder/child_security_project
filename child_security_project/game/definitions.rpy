@@ -256,13 +256,13 @@ init python:
         v = get_stranger_voice(line_id)
         if v:
             try:
-                # voiceチャンネルで再生し、音量を2.0倍にする
-                renpy.sound.play(v, channel="voice", relative_volume=2.0)
+                # voiceチャンネルで再生
+                renpy.voice(v)
             except Exception as e:
                 print(f"Voice play error: {e}")
                 try:
                     # フォールバック: soundチャンネルで再生
-                    renpy.sound.play(v, channel="sound", relative_volume=2.0)
+                    renpy.sound.play(v, channel="sound")
                 except:
                     pass
 
@@ -273,7 +273,7 @@ init python:
         mode = getattr(store, "game_mode", "going_home")
         
         # ユーザーゆび定のBGMを再生
-        renpy.music.play("audio/あにまるさんぽ.mp3", fadein=fadein, loop=True, if_changed=True, relative_volume=0.4)
+        renpy.music.play("audio/あにまるさんぽ.mp3", fadein=fadein, loop=True, if_changed=True, relative_volume=0.2)
 
     def get_npc_dialogue(npc_tag, dialogue_type="Greeting"):
         """

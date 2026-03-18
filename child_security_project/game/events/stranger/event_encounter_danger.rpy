@@ -3,7 +3,7 @@
 # =============================================================================
 
 label encounter_e_stranger:
-    play music "audio/Pinch!!.mp3" fadein 1.0 volume 0.4
+    play music "audio/Pinch!!.mp3" fadein 1.0 volume 0.2
     "だれかが ちかづいてきた。"
     
     call show_stranger_wrapper("encounter_e_stranger") from _call_show_stranger_wrapper_danger
