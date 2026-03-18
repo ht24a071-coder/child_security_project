@@ -82,6 +82,8 @@ label going_school_start:
     # voice "audio/voice_mother_itterasshai.mp3"
     pc "さあ、がっこうに いこう！"
     
+    "みちで あった ひとの 『とくちょう』や、『なにを されたか』を よく おぼえておこう！"
+    
     jump travel_loop
 
 # =============================================================================
@@ -112,6 +114,8 @@ label going_home_start:
     show screen image_overlay("images/Tutorial.png", "ちゅーとりある")
 
     pc "さあ、いえに かえろう！"
+    
+    "みちで あった ひとの 『とくちょう』や、『なにを されたか』を よく おぼえておこう！"
     
     jump travel_loop
 
@@ -224,8 +228,8 @@ label trigger_node_event(data):
         if group_name in ["suspicious", "danger"]:
             max_enc = getattr(persistent, "max_stranger_encounters", 2)
             # 現在の遭遇数をカウント
-            # encountered_eventsには辞書で情報が入っている。is_strangerフラグやevent_nameで判別
-            stranger_count = sum(1 for e in encountered_events if isinstance(e, dict) and e.get("char_type") in ["stranger", "suspicious"] or e.get("event_name") in ["suspicious", "stranger", "car", "mom_injury", "car_abduction", "suspicious_event_1", "suspicious_event_2", "encounter_danger", "acquaintance"])
+            # is_strangerフラグがTrueのもの、または「顔見知りの誘い(acquaintance)」をカウント
+            stranger_count = sum(1 for e in encountered_events if isinstance(e, dict) and (e.get("is_stranger") or e.get("event_name") == "acquaintance"))
             
             if stranger_count >= max_enc:
                 chance = 0 # 上限に達したら出現しない
