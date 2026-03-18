@@ -256,10 +256,15 @@ init python:
         v = get_stranger_voice(line_id)
         if v:
             try:
-                # voiceチャンネルで再生
-                renpy.music.play(v, channel="voice")
-            except:
-                pass
+                # voiceチャンネルで再生（loop=Falseで必ず1回再生）
+                renpy.music.play(v, channel="voice", loop=False)
+            except Exception as e:
+                print(f"Voice play error: {e}")
+                try:
+                    # フォールバック: soundチャンネルで再生
+                    renpy.sound.play(v, channel="sound")
+                except:
+                    pass
 
     def play_commute_bgm(fadein=1.0):
         """モードに合わせてBGMを再生する"""

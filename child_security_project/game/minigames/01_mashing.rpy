@@ -38,6 +38,11 @@ init -1 python:
             # じかん切れ判定
             if not self.show_result and self.get_remaining() <= 0:
                 self.result, self.show_result, self.finished = "miss", True, True
+                # タイムアウトSE
+                try:
+                    renpy.sound.play("audio/ブブー、不正解.mp3", channel="sound")
+                except:
+                    pass
             
             # シェイク減衰
             if renpy.get_game_runtime() - self.last_press_time > 0.1:
@@ -61,15 +66,21 @@ init -1 python:
             import random
             self.shake_offset = (random.randint(-5, 5), random.randint(-5, 5))
             
-            # SE追加
-            setup_globals = globals()
-            if "play_se" in setup_globals:
-                setup_globals["play_se"]("minigame_hit")
+            # SE（制彡なしで動いた時に必ず鳳る）
+            try:
+                renpy.sound.play("audio/アイテム入手音(もしくはカーソル移動音).mp3", channel="sound")
+            except:
+                pass
             
             if self.current_count >= self.target_count:
                 rem = self.get_remaining()
                 self.result = "perfect" if rem > self.time_limit * 0.5 else "good"
                 self.show_result = self.finished = True
+                # 成功時SE
+                try:
+                    renpy.sound.play("audio/正解、ピンポーン_2.mp3", channel="sound")
+                except:
+                    pass
             
     class EscapeMinigame(MashingMinigame):
         def __init__(self, difficulty="normal", **kwargs):
@@ -173,7 +184,7 @@ screen mashing_minigame(game):
                     $ res_clr = {"perfect": "#ff0", "good": "#0f0", "miss": "#888"}.get(game.result)
                     text res_txt size 50 xalign 0.5 color res_clr bold True outlines [(3, "#000", 0, 0)]
                 else:
-                     # ボタンあんない
+                    # ボタンあんない
                     text "\u24B6" size 80 color "#00ffff" bold True outlines [(3, "#000", 0, 0)] xalign 0.5 font gui.interface_text_font
 
         if not game.show_result:
