@@ -976,6 +976,20 @@ screen preferences():
                     textbutton _("Standard (Xbox/PS)") action [SetField(persistent, "controller_layout", "standard"), Function(update_controller_bindings)]
                     textbutton _("Nintendo (Switch)") action [SetField(persistent, "controller_layout", "nintendo"), Function(update_controller_bindings)]
 
+                vbox:
+                    style_prefix "slider"
+                    label _("イベントせってい")
+
+                    label _("ふしんしゃ そうぐうりつ")
+                    hbox:
+                        textbutton "0.0倍" action SetField(persistent, "stranger_encounter_rate", 0.0)
+                        textbutton "0.5倍" action SetField(persistent, "stranger_encounter_rate", 0.5)
+                        textbutton "1.0倍" action SetField(persistent, "stranger_encounter_rate", 1.0)
+                        textbutton "2.0倍" action SetField(persistent, "stranger_encounter_rate", 2.0)
+
+                    label _("さいだい そうぐう にんずう: [persistent.max_stranger_encounters:.0f] 人")
+                    bar value FieldValue(persistent, "max_stranger_encounters", 10.0, step=1.0)
+
             null height (4 * gui.pref_spacing)
 
             hbox:

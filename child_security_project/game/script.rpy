@@ -219,6 +219,20 @@ label trigger_node_event(data):
         # event_poolsをstoreから明示的に取得
         pools = event_pools
         
+        # カスタム設定（出現率・最大遭遇数）を適用
+        # 不審者または危険な人物(danger)のみ対象
+        if group_name in ["suspicious", "danger"]:
+            max_enc = getattr(persistent, "max_stranger_encounters", 2)
+            # 現在の遭遇数をカウント
+            # encountered_eventsには辞書で情報が入っている。is_strangerフラグやevent_nameで判別
+            stranger_count = sum(1 for e in encountered_events if isinstance(e, dict) and e.get("char_type") in ["stranger", "suspicious"] or e.get("event_name") in ["suspicious", "stranger", "car", "mom_injury", "car_abduction", "suspicious_event_1", "suspicious_event_2", "encounter_danger", "acquaintance"])
+            
+            if stranger_count >= max_enc:
+                chance = 0 # 上限に達したら出現しない
+            else:
+                rate_mult = getattr(persistent, "stranger_encounter_rate", 1.0)
+                chance = int(chance * rate_mult)
+
         # 確率判定とプール存在かくにん
         if renpy.random.randint(1, 100) <= chance and group_name in pools:
             available = []

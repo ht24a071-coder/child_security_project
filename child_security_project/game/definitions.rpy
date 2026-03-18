@@ -50,7 +50,9 @@ define stranger_voice_map = {
 }
 
 # 定数
-define PROB_SUSPICIOUS = 20 
+define PROB_SUSPICIOUS = 20
+default persistent.max_stranger_encounters = 2
+default persistent.stranger_encounter_rate = 1.0 
 define MAX_STEPS = 10 
 
 # 画像定義
