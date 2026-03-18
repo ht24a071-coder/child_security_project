@@ -38,14 +38,14 @@ default encountered_events = []
 # ふしんしゃの見ためごとのボイスマッピング
 define stranger_voice_map = {
     "stranger": {
-        "kaeri": "<vol=3.0>audio/stranger1_kaeri.wav",
-        "okuru": "<vol=3.0>audio/stranger1_okuru.wav",
-        "hello": "<vol=3.0>audio/stranger1_hello.wav",
+        "kaeri": "audio/stranger1_kaeri.wav",
+        "okuru": "audio/stranger1_okuru.wav",
+        "hello": "audio/stranger1_hello.wav",
     },
     "stranger2": {
-        "kaeri": "<vol=3.0>audio/stranger2_kaeri.wav",
-        "okuru": "<vol=3.0>audio/stranger2_okuru.wav",
-        "hello": "<vol=3.0>audio/stranger2_hello.wav",
+        "kaeri": "audio/stranger2_kaeri.wav",
+        "okuru": "audio/stranger2_okuru.wav",
+        "hello": "audio/stranger2_hello.wav",
     },
 }
 
