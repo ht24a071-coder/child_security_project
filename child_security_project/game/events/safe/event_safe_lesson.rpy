@@ -41,7 +41,10 @@ label safe_e_lesson_teacher:
     
     pc "うん、わかった！"
     
-    teacher "よし、きをつけてかえってね。"
+    if game_mode == "going_school":
+        teacher "よし、がっこうまで きをつけてね。"
+    else:
+        teacher "よし、きをつけてかえってね。"
     
     $ update_score(15, "あんぜんきょうしつ")
     
@@ -55,7 +58,10 @@ label safe_e_lesson_officer:
     
     $ record_encounter("officer", "officer")
     
-    officer "やあ、きをつけてかえっているかな？"
+    if game_mode == "going_school":
+        officer "やあ、きをつけて がっこうに むかっているかな？"
+    else:
+        officer "やあ、きをつけてかえっているかな？"
     
     pc "うん、だいじょうぶ！"
     

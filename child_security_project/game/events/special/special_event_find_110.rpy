@@ -3,7 +3,10 @@
 
 label special_e_find_110:
     show woman with dissolve
-    woman "あら、こんにちは。ひとりでおかえり？"
+    if game_mode == "going_school":
+        woman "あら、こんにちは。ひとりで がっこうに いくの？"
+    else:
+        woman "あら、こんにちは。ひとりでおかえり？"
     woman "ねえ、もしなにかこわいことがあったら、どこにでんわすればいいかしってる？"
 
     menu:
@@ -27,7 +30,10 @@ label special_e_find_110:
             woman "「ひゃくとおばん」、おまわりさんがきてくれるよ！"
             call show_feedback("quiz_110_unknown") from _call_fb_110_3
 
-    woman "きをつけてかえってね！"
+    if game_mode == "going_school":
+        woman "きをつけてね！"
+    else:
+        woman "きをつけてかえってね！"
     hide woman with dissolve
 
     return

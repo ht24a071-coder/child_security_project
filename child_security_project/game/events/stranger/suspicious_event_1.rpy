@@ -32,7 +32,7 @@ label suspi_e_test_1:
 
         "ごめんなさい。まっすぐ [player_destination]ないといけないんです":
             $ play_se("decide")
-            $ player_destination = get_commute_text("かえら", "か")
+            $ player_destination = get_commute_text("かえら", "いか")
             $ update_score(15, "はっきりと ことわった")
             
             pc "いりません！"

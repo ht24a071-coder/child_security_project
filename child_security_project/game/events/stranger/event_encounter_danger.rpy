@@ -336,7 +336,10 @@ label .escape_shout:
 label .refuse_stranger:
     $ update_score(15, "はっきりと ことわった")
     
-    pc "ごめんなさい！まっすぐ かえらないといけないんです！"
+    if game_mode == "going_school":
+        pc "ごめんなさい！まっすぐ がっこうに いかないといけないんです！"
+    else:
+        pc "ごめんなさい！まっすぐ かえらないといけないんです！"
     stranger "えー、ちょっとだけだよ～"
     pc "いいえ！さようなら！"
     

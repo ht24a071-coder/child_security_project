@@ -189,10 +189,12 @@ label travel_loop:
         d_before = get_shortest_dist(current_node, target_list)
         d_after = get_shortest_dist(next_location, target_list)
         
-        # きょりが縮まっていなければペナルティ
         if d_after >= d_before:
             update_score(-2, "よりみちをした")
-            renpy.notify("みちを まちがえちゃったみたい。まっすぐ かえろう！")
+            if game_mode == "going_school":
+                renpy.notify("みちを まちがえちゃったみたい。がっこうへ いそごう！")
+            else:
+                renpy.notify("みちを まちがえちゃったみたい。まっすぐ かえろう！")
 
     $ previous_node = current_node
     $ current_node = next_location
@@ -350,7 +352,10 @@ label game_clear:
         
         # だれも会わなかった場合
         if not encountered_events:
-            feedback_tips.append("よりみちを せずに、まっすぐ かえれたね！")
+            if game_mode == "going_school":
+                feedback_tips.append("よりみちを せずに、まっすぐ がっこうに つけたね！")
+            else:
+                feedback_tips.append("よりみちを せずに、まっすぐ かえれたね！")
             feedback_tips.append("だれにも あわないのが いちばん あんぜんだよ。")
         else:
             if has_stranger:
