@@ -1,0 +1,7 @@
+# --- Pythonキャッシュ ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+child_game_server/*
+!child_game_server/dummy.txt
